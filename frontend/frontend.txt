@@ -4,3 +4,20 @@ To run your project, navigate to the directory and run one of the following npm 
 - npm run android
 - npm run ios # you need to use macOS to build the iOS project - use the Expo app if you need to do iOS development without a Mac
 - npm run web
+
+To run the web portion navigate to frontend/web-citizen_science
+Web denotes that IT IS the react (not NATIVE) portion for the website admin page
+- cd frontend
+- cd web-citizen-science 
+- npm install
+- npm start
+
+frontend/
+  ├── citizen_science_app/   # React Native app
+  │   ├── App.tsx            # React Native entry point
+  │   └── navigation/        # React Navigation
+  └── web/                   # React web app
+      ├── src/
+      │   ├── App.tsx        # React entry point
+      │   └── components/
+      └── package.json       # Web dependencies
