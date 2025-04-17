@@ -1,0 +1,47 @@
+/* General CSS applied to ALL pages */
+.App {
+  text-align: center;
+}
+
+body {
+  background: linear-gradient(135deg, #e6f2ff 0%, #cce6ff 100%);
+  background-attachment: fixed;
+  /* Light blue gradient */
+}
+
+
+/* Navbar CSS */
+.blue-navbar {
+  background-color: #1a3e72;
+  transition: all 0.3s ease-out 0s;
+  box-shadow: 0px 10px 10px 0px rgba(9, 5, 29, 0.171);
+  backdrop-filter: blur(15px);
+  padding: 0.5rem 2rem;
+  font-size: 1.1rem;
+}
+
+.nav-link {
+  color: #ffffff !important;
+  padding: 1rem 1.5rem !important; /* Increased padding */
+  margin: -0.5rem -1rem; /* Counteracts navbar padding */
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #4fc3f7 !important;
+  color: #000000 !important;
+  border-radius: 4px;
+}
+
+.nav-item {
+  margin: 5px 20px;
+  color:#ffffff;
+}
+
+
+/* Homepage basic info CSS*/
+.homepage-content {
+  padding: 8rem 0 5rem;
+  text-align: left;
+}
