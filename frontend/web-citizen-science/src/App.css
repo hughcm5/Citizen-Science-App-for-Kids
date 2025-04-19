@@ -40,8 +40,8 @@ body {
 }
 
 
-/* Homepage basic info CSS*/
-.homepage-content {
+/* Any webpage basic info CSS*/
+.content {
   padding: 8rem 0 5rem;
   text-align: left;
 }

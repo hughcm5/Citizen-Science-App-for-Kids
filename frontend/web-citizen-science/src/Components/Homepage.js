@@ -9,7 +9,7 @@ function Homepage() {
   return (
     <section>
         <Container fluid >
-            <Container className="homepage-content">
+            <Container className="content">
                 <Row>
                     <Col md={9}>
                         <h1>About</h1>
