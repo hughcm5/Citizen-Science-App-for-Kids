@@ -11,6 +11,14 @@ frontend/
 │ ├── App.js # React main page for routing
 | └── components/ # React components
 
+## Dependencies :
+
+This project requires multiple dependencies to build and execute:
+  - node.js
+    -- expo
+    -- REACT Native
+  - Android SDK (https://developer.android.com/studio)
+
 
 ## Running the React Native App (Mobile)
 
