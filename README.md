@@ -1,6 +1,14 @@
 # Citizen-Science-App-for-Kids 
+This is a cross platform application consisting of an Admin Website and a Field App
+The Field App is for K12 youth to select a project to collect field data and submit their observations
+The Admin Website is for Educators to support the youth 
 
 # Project Setup and Run Instructions
+
+## Requirements (for the field app)
+
+  * Android SDK [https://developer.android.com/studio/](https://developer.android.com/studio/)
+
 
 ## Project Structure
 frontend/
@@ -17,7 +25,6 @@ This project requires multiple dependencies to build and execute:
   - node.js
     -- expo
     -- REACT Native
-  - Android SDK (https://developer.android.com/studio)
 
 
 ## Running the React Native App (Mobile)
