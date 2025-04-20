@@ -40,8 +40,14 @@ body {
 }
 
 
-/* Any webpage basic info CSS*/
+/* Generic CSS*/
 .content {
+  padding: 8rem 0 5rem;
+  text-align: left;
+}
+
+/* Form info CSS*/
+.pagecontent {
   padding: 8rem 0 5rem;
   text-align: left;
 }

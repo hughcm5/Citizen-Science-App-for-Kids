@@ -16,12 +16,12 @@ function Navigation() {
         <Container className="navbar-styles">
         <Nav.Item >
               <Nav.Link as={Link} to="/" >
-                Home
+                About Us
               </Nav.Link>
         </Nav.Item>
         <Nav.Item >
-              <Nav.Link as={Link} to="/project" >
-                Landing
+              <Nav.Link as={Link} to="/Landing" >
+                Home
               </Nav.Link>
         </Nav.Item>
         <Nav.Item >
@@ -31,7 +31,7 @@ function Navigation() {
         </Nav.Item>
         <Nav.Item >
               <Nav.Link as={Link} to="/createproject" >
-                Create Projects
+                Create New Project
               </Nav.Link>
         </Nav.Item>
         </Container>
