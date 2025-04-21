@@ -3,6 +3,7 @@ import requests
 from requests.exceptions import RequestException
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 
 """
@@ -17,6 +18,12 @@ load_dotenv('../.env')
 
 # Initialize Flask app
 app = Flask(__name__)
+# CORS configuration
+CORS(app,
+     origins=os.getenv('CORS_ORIGINS', '*').split(','), # Remove the * in production
+     supports_credentials=True
+     )
+
 
 # URLs of the backend services
 # replace with the actual URLs of your services once on the cloud
