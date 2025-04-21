@@ -1,5 +1,7 @@
 import os
 import requests
+import json
+from datetime import datetime
 from requests.exceptions import RequestException
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -40,8 +42,10 @@ class Project(db.Model):
     class_id = db.Column(db.String(50), nullable=False)
     project_title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False)
-    project_settings = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    # JSON field to store project settings
+    project_settings = db.Column(db.JSON, nullable=True)
 
     def to_dict(self):
         """
@@ -53,6 +57,7 @@ class Project(db.Model):
             'project_title': self.project_title,
             'description': self.description,
             'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
             'project_settings': self.project_settings
         }
 
@@ -94,13 +99,17 @@ def create_project():
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No input data provided'}), 400
+    
+    if not Project.query.get(project_id):
+        return jsonify({'error': 'Project not found'}), 404
 
     try:
         new_project = Project(
             class_id=data['class_id'],
             project_title=data['project_title'],
             description=data['description'],
-            created_at=data['created_at'],
+            # created_at does not get updated
+            updated_at=data['updated_at'],
             project_settings=data['project_settings']
         )
         db.session.add(new_project)
@@ -129,6 +138,7 @@ def update_project(project_id):
         project.project_title = data['project_title']
         project.description = data['description']
         project.created_at = data['created_at']
+        project.updated_at = data['updated_at']
         project.project_settings = data['project_settings']
         db.session.commit()
         return jsonify(project.to_dict()), 200
