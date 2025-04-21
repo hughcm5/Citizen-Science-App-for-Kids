@@ -10,7 +10,7 @@ from flask_cors import CORS
 Comments / things to do or look into:
 - Implement token verification logic in verify_token function
 - Implement authentication for the services
-- Implement logging errors for the gateway (app.logger.error ?)
+- Implement logging errors for the gateway (app.logger.error ?) / Google Cloud Logging
 """
 
 # Load environment variables
@@ -125,6 +125,6 @@ def gateway(service, path=None):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv('PORT', 5050)) 
+    port = int(os.getenv('PORT', 5000))
     debug = os.getenv('DEBUG', 'false').lower() == 'true' # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug) 
