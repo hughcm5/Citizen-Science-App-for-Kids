@@ -20,7 +20,7 @@ load_dotenv('../.env')
 app = Flask(__name__)
 # CORS configuration
 CORS(app,
-     origins=os.getenv('CORS_ORIGINS', '*').split(','), # Remove the * in production
+     origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
      supports_credentials=True
      )
 
