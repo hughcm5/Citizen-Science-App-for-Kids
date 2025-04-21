@@ -100,14 +100,20 @@ def create_project():
     if not data:
         return jsonify({'error': 'No input data provided'}), 400
 
+    # Validate the input data
+    required_fields = ['class_id', 'project_title', 'description']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+
+    # TODO Check if the class_id is valild
+
     try:
         new_project = Project(
             class_id=data['class_id'],
             project_title=data['project_title'],
             description=data['description'],
-            # created_at does not get updated
-            updated_at=data['updated_at'],
-            project_settings=data['project_settings']
+            project_settings=data.get('project_settings', {}),
         )
         db.session.add(new_project)
         db.session.commit()
@@ -125,6 +131,14 @@ def update_project(project_id):
     if not data:
         return jsonify({'error': 'No input data provided'}), 400
 
+    # Validate the input data
+    required_fields = ['class_id', 'project_title', 'description']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+
+    # TODO Check if the class_id is valild
+
     # Check if the project exists
     if not Project.query.get(project_id):
         return jsonify({'error': 'Project not found'}), 404
@@ -134,9 +148,7 @@ def update_project(project_id):
         project.class_id = data['class_id']
         project.project_title = data['project_title']
         project.description = data['description']
-        project.created_at = data['created_at']
-        project.updated_at = data['updated_at']
-        project.project_settings = data['project_settings']
+        project.project_settings = data.get('project_settings', {})
         db.session.commit()
         return jsonify(project.to_dict()), 200
     except RequestException as e:
