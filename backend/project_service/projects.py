@@ -99,9 +99,6 @@ def create_project():
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No input data provided'}), 400
-    
-    if not Project.query.get(project_id):
-        return jsonify({'error': 'Project not found'}), 404
 
     try:
         new_project = Project(
