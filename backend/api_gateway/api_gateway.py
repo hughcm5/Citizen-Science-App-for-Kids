@@ -92,17 +92,18 @@ def forward_service(service_url):
     except requests.RequestException as e:
         return jsonify({'Error': 'Service unavailable', 'details': repr(e)}), 503
 
-
 # Main gateway route
 @app.route('/<service>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<service>/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def gateway(service, path=None):
     # Validate service
-    if service.lower() not in SERVICE_URLS.keys():
+    service = service.lower()
+    if service not in SERVICE_URLS.keys():
         return jsonify({'Error': f'Unknown service: {service}'}), 404
 
     # No authentication for certain services as listed in the environment variable
     NO_AUTH_SERVICES = os.getenv('NO_AUTH_SERVICES', "projects,observations,csv").split(',')
+    # TODO: Implement Google OAuth token verification
     # if service not in NO_AUTH_SERVICES:
     #     # Check for token in headers
     #     # Will be implemented in the future
