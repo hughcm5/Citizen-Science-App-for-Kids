@@ -25,7 +25,7 @@ function Navigation() {
               </Nav.Link>
         </Nav.Item>
         <Nav.Item >
-              <Nav.Link as={Link} to="/project" >
+              <Nav.Link as={Link} to="/Viewprojects" >
                 View Projects
               </Nav.Link>
         </Nav.Item>
