@@ -23,8 +23,8 @@ if os.getenv("CLOUD_SQL", "false").lower() == "true":
     )
 else:
     db_uri = (
-        f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
+        f"mysql+pymysql://{os.getenv('PROJECTS_DB_USER')}:{os.getenv('PROJECTS_DB_PASSWORD')}"
+        f"@{os.getenv('PROJECTS_DB_HOST', 'localhost')}:{os.getenv('PROJECTS_DB_PORT', '3306')}/{os.getenv('PROJECTS_DB_NAME')}"
     )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
