@@ -189,6 +189,6 @@ def health_check():
 
 
 if __name__ == "__main__":
-    port = int(os.getenv('PORT', 5001))
+    port = int(os.getenv('PROJECTS_PORT', 5001))
     debug = os.getenv('DEBUG', 'false').lower() == 'true'  # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug)
