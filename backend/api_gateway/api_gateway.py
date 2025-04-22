@@ -28,11 +28,11 @@ CORS(app,
 # URLs of the backend services
 # replace with the actual URLs of your services once on the cloud
 SERVICE_URLS = {
-    'projects': os.getenv('PROJECTS_SERVICE_URL') or 'http://localhost:5051',
-    'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5052',
-    'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5053',
-    'teachers': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5054',
-    'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5055',
+    'projects': os.getenv('PROJECTS_SERVICE_URL') or 'http://localhost:5001',
+    'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5002',
+    'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5003',
+    'teachers': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5004',
+    'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
 }
 
 
@@ -66,12 +66,12 @@ def health_check():
         try:
             timeout = int(os.getenv('HEALTH_CHECK_TIMEOUT', 5))  # Default timeout is 5 seconds
             response = requests.get(f"{service_url}/health", timeout=timeout)
-            results[service] = 'ok' if response.status_code == 200 else 'unavailable'
+            results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code)
         except requests.RequestException as e:
             results[service] = f'unavailable: {repr(e)}'
 
     return jsonify({
-        'status': 'ok',
+        'API Gateway status': 'ok',
         'services': results
     }), 200
 
@@ -125,6 +125,6 @@ def gateway(service, path=None):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('GATEWAY_PORT', 5000))
     debug = os.getenv('DEBUG', 'false').lower() == 'true' # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug) 
