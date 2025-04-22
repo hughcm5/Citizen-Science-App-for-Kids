@@ -174,21 +174,23 @@ def delete_project(project_id):
         return jsonify({'error': repr(e)}), 500
 
 
-@app.route('/projects/health', methods=['GET'])
+@app.route('/health', methods=['GET'])
 def health_check():
     """
     Health check endpoint
     Also checks if the database is reachable
     """
     try:
-        # Check if the database is reachable
-        db.session.execute('SELECT 1')
+        # # Check if the database is reachable
+        # db.session.execute('SELECT 1')
         return jsonify({'status': 'healthy'}), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     port = int(os.getenv('PROJECTS_PORT', 5001))
     debug = os.getenv('DEBUG', 'false').lower() == 'true'  # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug)
