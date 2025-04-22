@@ -125,6 +125,6 @@ def gateway(service, path=None):
 
 
 if __name__ == "__main__":
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 5051))
     debug = os.getenv('DEBUG', 'false').lower() == 'true' # Set to True for debugging, False for production
-    app.run(host='0.0.0.0', port=port, debug=debug) 
+    app.run(host='0.0.0.0', port=5051, debug=debug) 
