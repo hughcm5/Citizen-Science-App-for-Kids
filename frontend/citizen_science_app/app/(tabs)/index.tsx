@@ -1,74 +1,85 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React from "react";
+import {
+  NativeBaseProvider,
+  Box,
+  Text,
+  Button,
+  Input,
+  VStack,
+  Image,
+} from "native-base";
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    // Outer wrapper required that enables automatic styling like react bootstrap
+    // to its child components inside the app, NEED this to style properly
+    <NativeBaseProvider>
+
+      {/*
+        Box component is container for image component mb=marginBottom
+        resizeMode = contain ensures image scales to fit inside the container
+        while maintaing aspect ratio (doesnt distort image)
+      */}
+      <Box>
+        <Box mb={6} width="100%">
+          <Image
+            source={{
+              uri: "https://ssec.si.edu/sites/default/files/MOBILE%20APPS%20FOR%20CITIZEN%20SCIENCE%205_0.png",
+            }} 
+            style={{ width: "100%", height: 300 }}
+            resizeMode="contain"
+          />
+        </Box>
+      </Box>
+
+      {/* 
+          App title with text component, text displays titles
+          fontSize
+          xs: Extra Small
+          sm: Small
+          md: Medium
+          lg: Large
+          xl: Extra Large
+          2xl: 2x Extra Large
+          3xl: 3x Extra Large
+          4xl: 4x Extra Large
+          5xl: 5x Extra Large
+          6xl: 6x Extra Large
+          7xl: 7x Extra Large
+          8xl: 8x Extra Large
+      */}
+      <Text fontSize="3xl" fontWeight="bold" mb={20} mt={-10}>
+        Welcome to the Citizen Science Mobile App!
+      </Text>
+
+      {/* Instructions */}
+      <Text fontSize="lg" mb={3}>
+        Please enter your class code to get started:
+      </Text>
+
+      {/* 
+        Container but specifically arranges child components vertically
+        space denotes the space between the vertical components
+        p means padding
+        bg = means background color
+      */}
+      <VStack space={4} alignItems="center" p={4}>
+        <Input
+          placeholder="Enter class code"
+          size="lg"
+          variant="filled"
+          bg="white"
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+        {/* Enter button */}
+        <Button
+          size="lg"
+          colorScheme="teal"
+          onPress={() => alert("Button Pressed")}
+        >
+          Enter
+        </Button>
+      </VStack>
+    </NativeBaseProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
