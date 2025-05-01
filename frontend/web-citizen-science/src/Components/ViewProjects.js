@@ -1,5 +1,7 @@
-import React from 'react'
+/* View Project Pages on the Admin Website */
 
+/* ------------ Necessary Imports ------------*/
+import React from 'react'
 /*Import components from react-bootstrap */
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -7,6 +9,10 @@ import Col from "react-bootstrap/Col";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+/* ------------ import axios from "axios";  ------------*/
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+/* ------------ Page Content  ------------*/
 function Project() {
   return (
     <Container fluid>

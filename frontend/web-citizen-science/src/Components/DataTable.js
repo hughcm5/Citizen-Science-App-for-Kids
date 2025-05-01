@@ -1,5 +1,9 @@
+/* Tailors the table(s) for data on the Admin Website */
+
+/* ------------ References ------------*/
 // adapted from https://github.com/mui/mui-x/blob/v7.12.1/docs/data/data-grid/editing/FullFeaturedCrudGrid.js
 
+/* ------------ Necessary Imports ------------*/
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,12 +21,13 @@ import {
 } from '@mui/x-data-grid';
 import { randomId } from '@mui/x-data-grid-generator';
 
+/* ------------ Populate the Table's Contents ------------*/
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
     const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
+    setRows((oldRows) => [...oldRows, { id, name: '', project: '', isNew: true }]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
@@ -38,6 +43,7 @@ function EditToolbar(props) {
   );
 }
 
+/* ------------ Create Retrieve Update Delete  ------------*/
 export default function FullFeaturedCrudGrid({rows, setRows, columns, onInsert, onUpdate, onDelete}) {
   const [newRows, setNewRows] = React.useState({});
   const [rowModesModel, setRowModesModel] = React.useState({});
@@ -159,11 +165,12 @@ export default function FullFeaturedCrudGrid({rows, setRows, columns, onInsert, 
         rows={rows}
         columns={columns}
         columnVisibilityModel={{
-          projectID: false,   
-            /* PK2Id: false,      <--- update these primary keys when backend is within Repo
-          PK3Id: false,
-          ...
-          PKXId: false, */     
+          //* Default visability is none aka.false until authentication and key lookup is prompted
+          project_id: false,   
+          observation_id: false,      
+          class_id: false,
+          admin_id: false,    
+          student_id: false, 
         }}
         editMode="row"
         rowModesModel={rowModesModel}
