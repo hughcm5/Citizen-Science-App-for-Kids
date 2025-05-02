@@ -8,7 +8,7 @@ CREATE TABLE Project (
     project_settings JSON
 );
 
--- Observation DB
+-- Observation Table
 CREATE TABLE Observation (
     observation_id INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE Observation (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Classroom DB
+-- Classroom Table
 CREATE TABLE Classroom (
     class_id INT AUTO_INCREMENT PRIMARY KEY,
     class_code VARCHAR(20) NOT NULL UNIQUE,
@@ -26,7 +26,7 @@ CREATE TABLE Classroom (
     grade_level VARCHAR(50)
 );
 
--- Admin DB
+-- Admin Table
 CREATE TABLE Admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
     admin_lastname VARCHAR(100),
@@ -37,7 +37,7 @@ CREATE TABLE Admin (
     role ENUM('teacher') NOT NULL
 );
 
--- Student DB
+-- Student Table
 CREATE TABLE Student (
     student_id INT AUTO_INCREMENT PRIMARY KEY,
     class_id INT NOT NULL,
@@ -45,18 +45,3 @@ CREATE TABLE Student (
     student_firstname VARCHAR(100),
     class_codes VARCHAR(255)
 );
-
-
--- Foreign Keys
-ALTER TABLE Project
-    ADD CONSTRAINT fk_project_class FOREIGN KEY (class_id) REFERENCES Classroom(class_id);
-
-ALTER TABLE Observation
-    ADD CONSTRAINT fk_observation_project FOREIGN KEY (project_id) REFERENCES Project(project_id),
-    ADD CONSTRAINT fk_observation_student FOREIGN KEY (student_id) REFERENCES Student(student_id);
-
-ALTER TABLE Classroom
-    ADD CONSTRAINT fk_classroom_admin FOREIGN KEY (admin_id) REFERENCES Admin(admin_id);
-
-ALTER TABLE Student
-    ADD CONSTRAINT fk_student_class FOREIGN KEY (class_id) REFERENCES Classroom(class_id);

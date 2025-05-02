@@ -2,7 +2,7 @@ import os
 import MySQLdb
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())  # Load .env from nearest available
+load_dotenv(find_dotenv())  # Load .env 
 
 def connect_to_database(
     host=None,
@@ -13,22 +13,10 @@ def connect_to_database(
     config: dict = None,
     url=None
 ):
-    """
-    Connect to a MySQL database.
-
-    Priority:
-        1. `url` (URL-style)
-        2. `config` (dictionary with keys: host, user, passwd, db, port)
-        3. individual params or environment variables
-
-    Returns:
-        MySQLdb connection object
-    """
-
     if url:
         import pymysql
         from sqlalchemy.engine import make_url
-        # Parse connection string using SQLAlchemy's utility
+        # Parse connection string
         parsed = make_url(url)
         return MySQLdb.connect(
             host=parsed.host,
@@ -45,7 +33,7 @@ def connect_to_database(
         db = config.get("db")
         port = config.get("port", 3306)
 
-    # Fallback to .env or passed-in individual values
+    # Use .env or use passed in values
     host = host or os.getenv("DB_HOST", "localhost")
     user = user or os.getenv("DB_USER")
     passwd = passwd or os.getenv("DB_PASSWORD")
