@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   NativeBaseProvider,
   Box,
@@ -7,14 +7,25 @@ import {
   Input,
   VStack,
   Image,
+  Spinner
 } from "native-base";
 
 export default function HomeScreen() {
+  // Sets class code to track input
+  const [classCode, setClassCode] = useState("");
+
+  // Set loading state
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = () => {
+    console.log("Example mock send data to backend", classCode)
+    alert(`Class code "${classCode}" submitted!`);
+  }
+
   return (
     // Outer wrapper required that enables automatic styling like react bootstrap
     // to its child components inside the app, NEED this to style properly
     <NativeBaseProvider>
-
       {/*
         Box component is container for image component mb=marginBottom
         resizeMode = contain ensures image scales to fit inside the container
@@ -69,13 +80,19 @@ export default function HomeScreen() {
           size="lg"
           variant="filled"
           bg="white"
+          value={classCode}
+          onChangeText={setClassCode}
+          accessibilityLabel="Enter class code input"
         />
 
-        {/* Enter button */}
+        {/* 
+        Enter button 
+        Submitting adds the following classcode into the backend database
+        */}
         <Button
           size="lg"
           colorScheme="teal"
-          onPress={() => alert("Button Pressed")}
+          onPress={handleSubmit}
         >
           Enter
         </Button>
