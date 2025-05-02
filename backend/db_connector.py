@@ -16,7 +16,7 @@ def connect_to_database(config=None, url=None):
             port=parsed.port or 3306
         )
 
-    # Fallback to config/dotenv
+    # Fallback to config/env
     host = config.get("host") if config else os.getenv("DB_HOST", "localhost")
     user = config.get("user") if config else os.getenv("DB_USER")
     password = config.get("passwd") if config else os.getenv("DB_PASSWORD")

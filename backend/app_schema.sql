@@ -1,5 +1,4 @@
--- Project DB
-CREATE TABLE Project (
+CREATE TABLE IF NOT EXISTS Project (
     project_id INT AUTO_INCREMENT PRIMARY KEY,
     class_id INT NOT NULL,
     project_title VARCHAR(255) NOT NULL,
@@ -8,8 +7,7 @@ CREATE TABLE Project (
     project_settings JSON
 );
 
--- Observation Table
-CREATE TABLE Observation (
+CREATE TABLE IF NOT EXISTS Observation (
     observation_id INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
     student_id INT NOT NULL,
@@ -17,8 +15,7 @@ CREATE TABLE Observation (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Classroom Table
-CREATE TABLE Classroom (
+CREATE TABLE IF NOT EXISTS Classroom (
     class_id INT AUTO_INCREMENT PRIMARY KEY,
     class_code VARCHAR(20) NOT NULL UNIQUE,
     admin_id INT NOT NULL,
@@ -26,8 +23,7 @@ CREATE TABLE Classroom (
     grade_level VARCHAR(50)
 );
 
--- Admin Table
-CREATE TABLE Admin (
+CREATE TABLE IF NOT EXISTS Admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
     admin_lastname VARCHAR(100),
     admin_firstname VARCHAR(100),
@@ -37,8 +33,7 @@ CREATE TABLE Admin (
     role ENUM('teacher') NOT NULL
 );
 
--- Student Table
-CREATE TABLE Student (
+CREATE TABLE IF NOT EXISTS Student (
     student_id INT AUTO_INCREMENT PRIMARY KEY,
     class_id INT NOT NULL,
     student_lastname VARCHAR(100),
