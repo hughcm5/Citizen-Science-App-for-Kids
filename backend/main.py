@@ -1,10 +1,10 @@
 import mysql.connector
-import db_connector as db
+from db_connector import connect_to_database
 import json
 
 
 
-cursor = db.cursor()
+cursor = connect_to_database()
 
 # Execute DDL statements
 with open("app_schema.sql", "r") as file:

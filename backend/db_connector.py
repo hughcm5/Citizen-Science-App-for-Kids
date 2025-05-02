@@ -1,46 +1,31 @@
 import os
-import MySQLdb
+import pymysql
+from sqlalchemy.engine import make_url
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())  # Load .env 
+load_dotenv(find_dotenv())
 
-def connect_to_database(
-    host=None,
-    user=None,
-    passwd=None,
-    db=None,
-    port=3306,
-    config: dict = None,
-    url=None
-):
+def connect_to_database(config=None, url=None):
     if url:
-        import pymysql
-        from sqlalchemy.engine import make_url
-        # Parse connection string
         parsed = make_url(url)
-        return MySQLdb.connect(
+        return pymysql.connect(
             host=parsed.host,
             user=parsed.username,
-            passwd=parsed.password,
-            db=parsed.database,
+            password=parsed.password,
+            database=parsed.database,
             port=parsed.port or 3306
         )
 
-    if config:
-        host = config.get("host")
-        user = config.get("user")
-        passwd = config.get("passwd")
-        db = config.get("db")
-        port = config.get("port", 3306)
+    # Fallback to config/dotenv
+    host = config.get("host") if config else os.getenv("DB_HOST", "localhost")
+    user = config.get("user") if config else os.getenv("DB_USER")
+    password = config.get("passwd") if config else os.getenv("DB_PASSWORD")
+    database = config.get("db") if config else os.getenv("DB_NAME")
+    port = int(config.get("port") if config else os.getenv("DB_PORT", 3306))
 
-    # Use .env or use passed in values
-    host = host or os.getenv("DB_HOST", "localhost")
-    user = user or os.getenv("DB_USER")
-    passwd = passwd or os.getenv("DB_PASSWORD")
-    db = db or os.getenv("DB_NAME")
-    port = int(port or os.getenv("DB_PORT", 3306))
-
-    if not all([host, user, passwd, db]):
+    if not all([host, user, password, database]):
         raise ValueError("Missing required DB connection parameters.")
 
-    return MySQLdb.connect(host=host, user=user, passwd=passwd, db=db, port=port)
+    return pymysql.connect(
+        host=host, user=user, password=password, database=database, port=port
+    )
