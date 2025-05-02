@@ -6,14 +6,14 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 /* Routes */
 import Navigation from './Components/Navigation.js';
 import Homepage from './Components/Homepage.js';
-import CreateProject from './Components/CreateProject.js';
+import CreateProject from './Components/CreateProject.jsx';
 import Landing from './Components/Landing.js';
 import ViewProjects from './Components/ViewProjects.js'
 import EditProjects from './Components/ViewProjects.js'
 
 /* ------------ Necessary Imports ------------*/
 import axios from "axios";
-//* import { randomId } from '@mui/x-data-grid-generator'; <-- NOT cooperating! >:(
+//* import { randomId } from '@mui/x-data-grid-generator'; <-- this is incompatiable with React Native :(
 /*Import bootstrap styles */
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -56,7 +56,7 @@ function App() {
         <Routes>
           {/* Pass getRows and getCol to each page using DataTable */}
           <Route path = "/" element= {<Homepage />}/>
-          <Route path = "/createproject" element= {<CreateProject />}/>
+          <Route path = "/createproject" element= {<CreateProject getRows={getRows} getCol={getCol}/>}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
           <Route path="/EditProjects" element={<EditProjects getRows={getRows} getCol={getCol} />} />
