@@ -1,41 +1,41 @@
-import mysql.connector
 import json
+import datetime
+from db_connector import connect_to_database
 
-# Connect to the database
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="YOUR_PASS", # your pass
-    database="testdb"
-)
+# Get a connection
+connection = connect_to_database()
+cursor = connection.cursor()
 
-cursor = conn.cursor()
+# Read SQL script
+with open("app_schema.sql", "r") as file:
+    lines = file.readlines()
 
-# Execute DDL statements
-with open("ddl.sql", "r") as file:
-    sql_script = file.read()
+# Split into individual statements
+commands = [cmd.strip() for cmd in lines.split(';') if cmd.strip()]
 
-commands = [cmd.strip() for cmd in sql_script.split(';') if cmd.strip()]
-
+# Execute each command
 for command in commands:
     try:
         cursor.execute(command)
-    except mysql.connector.Error as err:
+    except Exception as err:
         print("Error:", err)
+
 
 # Query and convert to JSON
 try:
-    cursor.execute("SELECT * FROM TestTable")
+    cursor.execute("SELECT * FROM Project")
     rows = cursor.fetchall()
     columns = [desc[0] for desc in cursor.description]
 
     result_list = [dict(zip(columns, row)) for row in rows]
-    json_output = json.dumps(result_list, indent=2)
+    # output data into console
+    json_output = json.dumps(result_list, indent=2, default=str)
 
     print(json_output)
 
-except mysql.connector.Error as err:
+except Exception as err:
     print("SELECT Error:", err)
 
+# Cleanup
 cursor.close()
-conn.close()
+connection.close()
