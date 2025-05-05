@@ -110,7 +110,8 @@ class Project(db.Model):
             'description': self.description,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
-            'project_settings': self.project_settings
+            'project_settings': self.project_settings,
+            'observations': [obs.to_dict() for obs in self.observations]
         }
 
     observations = db.relationship('Observation', backref='project', lazy=True, cascade='all, delete-orphan')
@@ -123,7 +124,8 @@ class Observation(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id', ondelete='CASCADE'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('student.student_id', ondelete='CASCADE'), nullable=False)
     data = db.Column(db.JSON)
-    timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     def to_dict(self):
         """
