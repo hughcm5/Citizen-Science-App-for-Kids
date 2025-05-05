@@ -1,6 +1,8 @@
 import os
 import requests
 import json
+import pymysql
+import logging
 from datetime import datetime
 from requests.exceptions import RequestException
 from dotenv import load_dotenv
