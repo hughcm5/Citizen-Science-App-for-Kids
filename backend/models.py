@@ -22,6 +22,20 @@ class Admin(db.Model):
     oauth_id = db.Column(db.String(255), unique=True)
     role = db.Column(db.Enum('teacher'), nullable=False)
 
+    def to_dict(self):
+        """
+        Convert the Admin object to a dictionary, so it can be easily be converted to JSON
+        """
+        return {
+            'admin_id': self.admin_id,
+            'admin_lastname': self.admin_lastname,
+            'admin_firstname': self.admin_firstname,
+            'email': self.email,
+            'created_at': self.created_at.isoformat(),
+            'oauth_id': self.oauth_id,
+            'role': self.role
+        }
+
     classrooms = db.relationship('Classroom', backref='admin', lazy=True)
 
 
@@ -33,6 +47,18 @@ class Classroom(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.admin_id'), nullable=False)
     class_name = db.Column(db.String(255))
     grade_level = db.Column(db.String(50))
+
+    def to_dict(self):
+        """
+        Convert the Classroom object to a dictionary, so it can be easily be converted to JSON
+        """
+        return {
+            'class_id': self.class_id,
+            'class_code': self.class_code,
+            'admin_id': self.admin_id,
+            'class_name': self.class_name,
+            'grade_level': self.grade_level
+        }
 
     students = db.relationship('Student', backref='classroom', lazy=True)
     projects = db.relationship('Project', backref='classroom', lazy=True)
@@ -47,6 +73,18 @@ class Student(db.Model):
     student_firstname = db.Column(db.String(100))
     class_codes = db.Column(db.String(255))  # unclear if this is redundant with class_id
 
+    def to_dict(self):
+        """
+        Convert the Student object to a dictionary, so it can be easily be converted to JSON
+        """
+        return {
+            'student_id': self.student_id,
+            'class_id': self.class_id,
+            'student_lastname': self.student_lastname,
+            'student_firstname': self.student_firstname,
+            'class_codes': self.class_codes
+        }
+
     observations = db.relationship('Observation', backref='student', lazy=True, cascade='all, delete-orphan')
 
 
@@ -60,6 +98,20 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     project_settings = db.Column(db.JSON)
 
+    def to_dict(self):
+        """
+        Convert the Project object to a dictionary, so it can be easily be converted to JSON
+        """
+        return {
+            'project_id': self.project_id,
+            'class_id': self.class_id,
+            'project_title': self.project_title,
+            'description': self.description,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'project_settings': self.project_settings
+        }
+
     observations = db.relationship('Observation', backref='project', lazy=True, cascade='all, delete-orphan')
 
 
@@ -72,6 +124,17 @@ class Observation(db.Model):
     data = db.Column(db.JSON)
     timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
+    def to_dict(self):
+        """
+        Convert the Observation object to a dictionary, so it can be easily be converted to JSON
+        """
+        return {
+            'observation_id': self.observation_id,
+            'project_id': self.project_id,
+            'student_id': self.student_id,
+            'data': self.data,
+            'timestamp': self.timestamp.isoformat()
+        }
 
-with app.app_context():
-    db.create_all()
+    student = db.relationship('Student', backref='observations', lazy=True)
+    project = db.relationship('Project', backref='observations', lazy=True)
