@@ -34,7 +34,10 @@ class Admin(db.Model):
             'email': self.email,
             'created_at': self.created_at.isoformat(),
             'oauth_id': self.oauth_id,
-            'role': self.role
+            'role': self.role,
+            'classrooms': [classroom.to_dict() for classroom in self.classrooms],
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
         }
 
     classrooms = db.relationship('Classroom', backref='admin', lazy=True)
@@ -48,6 +51,8 @@ class Classroom(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.admin_id'), nullable=False)
     class_name = db.Column(db.String(255))
     grade_level = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     def to_dict(self):
         """
@@ -58,7 +63,11 @@ class Classroom(db.Model):
             'class_code': self.class_code,
             'admin_id': self.admin_id,
             'class_name': self.class_name,
-            'grade_level': self.grade_level
+            'grade_level': self.grade_level,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'students': [student.to_dict() for student in self.students],
+            'projects': [project.to_dict() for project in self.projects]
         }
 
     students = db.relationship('Student', backref='classroom', lazy=True)
@@ -85,7 +94,10 @@ class Student(db.Model):
             'class_id': self.class_id,
             'student_lastname': self.student_lastname,
             'student_firstname': self.student_firstname,
-            'class_codes': self.class_codes
+            'class_codes': self.class_codes,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'observations': [obs.to_dict() for obs in self.observations]
         }
 
     observations = db.relationship('Observation', backref='student', lazy=True, cascade='all, delete-orphan')
@@ -139,7 +151,8 @@ class Observation(db.Model):
             'project_id': self.project_id,
             'student_id': self.student_id,
             'data': self.data,
-            'timestamp': self.timestamp.isoformat()
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
         }
 
     student = db.relationship('Student', backref='observations', lazy=True)
