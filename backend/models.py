@@ -152,7 +152,11 @@ class Observation(db.Model):
             'student_id': self.student_id,
             'data': self.data,
             'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat()
+            'updated_at': self.updated_at.isoformat(),
+            'student firstname': self.student.student_firstname if self.student else None,
+            'student lastname': self.student.student_lastname if self.student else None,
+            'student class id': self.student.class_id if self.student else None,
+            'project title': self.project.project_title if self.project else None,
         }
 
     student = db.relationship('Student', backref='observations', lazy=True)
