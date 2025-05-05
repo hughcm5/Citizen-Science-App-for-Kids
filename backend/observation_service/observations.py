@@ -109,7 +109,7 @@ def update_observation(observation_id):
         return jsonify({'error': 'observation_text must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     # Check if the observation exists
-    observation = Observation.query.get_or_404(observation_id)
+    observation = Observation.query.get(observation_id)
     if not observation:
         return jsonify({'error': 'Observation not found'}), 404
 
