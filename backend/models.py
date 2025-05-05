@@ -18,7 +18,8 @@ class Admin(db.Model):
     admin_lastname = db.Column(db.String(100))
     admin_firstname = db.Column(db.String(100))
     email = db.Column(db.String(255), unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
     oauth_id = db.Column(db.String(255), unique=True)
     role = db.Column(db.Enum('teacher'), nullable=False)
 
@@ -71,6 +72,8 @@ class Student(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
     student_lastname = db.Column(db.String(100))
     student_firstname = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
     class_codes = db.Column(db.String(255))  # unclear if this is redundant with class_id
 
     def to_dict(self):
