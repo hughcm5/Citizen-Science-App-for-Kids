@@ -14,7 +14,7 @@ Comments / things to do or look into:
 """
 
 # Load environment variables
-load_dotenv('../.env')
+load_dotenv('./.env')
 
 # Initialize Flask app
 app = Flask(__name__)

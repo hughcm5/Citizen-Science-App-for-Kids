@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, Observation
 
 # Load environment variables
-load_dotenv('../.env')
+load_dotenv('./.env')
 # Initialize Flask app
 app = Flask(__name__)
 
