@@ -33,6 +33,7 @@ SERVICE_URLS = {
     'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5003',
     'teachers': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5004',
     'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
+    'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
 
 
