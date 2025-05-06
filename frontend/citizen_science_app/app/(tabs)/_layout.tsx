@@ -7,6 +7,8 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -34,10 +36,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="project"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Project',
+          tabBarIcon: ({ color }) => <Ionicons name="document-text" size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="observation"
+        options={{
+          title: 'Observation',
+          tabBarIcon: ({ color }) => <Ionicons name="help-circle" size={28} color={color} />,
         }}
       />
     </Tabs>
