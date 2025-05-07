@@ -40,7 +40,7 @@ class Admin(db.Model):
             'updated_at': self.updated_at.isoformat()
         }
 
-    classrooms = db.relationship('Classroom', backref='admin', lazy=True)
+    classrooms = db.relationship('Classroom', back_populates='admin', lazy=True)
 
 
 # Classroom table
@@ -70,8 +70,10 @@ class Classroom(db.Model):
             'projects': [project.to_dict() for project in self.projects]
         }
 
-    students = db.relationship('Student', backref='classroom', lazy=True)
-    projects = db.relationship('Project', backref='classroom', lazy=True)
+    students = db.relationship('Student', back_populates='classroom', lazy=True)
+    projects = db.relationship('Project', back_populates='classroom', lazy=True)
+    admin = db.relationship('Admin', back_populates='classrooms', lazy=True)
+
 
 
 # Student table
@@ -100,7 +102,9 @@ class Student(db.Model):
             'observations': [obs.to_dict() for obs in self.observations]
         }
 
-    observations = db.relationship('Observation', backref='student', lazy=True, cascade='all, delete-orphan')
+    observations = db.relationship('Observation', back_populates='student', lazy=True, cascade='all, delete-orphan')
+    classroom = db.relationship('Classroom', back_populates='students', lazy=True)
+
 
 
 # Project table
@@ -129,7 +133,9 @@ class Project(db.Model):
             'observations': [obs.to_dict() for obs in self.observations]
         }
 
-    observations = db.relationship('Observation', backref='project', lazy=True, cascade='all, delete-orphan')
+    observations = db.relationship('Observation', back_populates='project', lazy=True, cascade='all, delete-orphan')
+    classroom = db.relationship('Classroom', back_populates='projects', lazy=True)
+
 
 
 # Observation table
@@ -159,5 +165,5 @@ class Observation(db.Model):
             'project title': self.project.project_title if self.project else None,
         }
 
-    student = db.relationship('Student', backref='observations', lazy=True)
-    project = db.relationship('Project', backref='observations', lazy=True)
+    student = db.relationship('Student', back_populates='observations', lazy=True)
+    project = db.relationship('Project', back_populates='observations', lazy=True)
