@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 
 # Get a connection
-connection = db
+connection = db()
 cursor = connection.cursor()
 
 
@@ -92,7 +92,7 @@ def user_info():
     first_name = names.get('givenName')
     last_name = names.get('familyName')
     email = profile.get('emailAddresses', [{}])[0].get('value')
-    oauth_id = profile.get('resourceName')  # typically "people/xxxx", optional
+    oauth_id = profile.get('resourceName')  
 
     if not email or not first_name or not last_name:
         return "Required user information not available.", 400
