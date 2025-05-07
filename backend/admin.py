@@ -58,11 +58,6 @@ def get_admins():
 
 @app.route('/admin', methods=['POST'])
 def create_admin():
-    print(">>> HIT /admin ROUTE <<<")
-    print("Content-Type:", request.content_type)
-    print("Headers:", dict(request.headers))
-    print("Body:", request.get_data())
-
     try:
         data = request.get_json()
         if not data or 'email' not in data:
