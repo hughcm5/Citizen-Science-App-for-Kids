@@ -90,68 +90,30 @@ def create_admin():
         app.logger.error(f"Error creating admin: {e}")
         return jsonify({"error": "An error occurred while creating the admin", "details": str(e)}), 500
 
-
-@app.route('/oauth')
-def oauth2authorize():
+@app.route('/admin/<int:id>', methods=['DELETE'])
+def delete_admin(id):
     """
-    Redirect user to Google's OAuth 2.0 server for authentication
+    Delete an admin by their ID.
     """
-    state = str(uuid.uuid4())
-    session['state'] = state  # Store the state in the session to protect against CSRF
-    auth_url = (
-        f"{AUTHORIZATION_ENDPOINT}?response_type=code&client_id={CLIENT_ID}"
-        f"&redirect_uri={REDIRECT_URI}&scope={SCOPE}&state={state}"
-    )
-    return redirect(auth_url)
-
-
-@app.route('/oauth/callback')
-def oauth2callback():
-    """
-    Callback route to handle the response from Google's OAuth 2.0 server
-    """
-    # Check for the state parameter to protect against CSRF
-    if 'state' not in request.args or request.args['state'] != session.get('state'):
-        return 'State mismatch. Possible CSRF attack.', 400
-
-    # Retrieve the authorization code from the request
-    auth_code = request.args.get('code')
-    if not auth_code:
-        return "Authorization code not provided.", 400
-
-    token_data = {
-        'code': auth_code,
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'redirect_uri': REDIRECT_URI,
-        'grant_type': 'authorization_code'
-    }
-    token_response = requests.post(TOKEN_ENDPOINT, data=token_data)
-    
-    if token_response.status_code == 200:
-        token_info = token_response.json()
-        access_token = token_info.get('access_token')
+    try:
+        # Find the admin by ID
+        admin = Admin.query.get(id)
         
-        if not access_token:
-            return "Access token not received.", 400
-
-        session['access_token'] = access_token
+        # If the admin doesn't exist, return an error
+        if not admin:
+            return jsonify({"error": "Admin not found"}), 404
         
-        # Fetch user info from Google People API
-        user_info_response = requests.get(
-            PEOPLE_API_URL, 
-            headers={'Authorization': f'Bearer {access_token}'}
-        )
+        # Delete the admin from the database
+        db.session.delete(admin)
+        db.session.commit()
 
-        if user_info_response.status_code == 200:
-            user_info = user_info_response.json()
-            # You can store this user info in your database if needed
-            return jsonify(user_info), 200
-        else:
-            return "Failed to fetch user information.", 400
-    else:
-        # Error handling for token exchange failure
-        return "Error during token exchange", 400
+        return jsonify({"message": f"Admin with ID {id} has been deleted"}), 200
+
+    except Exception as e:
+        # Log the error for debugging
+        app.logger.error(f"Error deleting admin: {e}")
+        return jsonify({"error": "An error occurred while deleting the admin", "details": str(e)}), 500
+
 
 
 @app.route('/health', methods=['GET'])
