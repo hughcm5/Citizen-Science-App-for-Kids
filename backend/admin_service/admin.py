@@ -16,6 +16,7 @@ cursor = connection.cursor()
 
 
 #TODO: FILL WITH NEW CODES
+
 CLIENT_ID = '471459612173-3pen67kmrl7d7eu1qvbpuoudb617meq9.apps.googleusercontent.com'
 CLIENT_SECRET = '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'  
 SCOPE = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
