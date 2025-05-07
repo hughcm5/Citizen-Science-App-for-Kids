@@ -1,22 +1,20 @@
 import os
 import requests
 import json
+import pymysql
+import logging
 from datetime import datetime
 from requests.exceptions import RequestException
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from models import db, Project
 
 # Load environment variables
-load_dotenv('../.env')
+load_dotenv('./.env')
 # Initialize Flask app
 app = Flask(__name__)
-# CORS configuration
-CORS(app,
-     origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
-     supports_credentials=True
-     )
 
 # get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
@@ -25,41 +23,14 @@ if os.getenv("CLOUD_SQL", "false").lower() == "true":
     )
 else:
     db_uri = (
-        f"mysql+pymysql://{os.getenv('PROJECTS_DB_USER')}:{os.getenv('PROJECTS_DB_PASSWORD')}"
-        f"@{os.getenv('PROJECTS_DB_HOST', 'localhost')}:{os.getenv('PROJECTS_DB_PORT', '3306')}/{os.getenv('PROJECTS_DB_NAME')}"
+        f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
     )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-
-
-# Define the Project model
-class Project(db.Model):
-    __tablename__ = 'projects'
-    id = db.Column(db.Integer, primary_key=True)
-    class_id = db.Column(db.String(50), nullable=False)
-    project_title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
-    # JSON field to store project settings
-    project_settings = db.Column(db.JSON, nullable=True)
-
-    def to_dict(self):
-        """
-        Convert the Project object to a dictionary, so it can be easily be converted to JSON
-        """
-        return {
-            'id': self.id,
-            'class_id': self.class_id,
-            'project_title': self.project_title,
-            'description': self.description,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat(),
-            'project_settings': self.project_settings
-        }
+db.init_app(app)
 
 
 # Routes
@@ -112,7 +83,7 @@ def create_project():
         new_project = Project(
             class_id=data['class_id'],
             project_title=data['project_title'],
-            description=data['description'],
+            description=data.get('description', ''),
             project_settings=data.get('project_settings', {}),
         )
         db.session.add(new_project)
@@ -147,7 +118,7 @@ def update_project(project_id):
         project = Project.query.get_or_404(project_id)
         project.class_id = data['class_id']
         project.project_title = data['project_title']
-        project.description = data['description']
+        project.description = data.get('description', '')
         project.project_settings = data.get('project_settings', {})
         db.session.commit()
         return jsonify(project.to_dict()), 200
