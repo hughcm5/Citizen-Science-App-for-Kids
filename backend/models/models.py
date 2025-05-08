@@ -113,6 +113,7 @@ class Project(db.Model):
     __tablename__ = 'project'
     project_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
+    class_id = db.Column(db.Integer, nullable=False)
     project_title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -125,7 +126,7 @@ class Project(db.Model):
         """
         return {
             'project_id': self.project_id,
-            # 'class_id': self.class_id,
+            'class_id': self.class_id,
             'project_title': self.project_title,
             'description': self.description,
             'created_at': self.created_at.isoformat(),
