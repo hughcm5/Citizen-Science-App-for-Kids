@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   NativeBaseProvider,
   Box,
@@ -7,8 +7,10 @@ import {
   Input,
   VStack,
   Image,
-  Spinner
+  Spinner,
 } from "native-base";
+
+
 
 export default function HomeScreen() {
   // Sets class code to track input
@@ -18,9 +20,9 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
-    console.log("Example mock send data to backend", classCode)
+    console.log("Example mock send data to backend", classCode);
     alert(`Class code "${classCode}" submitted!`);
-  }
+  };
 
   return (
     // Outer wrapper required that enables automatic styling like react bootstrap
@@ -36,7 +38,7 @@ export default function HomeScreen() {
           <Image
             source={{
               uri: "https://ssec.si.edu/sites/default/files/MOBILE%20APPS%20FOR%20CITIZEN%20SCIENCE%205_0.png",
-            }} 
+            }}
             style={{ width: "100%", height: 300 }}
             resizeMode="contain"
           />
@@ -89,14 +91,12 @@ export default function HomeScreen() {
         Enter button 
         Submitting adds the following classcode into the backend database
         */}
-        <Button
-          size="lg"
-          colorScheme="teal"
-          onPress={handleSubmit}
-        >
+        <Button size="lg" colorScheme="teal" onPress={handleSubmit}>
           Enter
         </Button>
       </VStack>
+
+      
     </NativeBaseProvider>
   );
 }

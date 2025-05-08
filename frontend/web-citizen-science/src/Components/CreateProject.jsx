@@ -24,7 +24,7 @@ function Project() {
     }
     console.log('project_title:', project_title);
     axios
-      .post("http://localhost:5001/projects", project_data)
+      .post("http://localhost:5000/projects", project_data)
       .then((response) => {
         console.log('Project post successful');
       })

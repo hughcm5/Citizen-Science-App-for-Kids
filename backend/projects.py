@@ -81,7 +81,7 @@ def create_project():
 
     try:
         new_project = Project(
-            class_id=data['class_id'],
+            # class_id=data['class_id'],
             project_title=data['project_title'],
             description=data.get('description', ''),
             project_settings=data.get('project_settings', {}),
@@ -116,7 +116,7 @@ def update_project(project_id):
 
     try:
         project = Project.query.get_or_404(project_id)
-        project.class_id = data['class_id']
+        # project.class_id = data['class_id']
         project.project_title = data['project_title']
         project.description = data.get('description', '')
         project.project_settings = data.get('project_settings', {})
