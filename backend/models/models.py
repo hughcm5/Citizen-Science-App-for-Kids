@@ -39,6 +39,7 @@ class Admin(db.Model):
             'updated_at': self.updated_at.isoformat()
         }
 
+
     # classrooms = db.relationship('Classroom', back_populates='admin', lazy=True)
 
 
@@ -68,6 +69,7 @@ class Classroom(db.Model):
             # 'students': [student.to_dict() for student in self.students],
             # 'projects': [project.to_dict() for project in self.projects]
         }
+
 
     # students = db.relationship('Student', back_populates='classroom', lazy=True)
     # projects = db.relationship('Project', back_populates='classroom', lazy=True)
@@ -100,6 +102,7 @@ class Student(db.Model):
             # 'observations': [obs.to_dict() for obs in self.observations]
         }
 
+
     # observations = db.relationship('Observation', back_populates='student', lazy=True, cascade='all, delete-orphan')
     # classroom = db.relationship('Classroom', back_populates='students', lazy=True)
 
@@ -129,6 +132,7 @@ class Project(db.Model):
             'project_settings': self.project_settings,
             # 'observations': [obs.to_dict() for obs in self.observations]
         }
+
 
     # observations = db.relationship('Observation', back_populates='project', lazy=True, cascade='all, delete-orphan')
     # classroom = db.relationship('Classroom', back_populates='projects', lazy=True)
@@ -160,6 +164,7 @@ class Observation(db.Model):
             'student class id': self.student.class_id if self.student else None,
             'project title': self.project.project_title if self.project else None,
         }
+
 
     # student = db.relationship('Student', back_populates='observations', lazy=True)
     # project = db.relationship('Project', back_populates='observations', lazy=True)
