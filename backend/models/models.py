@@ -81,6 +81,7 @@ class Student(db.Model):
     __tablename__ = 'student'
     student_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
+    class_id = db.Column(db.Integer, nullable=False)
     student_lastname = db.Column(db.String(100))
     student_firstname = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -93,7 +94,7 @@ class Student(db.Model):
         """
         return {
             'student_id': self.student_id,
-            # 'class_id': self.class_id,
+            'class_id': self.class_id,
             'student_lastname': self.student_lastname,
             'student_firstname': self.student_firstname,
             'class_codes': self.class_codes,
