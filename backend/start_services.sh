@@ -17,9 +17,13 @@ start_service() {
 start_service "Observations" "observations.py"&
 start_service "Clasrooms" "classrooms.py"&
 # start_service "students" "students.py"&
-start_service "Admins" "admins.py"&
+start_service "Admins" "admin.py"&
 start_service "Projects" "projects.py"&
 start_service "API" "api_gateway.py"
 
 
 echo "All microservices started."
+
+# start the frontend
+# cd ../frontend
+# npm start 
