@@ -127,6 +127,6 @@ def health_check():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensures the database tables are created on app startup
-    port = int(os.getenv('PROJECTS_PORT', 5001))
+    port = int(os.getenv('PROJECTS_PORT', 5004))
     debug = os.getenv('DEBUG', 'false').lower() == 'true'  # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug)
