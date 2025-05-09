@@ -81,11 +81,26 @@ In the backend folder and in separate terminals:
 
 ```
 python3 ./api_gateway.py
+```
+
+```
 python3 ./observations.py
+```
+
+```
 python3 ./admin.py
+```
+
+```
 python3 ./classrooms.py
+```
+
+```
 python3 ./projects.py
-python3 ./students.py students still not created
+```
+
+```
+python3 ./students.py <- students still not created
 ```
 
 #### Alternatively, you can use the start_backend.sh file
