@@ -68,11 +68,11 @@ class Classroom(db.Model):
             'grade_level': self.grade_level,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
-            'students': [student.to_dict() for student in self.students],
+            # 'students': [student.to_dict() for student in self.students],
             'projects': [project.to_dict() for project in self.projects]
         }
 
-    students = db.relationship('Student', back_populates='classroom', lazy=True)
+    # students = db.relationship('Student', back_populates='classroom', lazy=True)
     projects = db.relationship('Project', back_populates='classroom', lazy=True)
     admin = db.relationship('Admin', back_populates='classrooms', lazy=True)
 
@@ -103,8 +103,8 @@ class Student(db.Model):
             'observations': [obs.to_dict() for obs in self.observations]
         }
 
-    observations = db.relationship('Observation', back_populates='student', lazy=True, cascade='all, delete-orphan')
-    classroom = db.relationship('Classroom', back_populates='students', lazy=True)
+    # observations = db.relationship('Observation', back_populates='student', lazy=True, cascade='all, delete-orphan')
+    # classroom = db.relationship('Classroom', back_populates='students', lazy=True)
 
 
 # Project table
@@ -143,10 +143,10 @@ class Observation(db.Model):
     observation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id', ondelete='CASCADE'), nullable=False)
 
-    student_id = db.Column(db.Integer, db.ForeignKey('student.student_id', ondelete='CASCADE'), nullable=False)
-    # student_id = db.Column(db.Integer,nullable=False)
+    # student_id = db.Column(db.Integer, db.ForeignKey('student.student_id', ondelete='CASCADE'), nullable=False)
+    student_id = db.Column(db.Integer,nullable=False)
 
-    data = db.Column(db.JSON)
+    observation_data = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
@@ -158,14 +158,14 @@ class Observation(db.Model):
             'observation_id': self.observation_id,
             'project_id': self.project_id,
             'student_id': self.student_id,
-            'data': self.data,
+            'Observation data': self.observation_data,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
-            'student firstname': self.student.student_firstname if self.student else None,
-            'student lastname': self.student.student_lastname if self.student else None,
-            'student class id': self.student.class_id if self.student else None,
+            # 'student firstname': self.student.student_firstname if self.student else None,
+            # 'student lastname': self.student.student_lastname if self.student else None,
+            # 'student class id': self.student.class_id if self.student else None,
             'project title': self.project.project_title if self.project else None,
         }
 
-    student = db.relationship('Student', back_populates='observations', lazy=True)
+    # student = db.relationship('Student', back_populates='observations', lazy=True)
     project = db.relationship('Project', back_populates='observations', lazy=True)

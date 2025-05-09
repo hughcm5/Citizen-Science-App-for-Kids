@@ -70,18 +70,18 @@ def create_observation():
 
     if not data:
         return jsonify({'error': 'No data provided'}), 400
-    if 'student_id' not in data or 'project_id' not in data or 'observation_text' not in data:
+    if 'student_id' not in data or 'project_id' not in data or 'observation_data' not in data:
         return jsonify({'error': 'Missing required fields'}), 400
     if not isinstance(data['student_id'], int) or not isinstance(data['project_id'], int):
         return jsonify({'error': 'student_id and project_id must be integers'}), 400
-    if 'observation_text' in data and not isinstance(data['observation_text'], dict):
-        return jsonify({'error': 'observation_text must be a JSON object (i.e., a dictionary) if provided'}), 400
+    if 'observation_data' in data and not isinstance(data['observation_data'], dict):
+        return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     try:
         new_observation = Observation(
             student_id=data['student_id'],
             project_id=data['project_id'],
-            observation_text=data['observation_text']
+            observation_data=data['observation_data']
         )
         db.session.add(new_observation)
         db.session.commit()
@@ -98,12 +98,12 @@ def update_observation(observation_id):
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No data provided'}), 400
-    if 'student_id' not in data or 'project_id' not in data or 'observation_text' not in data:
+    if 'student_id' not in data or 'project_id' not in data or 'observation_data' not in data:
         return jsonify({'error': 'Missing required fields'}), 400
     if not isinstance(data['student_id'], int) or not isinstance(data['project_id'], int):
         return jsonify({'error': 'student_id and project_id must be integers'}), 400
-    if 'observation_text' in data and not isinstance(data['observation_text'], dict):
-        return jsonify({'error': 'observation_text must be a JSON object (i.e., a dictionary) if provided'}), 400
+    if 'observation_data' in data and not isinstance(data['observation_data'], dict):
+        return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     # Check if the observation exists
     observation = Observation.query.get(observation_id)
@@ -113,7 +113,7 @@ def update_observation(observation_id):
     try:
         observation.student_id = data['student_id']
         observation.project_id = data['project_id']
-        observation.observation_text = data['observation_text']
+        observation.observation_data = data['observation_data']
         db.session.commit()
         return jsonify(observation.to_dict()), 200
     except RequestException as e:
