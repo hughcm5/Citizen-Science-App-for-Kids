@@ -61,40 +61,52 @@ Make sure you have the following installed:
 
 Create a .env file in the backend/ directory using the .env.example file.
 
-see below
-
 ### 2. Create a Virtual Environment:
 
+```
 cd backend
 python -m venv venv
 source venv/bin/activate # On Windows use: venv\Scripts\activate
+```
 
 ### 3. Install Dependencies
 
+```
 pip install -r requirements.txt
+```
 
 ### 4. Start the individual services
 
-In the backend folder:
+In the backend folder and in separate terminals:
 
--   python3 ./api_gateway.py
--   python3 ./observations.py
--   python3 ./admin.py
--   python3 ./classrooms.py
--   python3 ./projects.py
--   python3 ./students.py students still not created
+```
+python3 ./api_gateway.py
+python3 ./observations.py
+python3 ./admin.py
+python3 ./classrooms.py
+python3 ./projects.py
+python3 ./students.py students still not created
+```
 
-#### Alternativly, you can use the start_backend.sh file
+#### Alternatively, you can use the start_backend.sh file
 
 You can do this by installing xterm
 Ubantu:
+
+```
 sudo apt install xterm
+```
 
 Then from the Root directory:
 
 Give start_backend.sh permission to run as an executable
+
+```
 chmod +x start_services.sh
+```
 
 Finally run the script:
 
+```
 ./start_backend.sh
+```
