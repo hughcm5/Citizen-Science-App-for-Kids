@@ -1,6 +1,18 @@
 #!/bin/bash
 
+# This script starts all microservices in separate terminal windows
+# and logs their output to respective log files.
+# for local development
+# Make sure to run this script from the root directory of the project
 
+# Also this requires xterm to be installed
+# Xterm is a terminal emulator and need to be installed separately
+# You can install it using the following command:
+# "sudo apt install xterm" on Ubuntu/Debian idk for other Operating Systems
+# Make sure to give execute permission to this script
+# chmod +x start_services.sh
+
+cd ./backend
 source venv/bin/activate
 
 # Function to start services in new terminals
@@ -24,6 +36,6 @@ start_service "API" "api_gateway.py"
 
 echo "All microservices started."
 
-# start the frontend
-# cd ../frontend
-# npm start 
+# # start the frontend
+cd ../frontend/web-citizen-science
+npm start 
