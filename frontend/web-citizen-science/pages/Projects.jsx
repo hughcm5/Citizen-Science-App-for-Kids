@@ -20,25 +20,18 @@ export default function Projects({getRows, getCol}) {
       width: 220,
       editable: false,              /* <--- PKs CANNOT be editable */
     },
-    {
+        {
+    /* set this up to display foreign keys */
       field: 'class_id',
       headerName: 'Class ID',
       width: 220,
-      align: 'left',
-      headerAlign: 'left',
-      editable: false,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: selectVals.classrooms,          
     },
     {
       field: 'project_title',
       headerName: 'Project Title',
-      width: 220,
-      align: 'left',
-      headerAlign: 'left',
-      editable: true,
-    },
-    {
-      field: 'title',           /* <--- What's the different between title and project title? */
-      headerName: 'Title',
       width: 220,
       align: 'left',
       headerAlign: 'left',
@@ -53,7 +46,7 @@ export default function Projects({getRows, getCol}) {
       editable: true,
     },
     {
-    field: 'created_at',            /* <--- Do we need this one? */
+    field: 'created_at',           
     headerName: 'Created At',
     width: 220,
     align: 'left',
