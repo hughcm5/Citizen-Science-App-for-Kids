@@ -6,3 +6,4 @@ cloud-sql-python-connector[pymysql]
 Flask-SQLAlchemy
 PyMySQL
 flask-cors
+uuid
