@@ -30,6 +30,9 @@ function Project() {
       })
       .catch((err) => {
         console.log('Failed to post project');
+        if (err.data) {
+          console.log(JSON.stringify(err.data));
+        }
       });
   };
 
