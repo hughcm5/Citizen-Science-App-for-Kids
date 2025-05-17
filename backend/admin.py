@@ -56,11 +56,14 @@ def get_admins():
         return jsonify({"error": "Failed to retrieve admins", "details": str(e)}), 500
 
 
-@app.route('/admin', methods=['POST'])
+@app.route('/admins', methods=['POST'])
 def create_admin():
     try:
         data = request.get_json()
-        if not data or 'email' not in data:
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        if not data['email'] or not data['admin_firstname'] or not data['admin_lastname']:
             return jsonify({"error": "Missing required fields"}), 400
 
         # Check for existing admin
@@ -85,7 +88,7 @@ def create_admin():
         app.logger.error(f"Error creating admin: {e}")
         return jsonify({"error": "An error occurred while creating the admin", "details": str(e)}), 500
 
-@app.route('/admin/<int:id>', methods=['DELETE'])
+@app.route('/admins/<int:id>', methods=['DELETE'])
 def delete_admin(id):
     """
     Delete an admin by their ID.
@@ -118,7 +121,7 @@ def health_check():
     """
     try:
         # This would execute a test query to check if DB is reachable
-        db.session.execute('SELECT 1')
+        # db.session.execute('SELECT 1')
         return jsonify({'status': 'healthy'}), 200
     except Exception as e:
         return jsonify({'error': f"Database error: {str(e)}"}), 500
@@ -127,6 +130,6 @@ def health_check():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensures the database tables are created on app startup
-    port = int(os.getenv('PROJECTS_PORT', 5001))
+    port = int(os.getenv('TEACHERS_PORT', 5004))
     debug = os.getenv('DEBUG', 'false').lower() == 'true'  # Set to True for debugging, False for production
     app.run(host='0.0.0.0', port=port, debug=debug)
