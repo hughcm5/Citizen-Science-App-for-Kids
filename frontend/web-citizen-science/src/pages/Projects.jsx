@@ -4,7 +4,7 @@
 import { React, useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import DataTable from '../components/DataTable';
+import DataTable from './components/DataTable';
 
 /* ------------ Project Table ------------*/
 export default function Projects({getRows, getCol}) {
