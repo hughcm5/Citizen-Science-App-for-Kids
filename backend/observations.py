@@ -52,10 +52,10 @@ def get_observation(observation_id):
     Get a specific observation by ID
     """
     # Check if the observation exists
-    if not db.session.query(Observation).filter_by(observation_id=observation_id).first():
+    if not db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none():
         return jsonify({'error': 'Observation not found'}), 404
     try:
-        observation = Observation.query.get_or_404(observation_id)
+        observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
         return jsonify(observation.to_dict()), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -78,8 +78,8 @@ def create_observation():
         return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     # verify if the student_id and project_id exist in the database
-    student = db.session.query(Student).filter_by(student_id=data['student_id']).first()
-    project = db.session.query(Project).filter_by(project_id=data['project_id']).first()
+    student = db.session.query(Student).filter_by(student_id=data['student_id']).one_or_none()
+    project = db.session.query(Project).filter_by(project_id=data['project_id']).one_or_none()
     if not student:
         return jsonify({'error': 'Student not found'}), 404
     if not project:
@@ -114,13 +114,13 @@ def update_observation(observation_id):
         return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     # Check if the observation exists
-    observation = db.session.query(Observation).filter_by(observation_id=observation_id).first()
+    observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
     if not observation:
         return jsonify({'error': 'Observation not found'}), 404
 
     # verify if the student_id and project_id exist in the database
-    student = db.session.query(Student).filter_by(student_id=data['student_id']).first()
-    project = db.session.query(Project).filter_by(project_id=data['project_id']).first()
+    student = db.session.query(Student).filter_by(student_id=data['student_id']).one_or_none()
+    project = db.session.query(Project).filter_by(project_id=data['project_id']).one_or_none()
     if not student:
         return jsonify({'error': 'Student not found'}), 404
     if not project:
@@ -142,7 +142,7 @@ def delete_observation(observation_id):
     Delete an observation by ID
     """
     # Check if the observation exists
-    observation = db.session.query(Observation).filter_by(observation_id=observation_id).first()
+    observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
     if not observation:
         return jsonify({'error': 'Observation not found'}), 404
 
