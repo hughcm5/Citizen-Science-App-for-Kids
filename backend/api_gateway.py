@@ -1,7 +1,7 @@
 import os
 import requests
 from requests.exceptions import RequestException
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -14,7 +14,7 @@ Comments / things to do or look into:
 """
 
 # Load environment variables
-load_dotenv('./.env')
+load_dotenv(find_dotenv())
 
 # Initialize Flask app
 app = Flask(__name__)
