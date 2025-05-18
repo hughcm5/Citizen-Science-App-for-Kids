@@ -79,7 +79,6 @@ class Classroom(db.Model):
 class Student(db.Model):
     __tablename__ = 'student'
     student_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
-
     class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
     student_lastname = db.Column(db.String(100))
     student_firstname = db.Column(db.String(100))
@@ -109,7 +108,6 @@ class Student(db.Model):
 # Project table
 class Project(db.Model):
     __tablename__ = 'project'
-
     project_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
     project_title = db.Column(db.String(255), nullable=False)
@@ -142,9 +140,7 @@ class Observation(db.Model):
     __tablename__ = 'observation'
     observation_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id', ondelete='CASCADE'), nullable=False)
-
     student_id = db.Column(db.Integer, db.ForeignKey('student.student_id', ondelete='CASCADE'), nullable=False)
-
     observation_data = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
