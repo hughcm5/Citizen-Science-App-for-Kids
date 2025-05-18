@@ -5,14 +5,14 @@ import pymysql
 import logging
 from datetime import datetime
 from requests.exceptions import RequestException
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Observation
 
 # Load environment variables
-load_dotenv('./.env')
+load_dotenv(find_dotenv())
 # Initialize Flask app
 app = Flask(__name__)
 
