@@ -45,6 +45,7 @@ AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth'
 TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 PEOPLE_API_URL = 'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses'
 
+
 # Routes
 @app.route('/admins', methods=['GET'])
 def get_admins():
@@ -67,8 +68,18 @@ def create_admin():
             return jsonify({"error": "Missing required fields"}), 400
 
         # Check for existing admin
-        if db.session.query(Admin).filter_by(email=data['email']).first():
+        if db.session.query(Admin).filter_by(email=data['email']).one_or_none():
             return jsonify({"error": "Admin with this email already exists"}), 409
+
+        # validate the input data
+        if 'admin_firstname' in data and (len(data['admin_firstname']) > 100 or not isinstance(data['admin_firstname'], str)):
+            return jsonify({"error": "admin_firstname must be a string and less than 100 characters"}), 400
+        if 'admin_lastname' in data and (len(data['admin_lastname']) > 100 or not isinstance(data['admin_lastname'], str)):
+            return jsonify({"error": "admin_lastname must be a string and less than 100 characters"}), 400
+        if 'email' in data and (len(data['email']) > 100 or not isinstance(data['email'], str)):
+            return jsonify({"error": "email must be a string and less than 100 characters"}), 400
+        if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
+            return jsonify({"error": "role must be a string and less than 50 characters"}), 400
 
         new_admin = Admin(
             admin_firstname=data.get('admin_firstname'),
@@ -88,6 +99,48 @@ def create_admin():
         app.logger.error(f"Error creating admin: {e}")
         return jsonify({"error": "An error occurred while creating the admin", "details": str(e)}), 500
 
+
+@app.route('/admins/<int:id>', methods=['PUT'])
+def update_admin(id):
+    """
+    Update an admin's details by their ID.
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # Find the admin by ID
+    admin = db.session.query(Admin).filter_by(id=id).one_or_none()
+    # If the admin doesn't exist, return an error
+    if not admin:
+        return jsonify({"error": "Admin not found"}), 404
+
+    # validate the input data
+    if 'admin_firstname' in data and (len(data['admin_firstname']) > 100 or not isinstance(data['admin_firstname'], str)):
+        return jsonify({"error": "admin_firstname must be a string and less than 100 characters"}), 400
+    if 'admin_lastname' in data and (len(data['admin_lastname']) > 100 or not isinstance(data['admin_lastname'], str)):
+        return jsonify({"error": "admin_lastname must be a string and less than 100 characters"}), 400
+    if 'email' in data and (len(data['email']) > 100 or not isinstance(data['email'], str)):
+        return jsonify({"error": "email must be a string and less than 100 characters"}), 400
+    if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
+        return jsonify({"error": "role must be a string and less than 50 characters"}), 400
+
+    try:
+        # Update the admin's details
+        admin.admin_firstname = data.get('admin_firstname', admin.admin_firstname)
+        admin.admin_lastname = data.get('admin_lastname', admin.admin_lastname)
+        admin.email = data.get('email', admin.email)
+        admin.oauth_id = data.get('oauth_id', admin.oauth_id)
+        admin.role = data.get('role', admin.role)
+        db.session.commit()
+        return jsonify(admin.to_dict()), 200
+
+    except Exception as e:
+        # Log the error for debugging
+        app.logger.error(f"Error updating admin: {e}")
+        return jsonify({"error": "An error occurred while updating the admin", "details": str(e)}), 500
+
+
 @app.route('/admins/<int:id>', methods=['DELETE'])
 def delete_admin(id):
     """
@@ -95,12 +148,12 @@ def delete_admin(id):
     """
     try:
         # Find the admin by ID
-        admin = Admin.query.get(id)
-        
+        admin = db.session.query(Admin).filter_by(id=id).first()
+
         # If the admin doesn't exist, return an error
         if not admin:
             return jsonify({"error": "Admin not found"}), 404
-        
+
         # Delete the admin from the database
         db.session.delete(admin)
         db.session.commit()
@@ -111,7 +164,6 @@ def delete_admin(id):
         # Log the error for debugging
         app.logger.error(f"Error deleting admin: {e}")
         return jsonify({"error": "An error occurred while deleting the admin", "details": str(e)}), 500
-
 
 
 @app.route('/health', methods=['GET'])
