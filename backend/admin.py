@@ -67,7 +67,7 @@ def create_admin():
             return jsonify({"error": "Missing required fields"}), 400
 
         # Check for existing admin
-        if Admin.query.filter_by(email=data['email']).first():
+        if db.session.query(Admin).filter_by(email=data['email']).first():
             return jsonify({"error": "Admin with this email already exists"}), 409
 
         new_admin = Admin(
