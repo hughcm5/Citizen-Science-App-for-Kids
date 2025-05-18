@@ -20,11 +20,12 @@ function Classroom() {
     event.preventDefault();
     const class_data = {
       class_code,
-      admin_id,
+      admin_id: parseInt(admin_id),
       class_name,
       grade_level
     }
     console.log('classroom:', Classroom);
+    console.log('classroom data:', class_data); // Log the class_data object for debugging
     axios
       .post("http://localhost:5000/classrooms", class_data)
       .then((response) => {
