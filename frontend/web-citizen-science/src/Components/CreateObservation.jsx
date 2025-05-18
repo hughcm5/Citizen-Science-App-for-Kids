@@ -1,4 +1,4 @@
-/* Create a New Project : Page for the Admin Website */
+/* Create a New Observation : Page for the Admin Website */
 
 /* ------------ Necessary Imports ------------*/
 import React, { useState } from 'react';
@@ -10,21 +10,21 @@ import Button from 'react-bootstrap/Button';
 import axios from "axios";
 
 /* ------------ Page Content  ------------*/
-function Project() {
+function Observation() {
+    const [project_id, setproject_id] = useState('');
   const [class_id, setclass_id] = useState('');
-  const [project_title, setproject_title] = useState('');
-  const [description, setdescription] = useState('');
+  const [data, setdata] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const project_data = {
+    const observation_data = {
+        project_id,
       class_id,
-      project_title,
-      description
+      data
     }
-    console.log('project_title:', project_title);
+    console.log('data:', data);
     axios
-      .post("http://localhost:5000/projects", project_data)
+      .post("http://localhost:5000/observations", observation_data)
       .then((response) => {
         console.log('Project post successful');
       })
@@ -42,17 +42,16 @@ function Project() {
         <Row>
           <Col md={9}>
             <h1 style={{paddingBottom: '40px'}}>
-              Citizen science projects are activities so K-12 students can 
-              meaningfully contribute to scientific research
+              Each project has a collection of observations made by the students in a class
             </h1>
-            <h2> You can create a new project: </h2>
+            <h2> You can create a new observation: </h2>
               
             <form onSubmit={handleSubmit}>
               <label>
-              Create a new Project - Enter the Project Details:
-              <input type="number" placeholder="5 digit number" value={class_id} onChange={(e) => setclass_id(e.target.value)} />
-              <input type="text" placeholder="Title" value={project_title} onChange={(e) => setproject_title(e.target.value)} />
-              <input type="textfield" placeholder="describe the project for the students" value={description} onChange={(e) => setdescription(e.target.value)} />
+              Create a new observation - Enter the observation Details:
+              <input type="number" placeholder="Project ID" value={project_id} onChange={(e) => setproject_id(e.target.value)} />
+              <input type="number" placeholder="Class ID" value={class_id} onChange={(e) => setclass_id(e.target.value)} />
+              <input type="textfield" placeholder="describe the data for the students" value={data} onChange={(e) => setdata(e.target.value)} />
               </label>
               <Button variant="primary" type="submit">Submit</Button>
             </form>
@@ -62,4 +61,4 @@ function Project() {
     </Container>
   )
 }
-export default Project
+export default Observation

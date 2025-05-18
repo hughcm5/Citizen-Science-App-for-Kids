@@ -26,12 +26,32 @@ function Navigation() {
         </Nav.Item>
         <Nav.Item >
               <Nav.Link as={Link} to="/Viewprojects" >
-                View Projects
+                Projects
               </Nav.Link>
         </Nav.Item>
         <Nav.Item >
               <Nav.Link as={Link} to="/createproject" >
                 Create New Project
+              </Nav.Link>
+        </Nav.Item>
+        <Nav.Item >
+              <Nav.Link as={Link} to="/createadmins" >
+               Admins
+              </Nav.Link>
+        </Nav.Item>
+        <Nav.Item >
+              <Nav.Link as={Link} to="/createclassroom" >
+               Classrooms
+              </Nav.Link>
+        </Nav.Item>
+        <Nav.Item >
+              <Nav.Link as={Link} to="/createstudent" >
+               Students
+              </Nav.Link>
+        </Nav.Item>
+        <Nav.Item >
+              <Nav.Link as={Link} to="/createobservation" >
+               Observations
               </Nav.Link>
         </Nav.Item>
         </Container>
