@@ -10,7 +10,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Project
+from models import db, Project, Student
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -198,6 +198,7 @@ def download_project_csv(project_id):
         ]
         csv_data = ','.join(headers) + '\n'
         file_name = f'project_{project_id}_observations.csv'
+        # Iterate through the observations and make the obervation data a string
         for ob_data in obs_dict:
             row = [
                 # if header is not 'Observation data', convert to string
@@ -211,6 +212,65 @@ def download_project_csv(project_id):
             csv_file.write(csv_data)
         return send_file(file_name, as_attachment=True, download_name=file_name,
                          mimetype='text/csv')
+
+    except RequestException as e:
+        return jsonify({'error': repr(e)}), 500
+
+
+@app.route('/projects/<int:project_id>/results', methods=['GET'])
+def get_project_results(project_id):
+    """
+    Get results for a specific project
+    """
+    # Check if the project exists
+    try:
+        project = db.session.get(project_id)
+        if not project:
+            return jsonify({'error': 'Project not found'}), 404
+
+        obs_dict = [obs.to_dict() for obs in project.observations]
+
+        # get all students in the class
+        students = db.session.query(Student).filter_by(class_id=project.class_id).all()
+        student_with_observations = []
+        student_no_observations = []
+        for student in students:
+            # check if the student has any observations
+            if any(obs['student_id'] == student.student_id for obs in obs_dict):
+                student_with_observations.append({
+                    'student_id': student.student_id,
+                    'first_name': student.student_firstname,
+                    'last_name': student.student_lastname
+                })
+            else:
+                student_no_observations.append({
+                    'student_id': student.student_id,
+                    'first_name': student.student_firstname,
+                    'last_name': student.student_lastname
+                })
+
+        results = {
+            'project': {
+                'project_id': project.project_id,
+                'project_title': project.project_title,
+                'description': project.description,
+                'class_id': project.class_id
+            },
+            'observations': obs_dict,
+            'stats': {
+                'total_observations': len(obs_dict),
+                'total_students': len(students),
+                'students_with_observations': len(student_with_observations),
+                'students_without_observations': len(student_no_observations),
+                'completion_percentage': len(student_with_observations) / len(students) * 100 if students else 0,
+                'average_observations_per_student': len(obs_dict) / len(students) if students else 0,
+                'average_observations_per_student_with_observations': len(obs_dict) / len(student_with_observations) if student_with_observations else 0,
+            },
+            'students_with_observations': student_with_observations,
+            'students_without_observations': student_no_observations
+        }
+
+        return jsonify(results)
 
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
