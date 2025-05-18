@@ -50,11 +50,26 @@ PEOPLE_API_URL = 'https://people.googleapis.com/v1/people/me?personFields=names,
 @app.route('/admins', methods=['GET'])
 def get_admins():
     try:
-        admins = Admin.query.all()
+        admins = Admin.session.query(Admin).all()
         admin_list = [admin.to_dict() for admin in admins]
         return jsonify(admin_list), 200
     except RequestException as e:
         return jsonify({"error": "Failed to retrieve admins", "details": str(e)}), 500
+
+
+@app.route('/admins/<int:id>', methods=['GET'])
+def get_admin(id):
+    """
+    Get a specific admin by ID
+    """
+    # Check if the admin exists
+    if not db.session.query(Admin).filter_by(id=id).one_or_none():
+        return jsonify({'error': 'Admin not found'}), 404
+    try:
+        admin = db.session.query(Admin).filter_by(id=id).one_or_none()
+        return jsonify(admin.to_dict()), 200
+    except RequestException as e:
+        return jsonify({"error": "Failed to retrieve admin", "details": str(e)}), 500
 
 
 @app.route('/admins', methods=['POST'])
@@ -110,7 +125,7 @@ def update_admin(id):
         return jsonify({"error": "No data provided"}), 400
 
     # Find the admin by ID
-    admin = db.session.query(Admin).filter_by(id=id).one_or_none()
+    admin = db.session.get(Admin, id)
     # If the admin doesn't exist, return an error
     if not admin:
         return jsonify({"error": "Admin not found"}), 404
@@ -148,7 +163,7 @@ def delete_admin(id):
     """
     try:
         # Find the admin by ID
-        admin = db.session.query(Admin).filter_by(id=id).first()
+        admin = db.session.get(Admin, id)
 
         # If the admin doesn't exist, return an error
         if not admin:
