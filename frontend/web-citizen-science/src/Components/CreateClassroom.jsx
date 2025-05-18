@@ -28,10 +28,10 @@ function Classroom() {
     axios
       .post("http://localhost:5000/classrooms", class_data)
       .then((response) => {
-        console.log('Admin creation successful');
+        console.log('Classroom creation successful');
       })
       .catch((err) => {
-        console.log('Failed to create admin');
+        console.log('Failed to create classroom');
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
