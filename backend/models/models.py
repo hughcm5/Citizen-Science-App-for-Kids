@@ -15,7 +15,7 @@ db = SQLAlchemy()
 # Admin table (used for teachers/admins)
 class Admin(db.Model):
     __tablename__ = 'admin'
-    admin_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    admin_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     admin_lastname = db.Column(db.String(100))
     admin_firstname = db.Column(db.String(100))
     email = db.Column(db.String(255), unique=True)
@@ -46,12 +46,9 @@ class Admin(db.Model):
 # Classroom table
 class Classroom(db.Model):
     __tablename__ = 'classroom'
-    class_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    class_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     class_code = db.Column(db.String(20), unique=True, nullable=False)
-
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.admin_id'), nullable=False)
-    # admin_id = db.Column(db.Integer, nullable=False)
-
     class_name = db.Column(db.String(255))
     grade_level = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -81,10 +78,8 @@ class Classroom(db.Model):
 # Student table
 class Student(db.Model):
     __tablename__ = 'student'
-    student_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
+    student_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
-    #class_id = db.Column(db.Integer, nullable=False)
     student_lastname = db.Column(db.String(100))
     student_firstname = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -113,10 +108,7 @@ class Student(db.Model):
 # Project table
 class Project(db.Model):
     __tablename__ = 'project'
-
-    #project_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    project_id = db.Column(db.String(5), primary_key=True, unique=True, nullable=False, default=lambda: str(uuid.uuid4().int)[:5])
-
+    project_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
     project_title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
@@ -146,11 +138,9 @@ class Project(db.Model):
 # Observation table
 class Observation(db.Model):
     __tablename__ = 'observation'
-    observation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    observation_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id', ondelete='CASCADE'), nullable=False)
-
     student_id = db.Column(db.Integer, db.ForeignKey('student.student_id', ondelete='CASCADE'), nullable=False)
-
     observation_data = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))

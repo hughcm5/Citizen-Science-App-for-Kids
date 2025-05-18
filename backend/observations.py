@@ -9,7 +9,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Observation
+from models import db, Observation, Student, Project
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -40,7 +40,7 @@ def get_observations():
     Get all observations from the database
     """
     try:
-        observations = Observation.query.all()
+        observations = db.session.query(Observation).all()
         return jsonify([observation.to_dict() for observation in observations]), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -52,10 +52,10 @@ def get_observation(observation_id):
     Get a specific observation by ID
     """
     # Check if the observation exists
-    if not Observation.query.get(observation_id):
+    if not db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none():
         return jsonify({'error': 'Observation not found'}), 404
     try:
-        observation = Observation.query.get_or_404(observation_id)
+        observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
         return jsonify(observation.to_dict()), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -76,6 +76,14 @@ def create_observation():
         return jsonify({'error': 'student_id and project_id must be integers'}), 400
     if 'observation_data' in data and not isinstance(data['observation_data'], dict):
         return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
+
+    # verify if the student_id and project_id exist in the database
+    student = db.session.query(Student).filter_by(student_id=data['student_id']).one_or_none()
+    project = db.session.query(Project).filter_by(project_id=data['project_id']).one_or_none()
+    if not student:
+        return jsonify({'error': 'Student not found'}), 404
+    if not project:
+        return jsonify({'error': 'Project not found'}), 404
 
     try:
         new_observation = Observation(
@@ -106,9 +114,17 @@ def update_observation(observation_id):
         return jsonify({'error': 'observation_data must be a JSON object (i.e., a dictionary) if provided'}), 400
 
     # Check if the observation exists
-    observation = Observation.query.get(observation_id)
+    observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
     if not observation:
         return jsonify({'error': 'Observation not found'}), 404
+
+    # verify if the student_id and project_id exist in the database
+    student = db.session.query(Student).filter_by(student_id=data['student_id']).one_or_none()
+    project = db.session.query(Project).filter_by(project_id=data['project_id']).one_or_none()
+    if not student:
+        return jsonify({'error': 'Student not found'}), 404
+    if not project:
+        return jsonify({'error': 'Project not found'}), 404
 
     try:
         observation.student_id = data['student_id']
@@ -126,7 +142,7 @@ def delete_observation(observation_id):
     Delete an observation by ID
     """
     # Check if the observation exists
-    observation = Observation.query.get(observation_id)
+    observation = db.session.query(Observation).filter_by(observation_id=observation_id).one_or_none()
     if not observation:
         return jsonify({'error': 'Observation not found'}), 404
 

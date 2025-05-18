@@ -10,7 +10,7 @@
 # You can install it using the following command:
 # "sudo apt install xterm" on Ubuntu/Debian idk for other Operating Systems
 # Make sure to give execute permission to this script
-# chmod +x start_services.sh
+# chmod +x start_backend.sh
 
 cd ./backend
 source venv/bin/activate

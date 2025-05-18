@@ -1,4 +1,4 @@
---Chat GPT assisted 
+
 INSERT INTO admin (admin_lastname, admin_firstname, email, created_at, updated_at, oauth_id, role) VALUES
 ('Brown', 'Robert', 'robert.brown@example.com', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'oauth456', 'teacher');
 
@@ -20,8 +20,9 @@ INSERT INTO project (project_id, class_id, project_title, description, created_a
 ('P1009', 1, 'Magnet Strength Test', 'Test magnetism with different materials.', UTC_TIMESTAMP(), UTC_TIMESTAMP(), JSON_OBJECT('materials', 'iron, copper, plastic', 'measurement', 'paper clips attracted'));
 
 INSERT INTO observation (project_id, student_id, observation_data, created_at, updated_at) VALUES
-('P1002', 1, JSON_OBJECT('Volcano went boom'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
-('P1006', 2, JSON_OBJECT('Solar system big'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
-('P1007', 3, JSON_OBJECT('plant grows'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
-('P1008', 4, JSON_OBJECT('water quality data: '), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
-('P1009', 5, JSON_OBJECT('How the **** do magnets work'), UTC_TIMESTAMP(), UTC_TIMESTAMP());
+('P1002', 1, JSON_OBJECT('note', 'Volcano went boom'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+('P1006', 2, JSON_OBJECT('note', 'Solar system big'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+('P1007', 3, JSON_OBJECT('note', 'Plant grows'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+('P1008', 4, JSON_OBJECT('note', 'Water quality data collected'), UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+('P1009', 5, JSON_OBJECT('note', 'Magnets interacted with some materials'), UTC_TIMESTAMP(), UTC_TIMESTAMP());
+
