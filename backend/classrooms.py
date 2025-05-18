@@ -75,13 +75,14 @@ def create_classroom():
         return jsonify({'error': 'Missing required fields'}), 400   
     if not isinstance(data['class_code'], str) or not isinstance(data['admin_id'], int):
         return jsonify({'error': 'class_code must be a string and admin_id must be an integer'}), 400
-    if Classroom.query.filter_by(class_code=data['class_code']).first():
+    if db.session.query(Classroom).filter_by(class_code=data['class_code']).first():
         return jsonify({'error': 'Class code already exists'}), 400
     if data['class_name'] and (len(data['class_name']) > 255 or not isinstance(data['class_name'], str)):
         return jsonify({'error': 'class_name must be a string and less than 255 characters'}), 400
     if data['grade_level'] and (len(data['grade_level']) > 50 or not isinstance(data['grade_level'], str)):
         return jsonify({'error': 'grade_level must be a string and less than 50 characters'}), 400
-    if not Admin.query.get(data['admin_id']):
+    # verify that the admin_id exists in the Admin table
+    if not db.session.get(Admin, data['admin_id']):
         return jsonify({'error': 'Admin/Teacher not found'}), 404
 
     try:
@@ -118,7 +119,7 @@ def update_classroom(class_id):
         return jsonify({'error': 'class_name must be a string and less than 255 characters'}), 400
     if data['grade_level'] and (len(data['grade_level']) > 50 or not isinstance(data['grade_level'], str)):
         return jsonify({'error': 'grade_level must be a string and less than 50 characters'}), 400
-    if not Admin.query.get(data['admin_id']):
+    if not db.session.get(Admin, data['admin_id']):
         return jsonify({'error': 'Admin/Teacher not found'}), 404
 
     # Check if the classroom exists
