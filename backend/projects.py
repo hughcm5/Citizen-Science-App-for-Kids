@@ -3,10 +3,11 @@ import requests
 import json
 import pymysql
 import logging
+import csv
 from datetime import datetime
 from requests.exceptions import RequestException
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Project
@@ -176,6 +177,40 @@ def get_project_csv(project_id):
 
         return csv_data, 200, {'Content-Type': 'text/csv',
                                'Content-Disposition': f'attachment; filename=project_{project_id}_observations.csv'}
+
+    except RequestException as e:
+        return jsonify({'error': repr(e)}), 500
+
+
+@app.route('/projects/<int:project_id>/csv_download', methods=['GET'])
+def download_project_csv(project_id):
+    try:
+        project = db.session.get(project_id)
+        if not project:
+            return jsonify({'error': 'Project not found'}), 404
+
+        obs_dict = [obs.to_dict() for obs in project.observations]
+
+        headers = [
+            'observation_id', 'project_id', 'project title', 'student_id',
+            'student firstname', 'student lastname', 'class id',
+            'created_at', 'updated_at', 'Observation data'
+        ]
+        csv_data = ','.join(headers) + '\n'
+        file_name = f'project_{project_id}_observations.csv'
+        for ob_data in obs_dict:
+            row = [
+                # if header is not 'Observation data', convert to string
+                str(ob_data.get(h, '')) if h != 'Observation data' else
+                json.dumps(ob_data.get(h, {}))
+                for h in headers
+            ]
+            csv_data += ','.join(row) + '\n'
+
+        with open(file_name, 'w') as csv_file:
+            csv_file.write(csv_data)
+        return send_file(file_name, as_attachment=True, download_name=file_name,
+                         mimetype='text/csv')
 
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
