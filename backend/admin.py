@@ -50,7 +50,7 @@ PEOPLE_API_URL = 'https://people.googleapis.com/v1/people/me?personFields=names,
 @app.route('/admins', methods=['GET'])
 def get_admins():
     try:
-        admins = Admin.session.query(Admin).all()
+        admins = db.session.query(Admin).all()
         admin_list = [admin.to_dict() for admin in admins]
         return jsonify(admin_list), 200
     except RequestException as e:
