@@ -145,6 +145,42 @@ def delete_project(project_id):
         return jsonify({'error': repr(e)}), 500
 
 
+# CSV endpoint
+@app.route('/projects/<int:project_id>/csv', methods=['GET'])
+def get_project_csv(project_id):
+    """
+    Get CSV file containing all observations for a specific project
+    """
+    try:
+        project = db.session.get(project_id)
+        if not project:
+            return jsonify({'error': 'Project not found'}), 404
+
+        obs_dict = [obs.to_dict() for obs in project.observations]
+
+        headers = [
+            'observation_id', 'project_id', 'project title', 'student_id',
+            'student firstname', 'student lastname', 'class id',
+            'created_at', 'updated_at', 'Observation data'
+        ]
+        csv_data = ','.join(headers) + '\n'
+
+        for ob_data in obs_dict:
+            row = [
+                # if header is not 'Observation data', convert to string
+                str(ob_data.get(h, '')) if h != 'Observation data' else
+                json.dumps(ob_data.get(h, {}))
+                for h in headers
+            ]
+            csv_data += ','.join(row) + '\n'
+
+        return csv_data, 200, {'Content-Type': 'text/csv',
+                               'Content-Disposition': f'attachment; filename=project_{project_id}_observations.csv'}
+
+    except RequestException as e:
+        return jsonify({'error': repr(e)}), 500
+
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """
