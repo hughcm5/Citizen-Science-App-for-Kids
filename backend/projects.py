@@ -9,7 +9,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Project
+from models import db, Project, Classroom, Admin
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -77,7 +77,9 @@ def create_project():
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
 
-    # TODO Check if the class_id is valild
+    # Validate the class_id
+    if not db.session.get(Classroom, data['class_id']):
+        return jsonify({'error': 'Classroom not found'}), 404
 
     try:
         new_project = Project(
@@ -108,7 +110,9 @@ def update_project(project_id):
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
 
-    # TODO Check if the class_id is valild
+    # Validate the class_id
+    if not db.session.get(Classroom, data['class_id']):
+        return jsonify({'error': 'Classroom not found'}), 404
 
     # Check if the project exists
     if not Project.query.get(project_id):
