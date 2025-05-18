@@ -9,7 +9,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Classroom
+from models import db, Classroom, Admin
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -81,11 +81,8 @@ def create_classroom():
         return jsonify({'error': 'class_name must be a string and less than 255 characters'}), 400
     if data['grade_level'] and (len(data['grade_level']) > 50 or not isinstance(data['grade_level'], str)):
         return jsonify({'error': 'grade_level must be a string and less than 50 characters'}), 400
-
-    # check if the admin exists
-    # Uncomment this line once the Admin model is implemented ###########################################################
-    # if not Admin.query.get(data['admin_id']): 
-    #     return jsonify({'error': 'Admin/Teacher not found'}), 404
+    if not Admin.query.get(data['admin_id']):
+        return jsonify({'error': 'Admin/Teacher not found'}), 404
 
     try:
         classroom = Classroom(
@@ -121,11 +118,8 @@ def update_classroom(class_id):
         return jsonify({'error': 'class_name must be a string and less than 255 characters'}), 400
     if data['grade_level'] and (len(data['grade_level']) > 50 or not isinstance(data['grade_level'], str)):
         return jsonify({'error': 'grade_level must be a string and less than 50 characters'}), 400
-
-    # check if the admin exists
-    # Uncomment this line once the Admin model is implemented ###########################################################
-    # if not Admin.query.get(data['admin_id']): 
-    #     return jsonify({'error': 'Admin/Teacher not found'}), 404
+    if not Admin.query.get(data['admin_id']):
+        return jsonify({'error': 'Admin/Teacher not found'}), 404
 
     # Check if the classroom exists
     classroom = Classroom.query.get(class_id)
