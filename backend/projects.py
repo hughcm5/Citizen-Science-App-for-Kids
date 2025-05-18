@@ -40,7 +40,7 @@ def get_projects():
     Get all projects from the database
     """
     try:
-        projects = Project.query.all()
+        projects = db.session.query(Project).all()
         return jsonify([project.to_dict() for project in projects]), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -52,11 +52,11 @@ def get_project(project_id):
     Get a specific project by ID
     """
     # Check if the project exists
-    if not Project.query.get(project_id):
+    if not db.session.get(Project, project_id):
         return jsonify({'error': 'Project not found'}), 404
 
     try:
-        project = Project.query.get_or_404(project_id)
+        project = db.session.query(Project).get_or_404(project_id)
         return jsonify(project.to_dict()), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -119,7 +119,7 @@ def update_project(project_id):
         return jsonify({'error': 'Project not found'}), 404
 
     try:
-        project = Project.query.get_or_404(project_id)
+        project = db.session.query(Project).get_or_404(project_id)
         project.class_id = data['class_id']
         project.project_title = data['project_title']
         project.description = data.get('description', '')
@@ -136,7 +136,7 @@ def delete_project(project_id):
     Delete a project by ID
     """
     # Check if the project exists
-    if not Project.query.get(project_id):
+    if not db.session.get(Project, project_id):
         return jsonify({'error': 'Project not found'}), 404
 
     try:
