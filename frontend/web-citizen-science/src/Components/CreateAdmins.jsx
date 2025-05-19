@@ -1,7 +1,7 @@
 /* Create a New Admin : Page for the Admin Website */
 
 /* ------------ Necessary Imports ------------*/
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 /*Import components from react-bootstrap */
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -15,6 +15,25 @@ function Admin() {
   const [admin_lastname, setadmin_lastname] = useState('');
   const [email, setemail] = useState('');
   const [role, setrole] = useState('');
+
+  const [adminData, setAdminData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [retrieveError, setRetrieveError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admins');
+        setAdminData(response.data);
+        setLoading(false);
+      } catch (err) {
+        setRetrieveError(err)
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -46,6 +65,9 @@ function Admin() {
             <h1 style={{paddingBottom: '40px'}}>
              The science projects are administered by educators, so children can meaningfully contribute and gain experience in scientific research
             </h1>
+
+            <pre>{JSON.stringify(adminData, null, 2)}</pre>
+
             <h2> You can create a new admin for the website here: </h2>
               
             <form onSubmit={handleSubmit}>
