@@ -8,11 +8,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Nav from 'react-bootstrap/Nav';
 import axios from "axios";
-
-/* ------------ import axios from "axios";  ------------*/
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 /* ------------ Page Content  ------------*/
 function ViewProject() {
@@ -55,13 +51,13 @@ function ViewProject() {
            <Form>
               <Form.Group className="mb-3" controlId="formBasicProjectCode">
                 <Form.Control 
-                  type="name" 
+                  type="selection" 
                   maxLength='5'
                   pattern= "\d{5}"
                   required 
                 />
                 <Form.Text className="text-muted">
-                  Enter a 5-digit project code
+                  Select a project code
                 </Form.Text>
               </Form.Group>
               <Button variant="primary" type="submit">
