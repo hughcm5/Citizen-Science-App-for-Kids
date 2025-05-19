@@ -28,7 +28,7 @@ function Classroom() {
     axios
       .post("http://localhost:5000/classrooms", class_data)
       .then((response) => {
-        console.log('Admin creation successful');
+        console.log('Classroom creation successful');
       })
       .catch((err) => {
         console.log('Failed to create admin');
@@ -50,7 +50,7 @@ function Classroom() {
               
             <form onSubmit={handleSubmit}>
               <label>
-              Create a new Admin - Enter the Admin's Details:
+              Create a new Classroom - Enter the Class Details:
               <input type="number" placeholder="Class Code" value={class_code} onChange={(e) => setclass_code(e.target.value)} />
               <input type="number" placeholder="Admin's ID" value={admin_id} onChange={(e) => setadmin_id(e.target.value)} />
               <input type="text" placeholder="Classroom's Name" value={class_name} onChange={(e) => setclass_name(e.target.value)} />
