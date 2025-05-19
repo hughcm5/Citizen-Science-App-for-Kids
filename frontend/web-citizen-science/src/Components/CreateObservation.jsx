@@ -26,10 +26,10 @@ function Observation() {
     axios
       .post("http://localhost:5000/observations", observation_data)
       .then((response) => {
-        console.log('Project post successful');
+        console.log('Observation post successful');
       })
       .catch((err) => {
-        console.log('Failed to post project');
+        console.log('Failed to post observation');
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
