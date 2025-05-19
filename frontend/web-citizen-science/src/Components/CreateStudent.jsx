@@ -1,7 +1,7 @@
 /* Create a New Student : Page for the Admin Website */
 
 /* ------------ Necessary Imports ------------*/
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 /*Import components from react-bootstrap */
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -15,6 +15,26 @@ function Student() {
   const [student_lastname, setstudent_lastname] = useState('');
   const [student_firstname, setstudent_firstname] = useState('');
   const [class_codes, setclass_codes] = useState('');
+
+    /* Prepare the retrieve on the frontend */
+  const [studentData, setstudentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [retrieveError, setRetrieveError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/students');
+        setstudentData(response.data);
+        setLoading(false);
+      } catch (err) {
+        setRetrieveError(err)
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -43,9 +63,13 @@ function Student() {
       <Container className="content">
         <Row>
           <Col md={9}>
-            <h1 style={{paddingBottom: '40px'}}>
-             Each classroom will have students that can access certain projects based on their assigned class codes
+            <h1 style={{paddingBottom: '10px'}}>
+            Students Page
             </h1>
+            <p>Each classroom will have students that can access certain projects based on their assigned class codes</p>
+            <h2>Current Students:</h2>
+            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
+            <pre>{JSON.stringify(studentData, null, 2)}</pre>
             <h2> You can create a new student for the website here: </h2>
               
             <form onSubmit={handleSubmit}>
