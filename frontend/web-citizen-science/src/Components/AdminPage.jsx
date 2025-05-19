@@ -20,6 +20,7 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
+  /* Prepare the retrieve on the frontend */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -65,7 +66,8 @@ function Admin() {
             <h1 style={{paddingBottom: '40px'}}>
              The science projects are administered by educators, so children can meaningfully contribute and gain experience in scientific research
             </h1>
-
+            <h2>Current Admins:</h2>
+            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
             <pre>{JSON.stringify(adminData, null, 2)}</pre>
 
             <h2> You can create a new admin for the website here: </h2>

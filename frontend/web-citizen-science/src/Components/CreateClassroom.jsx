@@ -1,7 +1,7 @@
 /* Create a New Classroom : Page for the Admin Website */
 
 /* ------------ Necessary Imports ------------*/
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 /*Import components from react-bootstrap */
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -15,6 +15,26 @@ function Classroom() {
   const [admin_id, setadmin_id] = useState('');
   const [class_name, setclass_name] = useState('');
   const [grade_level, setgrade_level] = useState('');
+
+    /* Prepare the retrieve on the frontend */
+  const [classData, setclassData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [retrieveError, setRetrieveError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/classrooms');
+        setclassData(response.data);
+        setLoading(false);
+      } catch (err) {
+        setRetrieveError(err)
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -47,6 +67,10 @@ function Classroom() {
             <h1 style={{paddingBottom: '40px'}}>
              Different classrooms will house appropriate projects. 
             </h1>
+            <h2>Current Classrooms:</h2>
+            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
+            <pre>{JSON.stringify(classData, null, 2)}</pre>
+
             <h2> You can create a new classroom here: </h2>
               
             <form onSubmit={handleSubmit}>

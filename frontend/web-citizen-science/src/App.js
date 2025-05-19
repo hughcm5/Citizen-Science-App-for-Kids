@@ -9,7 +9,7 @@ import Homepage from './Components/Homepage.js';
 import CreateProject from './Components/CreateProject.jsx';
 import Landing from './Components/Landing.js';
 import ViewProjects from './Components/ViewProjects.jsx'
-import Admin from './Components/CreateAdmins.jsx'
+import Admin from './Components/AdminPage.jsx'
 import Classroom from './Components/CreateClassroom.jsx'
 import Student from './Components/CreateStudent.jsx'
 import Observation from './Components/CreateObservation.jsx';
