@@ -5,14 +5,14 @@ import pymysql
 import logging
 from datetime import datetime
 from requests.exceptions import RequestException
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Project
+from models import db, Project, Classroom, Admin
 
 # Load environment variables
-load_dotenv('./.env')
+load_dotenv(find_dotenv())
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
@@ -42,7 +42,7 @@ def get_projects():
     Get all projects from the database
     """
     try:
-        projects = Project.query.all()
+        projects = db.session.query(Project).all()
         return jsonify([project.to_dict() for project in projects]), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -54,11 +54,11 @@ def get_project(project_id):
     Get a specific project by ID
     """
     # Check if the project exists
-    if not Project.query.get(project_id):
+    if not db.session.get(Project, project_id):
         return jsonify({'error': 'Project not found'}), 404
 
     try:
-        project = Project.query.get_or_404(project_id)
+        project = db.session.get(Project, project_id)
         return jsonify(project.to_dict()), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -79,7 +79,9 @@ def create_project():
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
 
-    # TODO Check if the class_id is valild
+    # Validate the class_id
+    if not db.session.get(Classroom, data['class_id']):
+        return jsonify({'error': 'Classroom not found'}), 404
 
     try:
         new_project = Project(
@@ -110,14 +112,16 @@ def update_project(project_id):
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
 
-    # TODO Check if the class_id is valild
+    # Validate the class_id
+    if not db.session.get(Classroom, data['class_id']):
+        return jsonify({'error': 'Classroom not found'}), 404
 
     # Check if the project exists
-    if not Project.query.get(project_id):
+    if not db.session.get(Project, project_id):
         return jsonify({'error': 'Project not found'}), 404
+    project = db.session.get(Project, project_id)
 
     try:
-        project = Project.query.get_or_404(project_id)
         project.class_id = data['class_id']
         project.project_title = data['project_title']
         project.description = data.get('description', '')
@@ -134,11 +138,11 @@ def delete_project(project_id):
     Delete a project by ID
     """
     # Check if the project exists
-    if not Project.query.get(project_id):
+    if not db.session.get(Project, project_id):
         return jsonify({'error': 'Project not found'}), 404
 
     try:
-        project = Project.query.get_or_404(project_id)
+        project = db.session.get(Project, project_id)
         db.session.delete(project)
         db.session.commit()
         return '', 204

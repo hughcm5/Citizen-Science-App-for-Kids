@@ -8,8 +8,11 @@ import Navigation from './Components/Navigation.js';
 import Homepage from './Components/Homepage.js';
 import CreateProject from './Components/CreateProject.jsx';
 import Landing from './Components/Landing.js';
-import ViewProjects from './Components/ViewProjects.js'
-import EditProjects from './Components/ViewProjects.js'
+import ViewProjects from './Components/ViewProjects.jsx'
+import Admin from './Components/AdminPage.jsx'
+import Classroom from './Components/CreateClassroom.jsx'
+import Student from './Components/CreateStudent.jsx'
+import Observation from './Components/CreateObservation.jsx';
 
 /* ------------ Necessary Imports ------------*/
 import axios from "axios";
@@ -59,7 +62,11 @@ function App() {
           <Route path = "/createproject" element= {<CreateProject getRows={getRows} getCol={getCol}/>}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
-          <Route path="/EditProjects" element={<EditProjects getRows={getRows} getCol={getCol} />} />
+          <Route path = "/CreateAdmins" element= {<Admin/>}/>
+          <Route path = "/CreateClassroom" element= {<Classroom/>}/>
+          <Route path = "/CreateStudent" element= {<Student/>}/>
+          <Route path = "/CreateObservation" element= {<Observation/>}/>
+
         </Routes>
       </Router>
       <footer>
