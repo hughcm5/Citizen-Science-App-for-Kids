@@ -44,7 +44,7 @@ export default function addbservation() {
   // Based of format (text, dropdown, checkbox) selected
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://192.168.68.105:5002/observations", {
+      const res = await fetch("http://192.168.68.104:5002/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function addbservation() {
   // For checkbox submissions
   const handleSubmit2 = async () => {
     try {
-      const res = await fetch("http://192.168.68.105:5002/observations", {
+      const res = await fetch("http://192.168.68.104:5002/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ export default function addbservation() {
   // For dropdown submissions
   const handleSubmit3 = async () => {
     try {
-      const res = await fetch("http://192.168.68.105:5002/observations", {
+      const res = await fetch("http://192.168.68.104:5002/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export default function addbservation() {
 
   // Use effect triggered only once at the start of page render to retrieve projects
   useEffect(() => {
-    fetch("http://192.168.68.105:5001/projects") // replace with your backend
+    fetch("http://192.168.68.104:5001/projects") // replace with your backend
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
