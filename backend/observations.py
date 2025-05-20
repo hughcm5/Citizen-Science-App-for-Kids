@@ -15,6 +15,8 @@ from models import db, Observation
 load_dotenv('./.env')
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
+CORS(app, supports_credentials=True)
 
 # get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":

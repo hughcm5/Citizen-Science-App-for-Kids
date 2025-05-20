@@ -117,8 +117,8 @@ class Project(db.Model):
     # project_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     project_id = db.Column(db.String(5), primary_key=True, unique=True, nullable=False, default=lambda: str(uuid.uuid4().int)[:5])
 
-    # class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
-    class_id = db.Column(db.Integer, nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
+    # class_id = db.Column(db.Integer, nullable=False)
     project_title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -131,7 +131,7 @@ class Project(db.Model):
         """
         return {
             'project_id': self.project_id,
-            'class_id': self.class_id,
+            # 'class_id': self.class_id,
             'project_title': self.project_title,
             'description': self.description,
             'created_at': self.created_at.isoformat(),
@@ -165,13 +165,13 @@ class Observation(db.Model):
             'observation_id': self.observation_id,
             'project_id': self.project_id,
             'student_id': self.student_id,
-            'Observation data': self.observation_data,
+            'observation_data': self.observation_data,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             # 'student firstname': self.student.student_firstname if self.student else None,
             # 'student lastname': self.student.student_lastname if self.student else None,
             # 'student class id': self.student.class_id if self.student else None,
-            'project title': self.project.project_title if self.project else None,
+            # 'project title': self.project.project_title if self.project else None,
         }
 
     # student = db.relationship('Student', back_populates='observations', lazy=True)

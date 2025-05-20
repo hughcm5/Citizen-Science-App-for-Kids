@@ -1,10 +1,14 @@
 import json
 import datetime
 from db_connector import connect_to_database
+from flask import Flask
+from flask_cors import CORS
 
 # Get a connection
 connection = connect_to_database()
 cursor = connection.cursor()
+app = Flask(__name__)
+CORS(app, origins=["http://localhost:8081"])
 
 # Read SQL script
 with open("app_schema.sql", "r") as file:
