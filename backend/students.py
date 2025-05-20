@@ -42,7 +42,9 @@ def get_students():
     or if a teacher only the students in thier classes
     """
     try:
-        students = Student.query.all()
+        students = db.session.query(Student).all()
+        if not students:
+            return jsonify({'error': 'No students found'}), 404
         return jsonify([student.to_dict() for student in students]), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -54,10 +56,10 @@ def get_student(student_id):
     Get a specific student by ID
     """
     # Check if the student exists
-    if not Student.query.get(student_id):
+    student = db.session.query(Student).filter_by(student_id=student_id).one_or_none()
+    if not student:
         return jsonify({'error': 'Student not found'}), 404
     try:
-        student = Student.query.get_or_404(student_id)
         return jsonify(student.to_dict()), 200
     except RequestException as e:
         return jsonify({'error': repr(e)}), 500
@@ -101,7 +103,7 @@ def update_student(student_id):
     Update a student by ID
     """
     # Check if the student exists
-    if not Student.query.get(student_id):
+    if not db.session.query(Student).filter_by(student_id=student_id).one_or_none():
         return jsonify({'error': 'Student not found'}), 404
     try:
         data = request.get_json()
@@ -117,7 +119,7 @@ def update_student(student_id):
         # if not isinstance(data['class_codes'], list):
         #     return jsonify({'error': 'class_codes must be a list'}), 400
 
-        student = Student.query.get_or_404(student_id)
+        student = db.session.query(Student).filter_by(student_id=student_id).one_or_none()
 
         student.student_lastname = data.get('student_lastname', student.student_lastname)
         student.student_firstname = data.get('student_firstname', student.student_firstname)
@@ -136,10 +138,10 @@ def delete_student(student_id):
     Delete a student by ID
     """
     # Check if the student exists
-    if not Student.query.get(student_id):
+    if not db.session.query(Student).filter_by(student_id=student_id).one_or_none():
         return jsonify({'error': 'Student not found'}), 404
     try:
-        student = Student.query.get_or_404(student_id)
+        student = db.session.query(Student).filter_by(student_id=student_id).one_or_none()
         db.session.delete(student)
         db.session.commit()
         return jsonify({'message': 'Student deleted successfully'}), 200
@@ -153,10 +155,10 @@ def get_student_observations(student_id):
     Get all observations for a specific student
     """
     # Check if the student exists
-    if not Student.query.get(student_id):
+    if not db.session.query(Student).filter_by(student_id=student_id).one_or_none():
         return jsonify({'error': 'Student not found'}), 404
     try:
-        student = Student.query.get_or_404(student_id)
+        student = db.session.query(Student).filter_by(student_id=student_id).one_or_none()
         stu_data = student.to_dict()
         stu_obs = filter(lambda x: x['0'] in {'obervations'}, stu_data.items())
         return jsonify(stu_obs), 200
