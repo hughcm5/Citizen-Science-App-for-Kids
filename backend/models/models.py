@@ -161,7 +161,7 @@ class Observation(db.Model):
             'observation_id': self.observation_id,
             'project_id': self.project_id,
             'student_id': self.student_id,
-            'Observation data': self.observation_data,
+            'observation data': self.observation_data,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             'student firstname': self.student.student_firstname if self.student else None,
