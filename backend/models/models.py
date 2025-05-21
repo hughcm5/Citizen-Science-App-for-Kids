@@ -78,13 +78,13 @@ class Classroom(db.Model):
 # Student table
 class Student(db.Model):
     __tablename__ = 'student'
-    student_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
-    class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False)
+    student_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    class_id = db.Column(db.Integer, db.ForeignKey('classroom.class_id', ondelete='CASCADE'), nullable=False) #Should classroom be nullable???
     student_lastname = db.Column(db.String(100))
     student_firstname = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
-    class_codes = db.Column(db.String(255))  # unclear if this is redundant with class_id
+    # class_codes = db.Column(db.String(255))  # unclear if this is redundant with class_id
 
     def to_dict(self):
         """
@@ -95,7 +95,7 @@ class Student(db.Model):
             'class_id': self.class_id,
             'student_lastname': self.student_lastname,
             'student_firstname': self.student_firstname,
-            'class_codes': self.class_codes,
+            # 'class_codes': self.class_codes,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             'observations': [obs.to_dict() for obs in self.observations]
@@ -153,7 +153,7 @@ class Observation(db.Model):
             'observation_id': self.observation_id,
             'project_id': self.project_id,
             'student_id': self.student_id,
-            'observation_data': self.observation_data,
+            'observation data': self.observation_data,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             'student firstname': self.student.student_firstname if self.student else None,
