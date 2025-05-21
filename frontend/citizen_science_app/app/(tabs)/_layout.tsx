@@ -22,7 +22,6 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
           default: {},
@@ -45,8 +44,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="observation"
         options={{
-          title: 'Observation',
+          title: 'About',
           tabBarIcon: ({ color }) => <Ionicons name="help-circle" size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="viewobservation"
+        options={{
+          title: 'Observations',
+          tabBarIcon: ({ color }) => <Ionicons name="eye-outline" size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="addobservation"
+        options={{
+          title: 'Add Obser.',
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle-outline" size={28} color={color} />,
         }}
       />
     </Tabs>

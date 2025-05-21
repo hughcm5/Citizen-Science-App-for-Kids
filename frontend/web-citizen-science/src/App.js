@@ -9,7 +9,7 @@ import Homepage from './Components/Homepage.js';
 import CreateProject from './Components/CreateProject.jsx';
 import Landing from './Components/Landing.js';
 import ViewProjects from './Components/ViewProjects.jsx'
-import Admin from './Components/CreateAdmins.jsx'
+import Admin from './Components/AdminPage.jsx'
 import Classroom from './Components/CreateClassroom.jsx'
 import Student from './Components/CreateStudent.jsx'
 import Observation from './Components/CreateObservation.jsx';
@@ -62,7 +62,7 @@ function App() {
           <Route path = "/createproject" element= {<CreateProject getRows={getRows} getCol={getCol}/>}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
-          <Route path = "/CreateAdmins" element= {<Admin/>}/>
+          <Route path = "/Admins" element= {<Admin/>}/>
           <Route path = "/CreateClassroom" element= {<Classroom/>}/>
           <Route path = "/CreateStudent" element= {<Student/>}/>
           <Route path = "/CreateObservation" element= {<Observation/>}/>
