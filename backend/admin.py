@@ -25,11 +25,11 @@ app.secret_key = 'SECRET_KEY'
 
 client = datastore.Client()
 
-BUSINESSES = "businesses"
+ADMINS = "admins"
 
 # Update the values of the following 3 variables
-CLIENT_ID = 'dtsgrQAMjx3zdfBVebjA3iIzOIPmWYsF'
-CLIENT_SECRET = 'slIAUOx_ggq-uB_-U-FiEbgQRUtV8NilI8-_yisEHwOD-fKgd7rZhXgZyye8ruH5'
+CLIENT_ID = 'XGJv1JnUf89jaNFTwjMxl1N6I1hkxuXA'
+CLIENT_SECRET = 'AgK0LTfeV4yKQjTersxbFl4Epd1NTVY795eXEHXZX19oYc5rj4qQ6xzpFSZfaAmt'
 DOMAIN = 'dev-tmf2tlri8xgzzr2y.us.auth0.com'
 
 
@@ -48,6 +48,25 @@ auth0 = oauth.register(
         'scope': 'openid profile email',
     },
 )
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    db_uri = (
+        # TODO: replace with the actual connection string for google cloud sql
+    )
+else:
+    db_uri = (
+        f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
+    )
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = str(uuid.uuid4())  # For session management
+
+# Initialize db with app
+db.init_app(app)
+
 
 # This code is adapted from https://auth0.com/docs/quickstart/backend/python/01-authorization?_ga=2.46956069.349333901.1589042886-466012638.1589042885#create-the-jwt-validation-decorator
 
@@ -126,25 +145,6 @@ def verify_jwt(request):
                             "description":
                                 "No RSA key in JWKS"}, 401)
 
-
-# Get the database URL from the environment variable
-if os.getenv("CLOUD_SQL", "false").lower() == "true":
-    db_uri = (
-        # TODO: replace with the actual connection string for google cloud sql
-    )
-else:
-    db_uri = (
-        f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-        f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
-    )
-
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = str(uuid.uuid4())  # For session management
-
-# Initialize db with app
-db.init_app(app)
-
 # OAuth Settings
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -204,8 +204,26 @@ def create_admin():
             return jsonify({"error": "email must be a string and less than 100 characters"}), 400
         if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
             return jsonify({"error": "role must be a string and less than 50 characters"}), 400
+        
+        # Verify the JWT and extract the payload
+        payload = verify_jwt(request)
+        admin_id = payload["sub"]            
+
+        mew_admin = datastore.entity.Entity(key=client.key(ADMINS))
+
+        new_admin.update({
+            "admin_id": admin_id,
+            "admin_firstname": data["admin_firstname"],
+            "admin_lastname": data["admin_lastname"],
+            "email": data["email"],
+            "oauth_id": data["oauth_id"]
+        })
+
+        client.put(new_admin)
+
 
         new_admin = Admin(
+            id = new_admin.key.id,
             admin_firstname=data.get('admin_firstname'),
             admin_lastname=data.get('admin_lastname'),
             email=data.get('email'),
@@ -216,8 +234,8 @@ def create_admin():
         db.session.add(new_admin)
         db.session.commit()
 
-        return jsonify(new_admin.to_dict()), 201
 
+        return jsonify(new_admin.to_dict()), 201
     except Exception as e:
         # Log the error for debugging
         app.logger.error(f"Error creating admin: {e}")
@@ -288,6 +306,33 @@ def delete_admin(id):
         # Log the error for debugging
         app.logger.error(f"Error deleting admin: {e}")
         return jsonify({"error": "An error occurred while deleting the admin", "details": str(e)}), 500
+    
+# Decode the JWT supplied in the Authorization header
+@app.route('/decode', methods=['GET'])
+def decode_jwt():
+    payload = verify_jwt(request)
+    return payload          
+        
+
+# Generate a JWT from the Auth0 domain and return it
+# Request: JSON body with 2 properties with "username" and "password"
+#       of a user registered with this Auth0 domain
+# Response: JSON with the JWT as the value of the property id_token
+@app.route('/login', methods=['POST'])
+def login_user():
+    content = request.get_json()
+    username = content["username"]
+    password = content["password"]
+    body = {'grant_type':'password','username':username,
+            'password':password,
+            'client_id':CLIENT_ID,
+            'client_secret':CLIENT_SECRET
+           }
+    headers = { 'content-type': 'application/json' }
+    url = 'https://' + DOMAIN + '/oauth/token'
+    r = requests.post(url, json=body, headers=headers)
+    return r.text, 200, {'Content-Type':'application/json'}
+
 
 
 @app.route('/health', methods=['GET'])
