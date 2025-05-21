@@ -28,8 +28,8 @@ client = datastore.Client()
 ADMINS = "admins"
 
 # Update the values of the following 3 variables
-CLIENT_ID = 'XGJv1JnUf89jaNFTwjMxl1N6I1hkxuXA'
-CLIENT_SECRET = 'AgK0LTfeV4yKQjTersxbFl4Epd1NTVY795eXEHXZX19oYc5rj4qQ6xzpFSZfaAmt'
+CLIENT_ID = 'SUVIcGTVz4Cxjs9KONBkLufxKsjZyzCI'
+CLIENT_SECRET = '_wkkQzDOouQg8JBykJAgToU7ceWW36RmcTZUZF9RaC3NRKiHVckPIt8_xJcrl-j-'
 DOMAIN = 'dev-tmf2tlri8xgzzr2y.us.auth0.com'
 
 
@@ -321,17 +321,31 @@ def decode_jwt():
 @app.route('/login', methods=['POST'])
 def login_user():
     content = request.get_json()
-    username = content["username"]
-    password = content["password"]
-    body = {'grant_type':'password','username':username,
-            'password':password,
-            'client_id':CLIENT_ID,
-            'client_secret':CLIENT_SECRET
-           }
-    headers = { 'content-type': 'application/json' }
-    url = 'https://' + DOMAIN + '/oauth/token'
-    r = requests.post(url, json=body, headers=headers)
-    return r.text, 200, {'Content-Type':'application/json'}
+    username = content.get("username")
+    password = content.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    body = {
+        'grant_type': 'password',
+        'username': username,
+        'password': password,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'audience': f"https://{DOMAIN}/api/v2/",
+        'scope': 'openid profile email'
+    }
+
+    headers = {'Content-Type': 'application/json'}
+    url = f'https://{DOMAIN}/oauth/token'
+
+    try:
+        r = requests.post(url, json=body, headers=headers)
+        r.raise_for_status()
+        return jsonify(r.json()), 200
+    except requests.exceptions.HTTPError as e:
+        return jsonify({"error": "Failed to authenticate", "details": r.text}), r.status_code
 
 
 
