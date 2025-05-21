@@ -10,7 +10,7 @@ import CreateProject from './Components/CreateProject.jsx';
 import Landing from './Components/Landing.js';
 import ViewProjects from './Components/ViewProjects.jsx'
 import Admin from './Components/AdminPage.jsx'
-import Classroom from './Components/CreateClassroom.jsx'
+import Classroom from './Components/ClassroomPage.jsx'
 import Student from './Components/CreateStudent.jsx'
 import Observation from './Components/CreateObservation.jsx';
 
@@ -50,7 +50,6 @@ const getCol = async (path) => {
     return 1;
   }
 }
-
 function App() {
   return (
     <div className="App">
@@ -63,7 +62,7 @@ function App() {
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
           <Route path = "/Admins" element= {<Admin/>}/>
-          <Route path = "/CreateClassroom" element= {<Classroom/>}/>
+          <Route path = "/Classrooms" element= {<Classroom/>}/>
           <Route path = "/CreateStudent" element= {<Student/>}/>
           <Route path = "/CreateObservation" element= {<Observation/>}/>
 
