@@ -62,7 +62,7 @@ function App() {
           <Route path = "/createproject" element= {<CreateProject getRows={getRows} getCol={getCol}/>}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
-          <Route path = "/CreateAdmins" element= {<Admin/>}/>
+          <Route path = "/Admins" element= {<Admin/>}/>
           <Route path = "/CreateClassroom" element= {<Classroom/>}/>
           <Route path = "/CreateStudent" element= {<Student/>}/>
           <Route path = "/CreateObservation" element= {<Observation/>}/>

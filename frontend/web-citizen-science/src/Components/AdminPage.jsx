@@ -16,9 +16,10 @@ function Admin() {
   const [email, setemail] = useState('');
   const [role, setrole] = useState('');
 
-  const [adminData, setAdminData] = useState(null);
+  const [adminData, setAdminData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
+
 
   /* Prepare the retrieve on the frontend */
   useEffect(() => {
@@ -38,7 +39,7 @@ function Admin() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const admin_data = {
+    const admin_payload = {
       admin_firstname,
       admin_lastname,
       email,
@@ -46,7 +47,7 @@ function Admin() {
     }
     console.log('admin:', Admin);
     axios
-      .post("http://localhost:5000/admins", admin_data)
+      .post("http://localhost:5000/admins", admin_payload)
       .then((response) => {
         console.log('Admin creation successful');
       })
@@ -58,6 +59,12 @@ function Admin() {
       });
   };
 
+  const toHumanReadableDate = (backendDateStr) => {
+    const date = new Date(backendDateStr);
+    // TODO: Format the string to remove timezone (not needed)
+    return date.toISOString().split('T')[0];
+  }
+
   return (
     <Container fluid>
       <Container className="content">
@@ -67,19 +74,52 @@ function Admin() {
              The science projects are administered by educators, so children can meaningfully contribute and gain experience in scientific research
             </h1>
             <h2>Current Admins:</h2>
-            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
-            <pre>{JSON.stringify(adminData, null, 2)}</pre>
+            <p></p>
+            {
+              // For debugging purposes only
+              /*
+              <pre>{JSON.stringify(adminData, null, 2)}</pre>
+              */
+            }
+            <table class="adminTable">
+              <thead>
+                  <tr>
+                    <th>ID #</th>
+                    <th>Classes</th>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Email</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {adminData.map(admin => (
+                    <tr id={admin}>
+                      <td>{admin.admin_id}</td>
+                      <td>{admin.classrooms.length}</td>
+                      <td>{admin.admin_lastname}</td>
+                      <td>{admin.admin_firstname}</td>
+                      <td>{admin.role}</td>
+                      <td>{toHumanReadableDate(admin.created_at)}</td>
+                      <td>{toHumanReadableDate(admin.updated_at)}</td>
+                      <td>{admin.email}</td>
+                    </tr>
+                  ))}
+                  </tbody>
+            </table>
 
-            <h2> You can create a new admin for the website here: </h2>
-              
+            <h2>New Admin</h2>
+              <p></p>
             <form onSubmit={handleSubmit}>
               <label>
-              Create a new Admin - Enter the Admin's Details:
+              Create a new Admin - Enter the Admin's Details: <br />
               <input type="text" placeholder="First Name" value={admin_firstname} onChange={(e) => setadmin_firstname(e.target.value)} />
               <input type="text" placeholder="Last Name" value={admin_lastname} onChange={(e) => setadmin_lastname(e.target.value)} />
               <input type="text" placeholder="Admin's Email" value={email} onChange={(e) => setemail(e.target.value)} />
               <input type="text" placeholder="Admin's Role (teacher, principle, etc)" value={role} onChange={(e) => setrole(e.target.value)} />
-              </label>
+              </label> <br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>
             </Col>
