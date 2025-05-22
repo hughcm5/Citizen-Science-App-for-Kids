@@ -99,7 +99,6 @@ def callback():
         'jwt': token['access_token'],
         'email': userinfo['email'],
         'name': userinfo['name'],
-        'picture': userinfo.get('picture')
     }
 
     return redirect(os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000"))
