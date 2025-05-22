@@ -25,29 +25,6 @@ app.secret_key = 'SECRET_KEY'
 
 client = datastore.Client()
 
-ADMINS = "admins"
-
-# Update the values of the following 3 variables
-CLIENT_ID = 'SUVIcGTVz4Cxjs9KONBkLufxKsjZyzCI'
-CLIENT_SECRET = '_wkkQzDOouQg8JBykJAgToU7ceWW36RmcTZUZF9RaC3NRKiHVckPIt8_xJcrl-j-'
-DOMAIN = 'dev-tmf2tlri8xgzzr2y.us.auth0.com'
-
-
-ALGORITHMS = ["RS256"]
-
-oauth = OAuth(app)
-
-auth0 = oauth.register(
-    'auth0',
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    api_base_url="https://" + DOMAIN,
-    access_token_url="https://" + DOMAIN + "/oauth/token",
-    authorize_url="https://" + DOMAIN + "/authorize",
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
-)
 
 # Get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
@@ -69,90 +46,6 @@ db.init_app(app)
 
 
 # This code is adapted from https://auth0.com/docs/quickstart/backend/python/01-authorization?_ga=2.46956069.349333901.1589042886-466012638.1589042885#create-the-jwt-validation-decorator
-
-class AuthError(Exception):
-    def __init__(self, error, status_code):
-        self.error = error
-        self.status_code = status_code
-
-
-@app.errorhandler(AuthError)
-def handle_auth_error(ex):
-    response = jsonify(ex.error)
-    response.status_code = ex.status_code
-    return response
-
-# Verify the JWT in the request's Authorization header
-def verify_jwt(request):
-    if 'Authorization' in request.headers:
-        auth_header = request.headers['Authorization'].split()
-        token = auth_header[1]
-    else:
-        raise AuthError({"code": "no auth header",
-                            "description":
-                                "Authorization header is missing"}, 401)
-    
-    jsonurl = urlopen("https://"+ DOMAIN+"/.well-known/jwks.json")
-    jwks = json.loads(jsonurl.read())
-    try:
-        unverified_header = jwt.get_unverified_header(token)
-    except jwt.JWTError:
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Invalid header. "
-                            "Use an RS256 signed JWT Access Token"}, 401)
-    if unverified_header["alg"] == "HS256":
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "Invalid header. "
-                            "Use an RS256 signed JWT Access Token"}, 401)
-    rsa_key = {}
-    for key in jwks["keys"]:
-        if key["kid"] == unverified_header["kid"]:
-            rsa_key = {
-                "kty": key["kty"],
-                "kid": key["kid"],
-                "use": key["use"],
-                "n": key["n"],
-                "e": key["e"]
-            }
-    if rsa_key:
-        try:
-            payload = jwt.decode(
-                token,
-                rsa_key,
-                algorithms=ALGORITHMS,
-                audience=CLIENT_ID,
-                issuer="https://"+ DOMAIN+"/"
-            )
-        except jwt.ExpiredSignatureError:
-            raise AuthError({"code": "token_expired",
-                            "description": "token is expired"}, 401)
-        except jwt.JWTClaimsError:
-            raise AuthError({"code": "invalid_claims",
-                            "description":
-                                "incorrect claims,"
-                                " please check the audience and issuer"}, 401)
-        except Exception:
-            raise AuthError({"code": "invalid_header",
-                            "description":
-                                "Unable to parse authentication"
-                                " token."}, 401)
-
-        return payload
-    else:
-        raise AuthError({"code": "no_rsa_key",
-                            "description":
-                                "No RSA key in JWKS"}, 401)
-
-# OAuth Settings
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-SCOPE = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
-REDIRECT_URI = 'http://localhost:5000/oauth/callback'
-AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth'
-TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
-PEOPLE_API_URL = 'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses'
 
 
 # Routes
@@ -204,26 +97,9 @@ def create_admin():
             return jsonify({"error": "email must be a string and less than 100 characters"}), 400
         if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
             return jsonify({"error": "role must be a string and less than 50 characters"}), 400
-        
-        # Verify the JWT and extract the payload
-        payload = verify_jwt(request)
-        admin_id = payload["sub"]            
-
-        mew_admin = datastore.entity.Entity(key=client.key(ADMINS))
-
-        new_admin.update({
-            "admin_id": admin_id,
-            "admin_firstname": data["admin_firstname"],
-            "admin_lastname": data["admin_lastname"],
-            "email": data["email"],
-            "oauth_id": data["oauth_id"]
-        })
-
-        client.put(new_admin)
-
-
+             
         new_admin = Admin(
-            id = new_admin.key.id,
+            admin_id=data.get('admin_id'),
             admin_firstname=data.get('admin_firstname'),
             admin_lastname=data.get('admin_lastname'),
             email=data.get('email'),
@@ -233,7 +109,6 @@ def create_admin():
 
         db.session.add(new_admin)
         db.session.commit()
-
 
         return jsonify(new_admin.to_dict()), 201
     except Exception as e:
@@ -306,47 +181,6 @@ def delete_admin(id):
         # Log the error for debugging
         app.logger.error(f"Error deleting admin: {e}")
         return jsonify({"error": "An error occurred while deleting the admin", "details": str(e)}), 500
-    
-# Decode the JWT supplied in the Authorization header
-@app.route('/decode', methods=['GET'])
-def decode_jwt():
-    payload = verify_jwt(request)
-    return payload          
-        
-
-# Generate a JWT from the Auth0 domain and return it
-# Request: JSON body with 2 properties with "username" and "password"
-#       of a user registered with this Auth0 domain
-# Response: JSON with the JWT as the value of the property id_token
-@app.route('/login', methods=['POST'])
-def login_user():
-    content = request.get_json()
-    username = content.get("username")
-    password = content.get("password")
-
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    body = {
-        'grant_type': 'password',
-        'username': username,
-        'password': password,
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'audience': f"https://{DOMAIN}/api/v2/",
-        'scope': 'openid profile email'
-    }
-
-    headers = {'Content-Type': 'application/json'}
-    url = f'https://{DOMAIN}/oauth/token'
-
-    try:
-        r = requests.post(url, json=body, headers=headers)
-        r.raise_for_status()
-        return jsonify(r.json()), 200
-    except requests.exceptions.HTTPError as e:
-        return jsonify({"error": "Failed to authenticate", "details": r.text}), r.status_code
-
 
 
 @app.route('/health', methods=['GET'])

@@ -2,16 +2,10 @@ import os
 import requests
 from requests.exceptions import RequestException
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
-
-
-"""
-Comments / things to do or look into:
-- Implement token verification logic in verify_token function
-- Implement authentication for the services
-- Implement logging errors for the gateway (app.logger.error ?) / Google Cloud Logging
-"""
+from authlib.integrations.flask_client import OAuth
+import uuid
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -24,9 +18,33 @@ CORS(app,
      supports_credentials=True
      )
 
+# Secret key for session management
+app.secret_key = str(uuid.uuid4())
+
+# OAuth Settings
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+DOMAIN = os.getenv('AUTH0_DOMAIN')
+REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:5000/oauth/callback')
+BASE_URL = f"https://{DOMAIN}"
+
+oauth = OAuth(app)
+
+auth0 = oauth.register(
+    'auth0',
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    api_base_url="https://" + DOMAIN,
+    access_token_url="https://" + DOMAIN + "/oauth/token",
+    authorize_url="https://" + DOMAIN + "/authorize",
+    server_metadata_url='https://dev-tmf2tlri8xgzzr2y.us.auth0.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid profile email',
+    },
+
+)
 
 # URLs of the backend services
-# replace with the actual URLs of your services once on the cloud
 SERVICE_URLS = {
     'projects': os.getenv('PROJECTS_SERVICE_URL') or 'http://localhost:5001',
     'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5002',
@@ -36,36 +54,25 @@ SERVICE_URLS = {
     'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
 
-
 def verify_token(token):
     """
-    Verify the token with google auth service.
-
-    to be implemented
-
+    Verify the token with Google Auth or Auth0.
+    To be implemented.
     """
     # TODO - Implement token verification logic
     pass
 
-
 @app.route('/health', methods=['GET'])
 def health_check():
-    """
-    Health check endpoint to verify the status of all services.
-    Returns a JSON response with the status of each service.
-
-    Each service need to implement a health check endpoint that returns 200 OK
-    if the service is running properly.
-    """
     results = {}
     for service in SERVICE_URLS:
         service_url = SERVICE_URLS.get(service)
         if not service_url:
-            results[service] = 'not configured'  # URL not set in environment variables or wrong URL
+            results[service] = 'not configured'
             continue
 
         try:
-            timeout = int(os.getenv('HEALTH_CHECK_TIMEOUT', 5))  # Default timeout is 5 seconds
+            timeout = int(os.getenv('HEALTH_CHECK_TIMEOUT', 5))
             response = requests.get(f"{service_url}/health", timeout=timeout)
             results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code)
         except requests.RequestException as e:
@@ -76,16 +83,39 @@ def health_check():
         'services': results
     }), 200
 
+# Login Route
+@app.route('/login')
+def login():
+    return auth0.authorize_redirect(redirect_uri=REDIRECT_URI)
+
+# Callback Route
+@app.route('/oauth/callback')
+def callback():
+    token = auth0.authorize_access_token()
+    userinfo = auth0.get('userinfo').json()
+
+    # Store user info in session
+    session['user'] = {
+        'jwt': token['access_token'],
+        'email': userinfo['email'],
+        'name': userinfo['name'],
+        'picture': userinfo.get('picture')
+    }
+
+    return redirect(os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000"))
+
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(
+        f"https://{DOMAIN}/v2/logout?client_id={CLIENT_ID}&returnTo={os.getenv('FRONTEND_REDIRECT_URL', 'http://localhost:3000')}"
+    )
 
 # Forwards requests to the appropriate service
 def forward_service(service_url):
-    """
-    Forwards the request to the appropriate service based on the URL.
-
-    """
     try:
         target_url = f"{service_url}{request.path}"
-        # Headers to exclude from the forwarded request since they might cause issues
         response = requests.request(
             method=request.method,
             url=target_url,
@@ -95,8 +125,8 @@ def forward_service(service_url):
         )
         content_type = response.headers.get('Content-Type', '')
         if content_type.startswith('application/json'): 
-            return jsonify(response.json()), response.status_code  # Ensures a JSON response
-        return response.content, response.status_code  # For passing other file types like CSVs
+            return jsonify(response.json()), response.status_code
+        return response.content, response.status_code
     except requests.RequestException as e:
         return jsonify({'Error': 'Service unavailable', 'details': repr(e)}), 503
 
@@ -104,28 +134,18 @@ def forward_service(service_url):
 @app.route('/<service>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/<service>/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def gateway(service, path=None):
-    # Validate service
     service = service.lower()
     if service not in SERVICE_URLS.keys():
         return jsonify({'Error': f'Unknown service: {service}'}), 404
 
-    # No authentication for certain services as listed in the environment variable
     NO_AUTH_SERVICES = os.getenv('NO_AUTH_SERVICES', "projects,observations,csv").split(',')
-    # TODO: Implement Google OAuth token verification
-    # if service not in NO_AUTH_SERVICES:
-    #     # Check for token in headers
-    #     # Will be implemented in the future
-    #     if not verify_token(token):
-    #         return jsonify({'Error': 'Invalid or expired token'}), 401
 
-    # Forward to target service
     service_url = SERVICE_URLS.get(service)
     if not service_url:
         return jsonify({'Error': f'Service URL for {service} not configured'}), 500
     return forward_service(service_url)
 
-
 if __name__ == "__main__":
     port = int(os.getenv('GATEWAY_PORT', 5000))
-    debug = os.getenv('DEBUG', 'false').lower() == 'true' # Set to True for debugging, False for production
-    app.run(host='0.0.0.0', port=port, debug=debug) 
+    debug = os.getenv('DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug)
