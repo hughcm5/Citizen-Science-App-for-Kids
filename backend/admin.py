@@ -5,15 +5,11 @@ import pymysql
 import logging
 from datetime import datetime
 from requests.exceptions import RequestException
-from google.cloud import datastore
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Admin
-from six.moves.urllib.request import urlopen
-from jose import jwt
-from authlib.integrations.flask_client import OAuth
 import uuid
 
 # Load environment variables
@@ -21,10 +17,6 @@ load_dotenv(find_dotenv())
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'SECRET_KEY'
-
-client = datastore.Client()
-
 
 # Get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
@@ -44,8 +36,14 @@ app.secret_key = str(uuid.uuid4())  # For session management
 # Initialize db with app
 db.init_app(app)
 
-
-# This code is adapted from https://auth0.com/docs/quickstart/backend/python/01-authorization?_ga=2.46956069.349333901.1589042886-466012638.1589042885#create-the-jwt-validation-decorator
+# OAuth Settings
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+SCOPE = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
+REDIRECT_URI = 'http://localhost:5000/oauth/callback'
+AUTHORIZATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/v2/auth'
+TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
+PEOPLE_API_URL = 'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses'
 
 
 # Routes
@@ -97,9 +95,8 @@ def create_admin():
             return jsonify({"error": "email must be a string and less than 100 characters"}), 400
         if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
             return jsonify({"error": "role must be a string and less than 50 characters"}), 400
-             
+
         new_admin = Admin(
-            admin_id=data.get('admin_id'),
             admin_firstname=data.get('admin_firstname'),
             admin_lastname=data.get('admin_lastname'),
             email=data.get('email'),
@@ -111,6 +108,7 @@ def create_admin():
         db.session.commit()
 
         return jsonify(new_admin.to_dict()), 201
+
     except Exception as e:
         # Log the error for debugging
         app.logger.error(f"Error creating admin: {e}")

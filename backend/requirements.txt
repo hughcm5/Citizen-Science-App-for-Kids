@@ -7,7 +7,3 @@ Flask-SQLAlchemy
 PyMySQL
 flask-cors
 uuid
-pyhton-jose
-authlib
-requests
-six
