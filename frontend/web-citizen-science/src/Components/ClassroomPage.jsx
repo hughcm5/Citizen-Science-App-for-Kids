@@ -9,7 +9,7 @@ import Col from "react-bootstrap/Col";
 import Button from 'react-bootstrap/Button';
 import axios from "axios";
 
-/* ------------ Page Content  ------------*/
+/* ------------ Classroom Table  ------------*/
 function Classroom() {
   const [class_code, setclass_code] = useState('');
   const [admin_id, setadmin_id] = useState('');
@@ -21,21 +21,23 @@ function Classroom() {
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
+/* ------------ Retrieve  ------------*/
+  const fetchData = async () => {
+    // todo refresh table when other users update during session
+    try {
+      const response = await axios.get('http://localhost:5000/classrooms');
+      setclassData(response.data);
+      setLoading(false);
+    } catch (err) {
+      setRetrieveError(err)
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/classrooms');
-        setclassData(response.data);
-        setLoading(false);
-      } catch (err) {
-        setRetrieveError(err)
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
-
+  
+/* ------------ Create  ------------*/
   const handleSubmit = (event) => {
     event.preventDefault();
     const class_data = {
@@ -50,8 +52,10 @@ function Classroom() {
       .post("http://localhost:5000/classrooms", class_data)
       .then((response) => {
         console.log('Classroom creation successful');
+        fetchData();   // refresh table after creation
       })
       .catch((err) => {
+        // todo : signal if admin ID not found
         console.log('Failed to create classroom');
         if (err.data) {
           console.log(JSON.stringify(err.data));
@@ -61,27 +65,40 @@ function Classroom() {
 
     const toHumanReadableDate = (backendDateStr) => {
     const date = new Date(backendDateStr);
-    // TODO: Format the string to remove timezone (not needed)
+    // Format the string to remove timezone 
     return date.toISOString().split('T')[0];
   }
+/* ------------ Delete  ------------*/
+  const deleteClassroom = async (id) => {
+  try{
+    const response = await axios.delete('http://localhost:5000/classrooms' + id.toString());
+    console.log('Classroom deleted successfully:', response.data);
+    // Handle successful deletion (todo: update/refresh table upon deletion)
+    fetchData();
+    }
+    catch (error){
+    console.error('Error deleting classroom:', error);
+    // Error handling
+    }
+  };
 
+/* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
         <Row>
           <Col md={9}>
             <h1 style={{paddingBottom: '40px'}}>
-             Different classrooms will house appropriate projects. 
+             Different classrooms will house different students and projects in the system
             </h1>
             <h2>Current Classrooms:</h2>
             <p></p>
                         {
               // For debugging purposes only
-              /*
-            <pre>{JSON.stringify(classData, null, 2)}</pre>
-              */
+           //  <pre>{JSON.stringify(classData, null, 2)}</pre>
+              
             }
-            <table class="classTable">
+            <table className ="classTable">
               <thead>
                 <tr>
                     <th>ID #</th>
@@ -92,6 +109,7 @@ function Classroom() {
                     <th>Total Students</th>
                     <th>Creation Date</th>
                     <th>Updated Date</th>
+                    <th> </th>
                 </tr>
               </thead>
               <tbody>
@@ -99,12 +117,19 @@ function Classroom() {
                  <tr id={classroom}>
                   <td>{classroom.class_id}</td>
                   <td>{classroom.class_code}</td>
-                  <td>{classroom.class_name}</td>
+                  <td>
+                  <input
+                  type="text"
+                  value={classroom.class_name}
+                  onChange={e => setclass_name(e.target.value)} 
+                  id="class_name"/>
+                  {classroom.class_name}</td>
                   <td>{classroom.grade_level}</td>
                   <td>{classroom.projects.length}</td>
                   <td>{classroom.students.length}</td>
                   <td>{toHumanReadableDate(classroom.created_at)}</td>
                   <td>{toHumanReadableDate(classroom.updated_at)}</td>
+                  <td><button onClick={(event) => deleteClassroom(classData.class_id)}>Delete</button></td>
                  </tr> 
                 ))}
               </tbody>
