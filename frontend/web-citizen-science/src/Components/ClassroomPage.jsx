@@ -21,6 +21,9 @@ function Classroom() {
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
+  const [editedId, setEditedId] = useState(null);
+  const [editedClassData, setEditedClassData] = useState({});
+
 /* ------------ Retrieve  ------------*/
   const fetchData = async () => {
     // todo refresh table when other users update during session
@@ -37,7 +40,7 @@ function Classroom() {
     fetchData();
   }, []);
   
-/* ------------ Create  ------------*/
+/* ------------ Create ------------*/
   const handleSubmit = (event) => {
     event.preventDefault();
     const class_data = {
@@ -69,11 +72,12 @@ function Classroom() {
     return date.toISOString().split('T')[0];
   }
 /* ------------ Delete  ------------*/
-  const deleteClassroom = async (id) => {
+  const deleteClassroom = async (class_id) => {
   try{
-    const response = await axios.delete('http://localhost:5000/classrooms' + id.toString());
+    const response = await axios.delete(`http://localhost:5000/classrooms/` + class_id.toString());
+
     console.log('Classroom deleted successfully:', response.data);
-    // Handle successful deletion (todo: update/refresh table upon deletion)
+    // Handle successful deletion and update/refresh table upon deletion
     fetchData();
     }
     catch (error){
@@ -81,6 +85,59 @@ function Classroom() {
     // Error handling
     }
   };
+
+/* ------------ Update ------------*/
+  const onEditRow = (classroom) => {
+    // allow the row's content to be edited by the user
+    setEditedId(classroom.class_id);
+    setEditedClassData(classroom);
+  }
+  const onEditChange = (x) => {
+    const { name, value } = x.target;
+    setEditedClassData({...editedClassData, [name]: value});
+  }
+  const cancelEdit = () => {
+    setEditedId(null);
+    setEditedClassData({});
+  }
+  const onSaveEdit = async () => {
+    if (!editedId) {
+      // If nothing was edited, do nothing
+      return;
+    }
+
+    // TODO: frontend validation to catch mistakes before sending to the backend
+
+    const class_payload = {
+      'class_code' : editedClassData.class_code,
+      'class_name' : editedClassData.class_name,
+      'grade_level' : editedClassData.grade_level,
+      'admin_id' : editedClassData.admin_id, // foreign key
+    };
+    // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback for the user
+    try {
+      const response = await axios.put(`http://localhost:5000/classrooms/` + editedClassData.class_id.toString(), classData);
+      // handle success (update/refresh table)
+
+      // update fields on fromt end, need to displays something for user
+      // iterate to match classroom with id to edit
+      const class_to_update = classData.find(obj => obj.class_id === editedClassData.class_id);
+      if (class_to_update) {
+        class_to_update.class_code = editedClassData.class_code;
+        class_to_update.class_name = editedClassData.class_name;
+        class_to_update.grade_level = editedClassData.grade_level;
+        class_to_update.admin_id = editedClassData.admin_id;
+        // need to get foreign key : admin id
+      }
+      fetchData(); // repopulate the table
+      cancelEdit(); // stop the editing processs
+    } catch (error) {
+      console.error('Error updating this classroom: ', error);
+      // error handling
+      // TODO frontend implementation: print error for user, etc
+    }
+  }
+
 
 /* ------------ Page Content  ------------*/
   return (
@@ -96,11 +153,11 @@ function Classroom() {
                         {
               // For debugging purposes only
            //  <pre>{JSON.stringify(classData, null, 2)}</pre>
-              
             }
             <table className ="classTable">
               <thead>
                 <tr>
+                    <th> </th>
                     <th>ID #</th>
                     <th>Class Code</th>
                     <th>Name</th>
@@ -113,8 +170,18 @@ function Classroom() {
                 </tr>
               </thead>
               <tbody>
-                {classData?.map(classroom => (
-                 <tr id={classroom}>
+                {classData.map(classroom => (
+                 <tr key={classroom.class_id}>
+                    <td>
+                        {
+                          editedId === classroom.class_id
+                          ? (<>
+                              <button onClick={() => cancelEdit()}>Cancel</button>
+                              <button onClick={() => onSaveEdit()}>Save</button>
+                            </>)
+                          : (<button onClick={() => onEditRow(classroom)}>Edit</button>)
+                        }
+                      </td>
                   <td>{classroom.class_id}</td>
                   <td>{classroom.class_code}</td>
                   <td>
@@ -129,7 +196,7 @@ function Classroom() {
                   <td>{classroom.students.length}</td>
                   <td>{toHumanReadableDate(classroom.created_at)}</td>
                   <td>{toHumanReadableDate(classroom.updated_at)}</td>
-                  <td><button onClick={(event) => deleteClassroom(classData.class_id)}>Delete</button></td>
+                  <td><button onClick={(event) => deleteClassroom(classroom.class_id)}>Delete</button></td>
                  </tr> 
                 ))}
               </tbody>
