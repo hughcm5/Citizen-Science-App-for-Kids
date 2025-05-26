@@ -28,7 +28,7 @@ EOF
 # Start individual microservices
 start_service "Observations" "observations.py"
 start_service "Classrooms" "classrooms.py"
-# start_service "Students" "students.py"
+start_service "Students" "students.py"
 start_service "Admins" "admin.py"
 start_service "Projects" "projects.py"
 start_service "API" "api_gateway.py"
