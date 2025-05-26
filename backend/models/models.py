@@ -40,7 +40,14 @@ class Admin(db.Model):
             'updated_at': self.updated_at.isoformat()
         }
 
-    classrooms = db.relationship('Classroom', back_populates='admin', cascade='all, delete-orphan', passive_deletes=True, lazy=True)
+    classrooms = db.relationship(
+        'Classroom',
+        back_populates='admin',
+        cascade='all, delete-orphan',
+        single_parent=True,
+        passive_deletes=True,
+        lazy=True
+    )
 
 
 # Classroom table
@@ -70,8 +77,22 @@ class Classroom(db.Model):
             'projects': [project.to_dict() for project in self.projects]
         }
 
-    students = db.relationship('Student', back_populates='classroom', lazy=True)
-    projects = db.relationship('Project', back_populates='classroom', lazy=True)
+    students = db.relationship(
+        'Student',
+        back_populates='classroom',
+        lazy=True,
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        single_parent=True
+    )
+    projects = db.relationship(
+        'Project',
+        back_populates='classroom',
+        lazy=True,
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+        single_parent=True
+    )
     admin = db.relationship('Admin', back_populates='classrooms', lazy=True)
 
 
@@ -101,7 +122,13 @@ class Student(db.Model):
             'observations': [obs.to_dict() for obs in self.observations]
         }
 
-    observations = db.relationship('Observation', back_populates='student', lazy=True, cascade='all, delete-orphan')
+    observations = db.relationship(
+        'Observation',
+        back_populates='student',
+        lazy=True,
+        cascade='all, delete-orphan',
+        single_parent=True
+    )
     classroom = db.relationship('Classroom', back_populates='students', lazy=True)
 
 
@@ -131,7 +158,13 @@ class Project(db.Model):
             'observations': [obs.to_dict() for obs in self.observations]
         }
 
-    observations = db.relationship('Observation', back_populates='project', lazy=True, cascade='all, delete-orphan')
+    observations = db.relationship(
+        'Observation',
+        back_populates='project',
+        lazy=True,
+        cascade='all, delete-orphan',
+        single_parent=True
+    )
     classroom = db.relationship('Classroom', back_populates='projects', lazy=True)
 
 
