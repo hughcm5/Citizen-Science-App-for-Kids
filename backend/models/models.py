@@ -40,7 +40,7 @@ class Admin(db.Model):
             'updated_at': self.updated_at.isoformat()
         }
 
-    classrooms = db.relationship('Classroom', back_populates='admin', lazy=True)
+    classrooms = db.relationship('Classroom', back_populates='admin', cascade='all, delete-orphan', passive_deletes=True, lazy=True)
 
 
 # Classroom table
@@ -48,7 +48,7 @@ class Classroom(db.Model):
     __tablename__ = 'classroom'
     class_id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     class_code = db.Column(db.String(20), unique=True, nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey('admin.admin_id'), nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.admin_id', ondelete='CASCADE'), nullable=False)
     class_name = db.Column(db.String(255))
     grade_level = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
