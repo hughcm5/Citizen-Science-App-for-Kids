@@ -18,7 +18,7 @@ function ViewProject() {
   const [description, setdescription] = useState('');
 
     /* Prepare the retrieve on the frontend */
-  const [projectData, setprojectData] = useState(null);
+  const [projectData, setprojectData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
@@ -71,14 +71,16 @@ function ViewProject() {
       <Container className="content">
         <Row>
           <Col md={9}>
-            <h1 style={{paddingBottom: '20px'}}>Projects Page</h1>
-            <p>You can view the current Citizen Science Projects.</p>
-            <h2>Current Projects:</h2>
+            <h1 style={{paddingBottom: '10px'}}>Projects Page</h1>
+            <p>Citizen science projects are activities so K-12 students can 
+              meaningfully contribute to scientific research <br />
+              <br /></p>
+            <h2>Active Projects:</h2>
             {
               // for debugging purposes
               // {JSON.stringify(projectData, null, 2)}
             }
-            <br />
+            <p>You can view the current Citizen Science Projects.</p>
             { /* ------------ Project Table  ------------*/ }
             <table className="projectTable">
               <thead>
@@ -102,6 +104,20 @@ function ViewProject() {
               ))}
               </tbody>
             </table>
+            <br />
+          { /* ------------ Create a Project ------------*/ }
+            <h2> Create Project </h2>
+            <p>Enter the project details to create a new project.</p>
+            { /* ------------ TODO: Selection for Class ID ------------*/ }
+            <form onSubmit={handleSubmit}>
+              <label> 
+              <input type="number" placeholder="(Existing) Class ID" value={class_id} onChange={(e) => setclass_id(e.target.value)} />
+              <input type="text" placeholder="Title" value={project_title} onChange={(e) => setproject_title(e.target.value)} />
+              <input type="textfield" placeholder="describe the project for the students" value={description} onChange={(e) => setdescription(e.target.value)} />
+              </label>
+              <br />
+              <Button variant="primary" type="submit">Submit</Button>
+            </form>
             </Col>
         </Row>
       </Container>
