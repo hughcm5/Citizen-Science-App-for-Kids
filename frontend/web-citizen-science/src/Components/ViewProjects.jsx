@@ -10,17 +10,23 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from "axios";
 
-/* ------------ Projects Table ------------*/
+/* ------------ Functions for Projects Page ------------*/
 function ViewProject() {
+  /* values to match Models.py and Projects Microservice for the payload */
   const [project_id, setproject_id] = useState('');
   const [class_id, setclass_id] = useState('');
   const [project_title, setproject_title] = useState('');
   const [description, setdescription] = useState('');
-
     /* Prepare the retrieve on the frontend */
   const [projectData, setprojectData] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState([]);
+  const [selectedProjectResults, setSelectedProjectResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
+  /* Prepare to edit on the frontend */
+  const [editedId, setEditedId] = useState(null);
+  const [editedProjectData, setEditedProjectData] = useState({});
+
 
 /* ------------ Create ------------*/
   const handleSubmit = (event) => {
@@ -35,7 +41,7 @@ function ViewProject() {
     axios.post("http://localhost:5000/projects", project_payload)
     .then((response) => {
       console.log('Project creation successful');
-      fetchData(); // retreive 
+      fetchData(); // repopulate table with new project 
     })
     .catch((err) => {
       console.log('Failed to create this project');
@@ -46,7 +52,7 @@ function ViewProject() {
   };
   const toHumanReadableDate = (backendDateStr) => {
     const date = new Date(backendDateStr);
-    // Format the string to remove timezone 
+    // Format the string to remove timezone and timestamp 
     return date.toISOString().split('T')[0];
   }
 
@@ -64,6 +70,89 @@ function ViewProject() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  /* ------------ Update ------------*/
+  const onEditRow = (project) => {
+    // enables editing by matching a selected id and renders input fields
+    setEditedId(project.project_id);
+    setEditedProjectData(project);
+  }
+  const onEditChange = (x) => {
+    const { name, value } = x.target;
+    setEditedProjectData({...editedProjectData, [name]:value});
+  }
+  const cancelEdit = () => {
+    setEditedId(null);
+    setEditedProjectData({});
+  }
+  const onSaveEdit = async () => {
+    if (!editedId) {
+      // do nothing if no edits were made
+      return;
+    }
+    // TODO frontend validation to catch mistakes before sending updates to backend
+    const project_payload = {
+      // if edits exist, then package the payload to send to the backend
+      'project_id' : editedProjectData.project_id, // send ALL necessary components that match the microservice for PUT
+      'class_id': editedProjectData.class_id,
+      'project_title': editedProjectData.project_title,
+      'description': editedProjectData.description,
+      'project_settings' : editedProjectData.project_settings
+    };
+    // TODO: Add some feedback for the user to know that edits are being saved
+    try {
+      const response = await axios.put(`http://localhost:5000/projects/` + editedProjectData.project_id.toString(), project_payload);
+      console.log('Project updated successfully', response.data);
+      // handle update
+      const project_to_be_updated = projectData.find(obj => obj.project_id === editedProjectData.project_id);
+      if (project_to_be_updated) {
+        project_to_be_updated.project_title = editedProjectData.project_title;
+        project_to_be_updated.description = editedProjectData.description;
+      }
+      fetchData()
+      // refresh the table (just in case multiple edits were made at once)
+      cancelEdit(); // exit edit mode: disables edit fields 
+      // TODO let user know edits were successful
+    } catch (error) {
+      console.error('Error updating project: ', error); // error handling
+      // TODO autocancel or leave editing mode
+      cancelEdit();
+      // TODO tell user stuff went wrong and what went wrong
+    }
+  }
+/* ------------ Results ------------*/
+  const fetchResults = async () => {
+    console.log("Fetching");
+      try {
+        const response = await axios.get('http://localhost:5000/projects/'+ project_id.toString() + '/results');
+        setprojectData(response.data);
+        setLoading(false);
+      } catch (err) {
+        setRetrieveError(err)
+        setLoading(false);
+      }
+    };
+  
+  const fetchSelectedProject = async () => {
+    if (!selectedProjectId) {
+      // TODO: Make an error message show
+      console.log("A project ID is required");
+      return;
+    }
+
+    axios
+      .get('http://localhost:5000/projects/'+ selectedProjectId.toString() + '/results')
+      .then((response) => {
+        console.log('Successfully fetched project details');
+        const project_details = response.data;
+        console.log(project_details);
+        setSelectedProjectResults(project_details);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch project data');
+        console.error(err);
+      });
+  }
 
 /* ------------ Page Content  ------------*/
   return (
@@ -105,6 +194,31 @@ function ViewProject() {
               </tbody>
             </table>
             <br />
+          { /* ------------ Project Results  ------------*/ }
+          <p>Select a Project to View its results:</p>
+          <select
+            value={selectedProjectId}
+            onChange={e => setSelectedProjectId(e.target.value)}
+          >
+            {projectData.map(project => (
+              <option value={project.project_id}>{project.project_title + ' (' + project.project_id.toString() + ')'}</option>
+            ))}
+          </select>
+          <button onClick={fetchSelectedProject}>See Results</button>
+           <br />
+            {
+              // for debugging purposes
+              JSON.stringify(selectedProjectResults, null, 2)
+            }
+          <table>
+          { /* ------------ TODO Display Results  ------------*/ }
+
+          </table>
+          <p> Download Project Data</p>
+          { /* ------------ Show CSV File  ------------*/ }
+          
+          { /* ------------ Allow user to download CSV File  ------------*/ }
+
           { /* ------------ Create a Project ------------*/ }
             <h2> Create Project </h2>
             <p>Enter the project details to create a new project.</p>
