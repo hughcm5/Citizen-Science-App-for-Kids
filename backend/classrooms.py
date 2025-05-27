@@ -123,7 +123,7 @@ def update_classroom(class_id):
         return jsonify({'error': 'Admin/Teacher not found'}), 404
 
     # Check if the classroom exists
-    classroom = Classroom.session.get(Classroom, class_id)
+    classroom = db.session.get(Classroom, class_id)
     if not classroom:
         return jsonify({'error': 'Classroom not found'}), 404
 
@@ -144,7 +144,7 @@ def delete_classroom(class_id):
     Delete a classroom
     """
     # Check if the classroom exists
-    classroom = Classroom.session.get(Classroom, class_id)
+    classroom = db.session.get(Classroom, class_id)
     if not classroom:
         return jsonify({'error': 'Classroom not found'}), 404
 

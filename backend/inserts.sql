@@ -7,12 +7,12 @@ INSERT INTO admin (admin_lastname, admin_firstname, email, created_at, updated_a
 INSERT INTO classroom (class_code, admin_id, class_name, grade_level, created_at, updated_at) VALUES
 (11002, 1, 'Science Class', '7th Grade', UTC_TIMESTAMP(), UTC_TIMESTAMP());
 
-INSERT INTO student (class_id, student_lastname, student_firstname, created_at, updated_at, class_codes) VALUES
-(1, 'student1-last', 'student1-first', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 11001),
-(2, 'student2-last', 'student2-first', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 11002),
-(3, 'student3-last', 'student3-first', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 11003),
-(4, 'student4-last', 'student4-first', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 11004),
-(5, 'student5-last', 'student5-first', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 11005);
+INSERT INTO student (class_id, student_lastname, student_firstname, created_at, updated_at) VALUES
+(1, 'student1-last', 'student1-first', UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+(2, 'student2-last', 'student2-first', UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+(3, 'student3-last', 'student3-first', UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+(4, 'student4-last', 'student4-first', UTC_TIMESTAMP(), UTC_TIMESTAMP()),
+(5, 'student5-last', 'student5-first', UTC_TIMESTAMP(), UTC_TIMESTAMP());
 
 INSERT INTO project (project_id, class_id, project_title, description, created_at, updated_at, project_settings) VALUES
 (11002, 1, 'Volcano Model', 'Create a working volcano model.', UTC_TIMESTAMP(), UTC_TIMESTAMP(), JSON_OBJECT('materials', 'baking soda, vinegar')),

@@ -98,8 +98,53 @@ def callback():
     session['user'] = {
         'jwt': token['access_token'],
         'email': userinfo['email'],
-        'name': userinfo['name'],
+        'name': userinfo.get('name'),
+        'sub': userinfo.get('sub')  # OAuth ID
     }
+
+    # Attempt to create admin if not already exists
+    try:
+        admin_service_url = SERVICE_URLS['admins']
+
+        # Check if the admin already exists
+        check_response = requests.get(
+            f"{admin_service_url}/admins",
+            headers={'Authorization': f"Bearer {token['access_token']}"}
+        )
+
+        if check_response.status_code == 200:
+            existing_admins = check_response.json()
+            email = userinfo['email']
+
+            if not any(admin['email'] == email for admin in existing_admins):
+                # Split name into first and last name
+                name_parts = userinfo.get('name', '').split()
+                firstname = name_parts[0] if name_parts else 'Unknown'
+                lastname = ' '.join(name_parts[1:]) if len(name_parts) > 1 else ''
+
+                # Send POST request to create the admin
+                create_response = requests.post(
+                    f"{admin_service_url}/admins",
+                    headers={
+                        'Authorization': f"Bearer {token['access_token']}",
+                        'Content-Type': 'application/json'
+                    },
+                    json={
+                        'email': email,
+                        'admin_firstname': firstname,
+                        'admin_lastname': lastname,
+                        'oauth_id': userinfo.get('sub'),
+                        'role': 'teacher'
+                    }
+                )
+                if create_response.status_code not in [200, 201]:
+                    app.logger.error(f"Failed to create admin: {create_response.text}")
+
+        else:
+            app.logger.error(f"Failed to fetch existing admins: {check_response.text}")
+
+    except Exception as e:
+        app.logger.error(f"Error during admin creation: {e}")
 
     return redirect(os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000"))
 
