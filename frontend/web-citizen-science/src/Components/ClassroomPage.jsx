@@ -116,7 +116,7 @@ function Classroom() {
     };
     // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback for the user
     try {
-      const response = await axios.put(`http://localhost:5000/classrooms/` + editedClassData.class_id.toString(), classData);
+      const response = await axios.put(`http://localhost:5000/classrooms/` + editedClassData.class_id.toString(), class_payload);
       // handle success (update/refresh table)
 
       // update fields on fromt end, need to displays something for user
@@ -183,15 +183,25 @@ function Classroom() {
                         }
                       </td>
                   <td>{classroom.class_id}</td>
-                  <td>{classroom.class_code}</td>
                   <td>
-                  <input
-                  type="text"
-                  value={classroom.class_name}
-                  onChange={e => setclass_name(e.target.value)} 
-                  id="class_name"/>
-                  {classroom.class_name}</td>
-                  <td>{classroom.grade_level}</td>
+{
+                  editedId === classroom.class_id ? (<input name="class_code" type="number" value={editedClassData.class_code} onChange={onEditChange} />) : (classroom.class_code)
+                  }
+                  </td>
+                  <td> 
+                    {
+                  editedId === classroom.class_id ? (<input name="class_name" type="text"
+                  value={editedClassData.class_name}
+                  onChange={onEditChange} />) : (classroom.class_name)
+                    } 
+                  </td>
+                  <td>
+                    {
+                    editedId === classroom.class_id ? (<input name="grade_level" type="text" 
+                    value={editedClassData.grade_level} 
+                    onChange={onEditChange}/>) : (classroom.grade_level)
+                    }
+                    </td>
                   <td>{classroom.projects.length}</td>
                   <td>{classroom.students.length}</td>
                   <td>{toHumanReadableDate(classroom.created_at)}</td>
