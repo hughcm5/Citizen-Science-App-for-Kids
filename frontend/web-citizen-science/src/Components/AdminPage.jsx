@@ -20,20 +20,19 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/admins');
+      setAdminData(response.data);
+      setLoading(false);
+    } catch (err) {
+      setRetrieveError(err)
+      setLoading(false);
+    }
+  };
 
   /* Prepare the retrieve on the frontend */
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/admins');
-        setAdminData(response.data);
-        setLoading(false);
-      } catch (err) {
-        setRetrieveError(err)
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -50,6 +49,7 @@ function Admin() {
       .post("http://localhost:5000/admins", admin_payload)
       .then((response) => {
         console.log('Admin creation successful');
+        fetchData();
       })
       .catch((err) => {
         console.log('Failed to create admin');
@@ -64,6 +64,19 @@ function Admin() {
     // TODO: Format the string to remove timezone (not needed)
     return date.toISOString().split('T')[0];
   }
+
+  const deleteAdmin = async (id) => {
+  try {
+    const response = await axios.delete(`http://localhost:5000/admins/` + id.toString());
+    
+    console.log('Admin deleted successfully:', response.data);
+    // Handle successful deletion (todo: update/refresh table upon deletion)
+    fetchData();
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    // Error handling
+  }
+};
 
   return (
     <Container fluid>
@@ -92,6 +105,7 @@ function Admin() {
                     <th>Created</th>
                     <th>Updated</th>
                     <th>Email</th>
+                    <th> </th>
                   </tr>
                   </thead>
                   <tbody>
@@ -105,6 +119,7 @@ function Admin() {
                       <td>{toHumanReadableDate(admin.created_at)}</td>
                       <td>{toHumanReadableDate(admin.updated_at)}</td>
                       <td>{admin.email}</td>
+                      <td><button onClick={(event) => deleteAdmin(admin.admin_id)}>Delete</button></td>
                     </tr>
                   ))}
                   </tbody>

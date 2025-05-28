@@ -17,7 +17,7 @@ function Classroom() {
   const [grade_level, setgrade_level] = useState('');
 
     /* Prepare the retrieve on the frontend */
-  const [classData, setclassData] = useState(null);
+  const [classData, setclassData] = useState([]); // make sure the default is an empty list 
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
@@ -59,6 +59,12 @@ function Classroom() {
       });
   };
 
+    const toHumanReadableDate = (backendDateStr) => {
+    const date = new Date(backendDateStr);
+    // TODO: Format the string to remove timezone (not needed)
+    return date.toISOString().split('T')[0];
+  }
+
   return (
     <Container fluid>
       <Container className="content">
@@ -68,14 +74,47 @@ function Classroom() {
              Different classrooms will house appropriate projects. 
             </h1>
             <h2>Current Classrooms:</h2>
-            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
+            <p></p>
+                        {
+              // For debugging purposes only
+              /*
             <pre>{JSON.stringify(classData, null, 2)}</pre>
+              */
+            }
+            <table class="classTable">
+              <thead>
+                <tr>
+                    <th>ID #</th>
+                    <th>Class Code</th>
+                    <th>Name</th>
+                    <th>Grade Level</th>
+                    <th>Total Projects</th>
+                    <th>Total Students</th>
+                    <th>Creation Date</th>
+                    <th>Updated Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {classData?.map(classroom => (
+                 <tr id={classroom}>
+                  <td>{classroom.class_id}</td>
+                  <td>{classroom.class_code}</td>
+                  <td>{classroom.class_name}</td>
+                  <td>{classroom.grade_level}</td>
+                  <td>{classroom.projects.length}</td>
+                  <td>{classroom.students.length}</td>
+                  <td>{toHumanReadableDate(classroom.created_at)}</td>
+                  <td>{toHumanReadableDate(classroom.updated_at)}</td>
+                 </tr> 
+                ))}
+              </tbody>
+            </table>
 
-            <h2> You can create a new classroom here: </h2>
-              
+            <h2> New Classroom </h2>
+              <p></p>
             <form onSubmit={handleSubmit}>
               <label>
-              Create a new Classroom - Enter the Class Details:
+              Create a new Classroom - Enter the Class Details: <br />
               <input type="number" placeholder="Class Code" value={class_code} onChange={(e) => setclass_code(e.target.value)} />
               <input type="number" placeholder="Admin's ID" value={admin_id} onChange={(e) => setadmin_id(e.target.value)} />
               <input type="text" placeholder="Classroom's Name" value={class_name} onChange={(e) => setclass_name(e.target.value)} />
