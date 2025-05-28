@@ -21,8 +21,6 @@ export default function viewobservation() {
   const [observations, setObservations] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
-  console.log(observations);
-
   // Use effect that triggers only once at the start of component render to fetch
   // all observations stored in the backend
   useEffect(() => {
@@ -85,7 +83,7 @@ export default function viewobservation() {
         */}
         {observations.map((observation) => {
           const { observationText, checkboxOptions, observationDropdown } =
-            observation.observation_data;
+            observation["observation data"];
 
           let displayText = "No observation available";
 
