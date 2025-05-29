@@ -11,3 +11,4 @@ python-jose
 authlib
 requests
 six
+gunicorn
