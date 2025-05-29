@@ -14,7 +14,6 @@ env_variables:
     OBSERVATIONS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/observations"
     STUDENTS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/students"
     TEACHERS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/teachers"
-    CSV_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/csv"
     CLASSROOMS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/classroom"
 
     PROJECTS_SERVICE_NAME: "projects"
