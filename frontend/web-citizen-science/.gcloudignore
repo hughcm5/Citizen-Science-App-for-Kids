@@ -30,3 +30,5 @@
 /setup.cfg
 
 node_modules/
+src/
+public/
