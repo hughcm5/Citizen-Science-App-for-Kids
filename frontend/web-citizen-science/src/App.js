@@ -1,5 +1,4 @@
 /* ------------ Main Routing ------------*/
-
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
@@ -19,7 +18,7 @@ import axios from "axios";
 //* import { randomId } from '@mui/x-data-grid-generator'; <-- this is incompatiable with React Native :(
 /*Import bootstrap styles */
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+<a href="https://www.flaticon.com/free-icons/responsive-design" title="responsive design icons">Responsive design icons created by Freepik - Flaticon</a>
 const getRows = async (path) => {
   try {
   const res = await axios.get(process.env.REACT_APP_API_URL + path);
@@ -56,16 +55,13 @@ function App() {
       <Router>
         <Navigation/>
         <Routes>
-          {/* Pass getRows and getCol to each page using DataTable */}
           <Route path = "/" element= {<Homepage />}/>
-          <Route path = "/createproject" element= {<CreateProject getRows={getRows} getCol={getCol}/>}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/ViewProjects" element= {<ViewProjects/>}/>
           <Route path = "/Admins" element= {<Admin/>}/>
           <Route path = "/Classrooms" element= {<Classroom/>}/>
           <Route path = "/CreateStudent" element= {<Student/>}/>
           <Route path = "/CreateObservation" element= {<Observation/>}/>
-
         </Routes>
       </Router>
       <footer>
