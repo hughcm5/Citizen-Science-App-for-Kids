@@ -1,6 +1,6 @@
 runtime: python312
-service: backend
-entrypoint: gunicorn -b :$PORT api_gateway:app
+service: projects
+entrypoint: gunicorn -b :$PORT projects:app
 
 handlers:
     # This handler routes all requests not caught above to your main app. It is

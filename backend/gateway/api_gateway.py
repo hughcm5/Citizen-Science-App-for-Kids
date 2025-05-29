@@ -50,7 +50,7 @@ SERVICE_URLS = {
     'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5002',
     'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5003',
     'admins': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5004',
-    'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
+    # 'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
     'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
 
@@ -74,7 +74,7 @@ def health_check():
         try:
             timeout = int(os.getenv('HEALTH_CHECK_TIMEOUT', 5))
             response = requests.get(f"{service_url}/health", timeout=timeout)
-            results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code)
+            results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code) + f" ({response.text})" + f" ({service_url})"
         except requests.RequestException as e:
             results[service] = f'unavailable: {repr(e)}'
 

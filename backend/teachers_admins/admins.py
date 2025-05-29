@@ -15,7 +15,6 @@ from six.moves.urllib.request import urlopen
 from jose import jwt
 from authlib.integrations.flask_client import OAuth
 import uuid
-from connect_connector import connect_with_connector
 
 
 # Load environment variables

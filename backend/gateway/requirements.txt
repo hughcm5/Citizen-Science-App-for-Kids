@@ -1,0 +1,14 @@
+Flask==3.1.0
+requests==2.32.3
+python-dotenv==1.1.0
+google-cloud-datastore==2.15.1
+cloud-sql-python-connector[pymysql]
+Flask-SQLAlchemy
+PyMySQL
+flask-cors
+uuid
+python-jose
+authlib
+requests
+six
+gunicorn
