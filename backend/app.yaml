@@ -10,6 +10,13 @@ handlers:
       script: auto
 
 env_variables:
+    PROJECTS_SERVICE_URL: "/projects"
+    OBSERVATIONS_SERVICE_URL: "/observations"
+    STUDENTS_SERVICE_URL: "/students"
+    TEACHERS_SERVICE_URL: "/teachers"
+    CSV_SERVICE_URL: "/csv"
+    CLASSROOM_SERVICE_URL: "/classroom"
+
     PROJECTS_SERVICE_NAME: "projects"
     OBSERVATIONS_SERVICE_NAME: "observations"
     STUDENTS_SERVICE_NAME: "students"
