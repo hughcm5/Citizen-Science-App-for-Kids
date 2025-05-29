@@ -23,7 +23,8 @@ CORS(app, supports_credentials=True)
 # get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
     db_uri = (
-        # TODO: replace with the actual connection string for google cloud sql
+        f"mysql+pymysql://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}@/"
+        f"{os.environ['DB_NAME']}?unix_socket=/cloudsql/{os.environ['DB_CONNECTION_NAME']}"
     )
 else:
     db_uri = (

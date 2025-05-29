@@ -15,6 +15,8 @@ from six.moves.urllib.request import urlopen
 from jose import jwt
 from authlib.integrations.flask_client import OAuth
 import uuid
+from connect_connector import connect_with_connector
+
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -23,15 +25,19 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 app.secret_key = 'SECRET_KEY'
 
-client = datastore.Client()
+# client = datastore.Client()
 
 
 # Get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    #  This is for production on Google Cloud Run or App Engine not using the Cloud SQL Proxy
     db_uri = (
-        # TODO: replace with the actual connection string for google cloud sql
+        f"mysql+pymysql://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}@/"
+        f"{os.environ['DB_NAME']}?unix_socket=/cloudsql/{os.environ['DB_CONNECTION_NAME']}"
     )
+
 else:
+    # use this for local development AND if using the Cloud SQL Proxy
     db_uri = (
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
         f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
@@ -97,7 +103,7 @@ def create_admin():
             return jsonify({"error": "email must be a string and less than 100 characters"}), 400
         if 'role' in data and (len(data['role']) > 50 or not isinstance(data['role'], str)):
             return jsonify({"error": "role must be a string and less than 50 characters"}), 400
-             
+
         new_admin = Admin(
             admin_id=data.get('admin_id'),
             admin_firstname=data.get('admin_firstname'),
