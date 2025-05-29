@@ -26,7 +26,7 @@ start_service() {
 }
 
 # Start the database proxy
-start_service "Google Cloud SQL proxy" "./cloud-sql-proxy citizen-science-app-for-kids:us-central1:citizen-science-instance"
+# start_service "Google Cloud SQL proxy" "./cloud-sql-proxy citizen-science-app-for-kids:us-central1:citizen-science-instance"
 
 # Start individual microservices
 start_service "Observations" "observations.py"&
