@@ -1,5 +1,5 @@
 runtime: nodejs22
-service: frontend
+service: default
 
 handlers:
     - url: /
