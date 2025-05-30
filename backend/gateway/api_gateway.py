@@ -18,7 +18,6 @@ CORS(app,
       supports_credentials=True
      )
 
-
 # Secret key for session management
 app.secret_key = str(uuid.uuid4())
 
@@ -55,6 +54,7 @@ SERVICE_URLS = {
     'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
 
+
 def verify_token(token):
     """
     Verify the token with Google Auth or Auth0.
@@ -62,6 +62,7 @@ def verify_token(token):
     """
     # TODO - Implement token verification logic
     pass
+
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -84,10 +85,12 @@ def health_check():
         'services': results
     }), 200
 
+
 # Login Route
 @app.route('/login')
 def login():
     return auth0.authorize_redirect(redirect_uri=REDIRECT_URI)
+
 
 # Callback Route
 @app.route('/oauth/callback')
@@ -149,6 +152,7 @@ def callback():
 
     return redirect(os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000"))
 
+
 # Logout Route
 @app.route('/logout')
 def logout():
@@ -157,17 +161,11 @@ def logout():
         f"https://{DOMAIN}/v2/logout?client_id={CLIENT_ID}&returnTo={os.getenv('FRONTEND_REDIRECT_URL', 'http://localhost:3000')}"
     )
 
+
 # Forwards requests to the appropriate service
 def forward_service(service_url):
     try:
         target_url = f"{service_url}{request.path}"
-        # response = requests.request(
-        #     method=request.method,
-        #     url=target_url,
-        #     headers={key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
-        #     params=request.args,
-        #     json=request.get_json(silent=True) or {}
-        # )
 
         args = {
             'method': request.method,
@@ -180,13 +178,11 @@ def forward_service(service_url):
             # Check if the original request had a JSON body
             if request.content_type and 'application/json' in request.content_type.lower():
                 try:
-                    # Try to get JSON data from the original request
                     original_json_data = request.get_json()
-                    if original_json_data is not None:  # Ensure it's not None (e.g. if body was empty "{}" but valid JSON)
+                    if original_json_data is not None:
                         args['json'] = original_json_data
                 except Exception as e:
                     return jsonify({'Error': 'Invalid JSON data', 'details': str(e)}), 400
-            # If not JSON, but there's other data, pass it as 'data'
             elif request.data:
                 args['data'] = request.data
 
@@ -213,6 +209,7 @@ def gateway(service, path=None):
     if not service_url:
         return jsonify({'Error': f'Service URL for {service} not configured'}), 500
     return forward_service(service_url)
+
 
 if __name__ == "__main__":
     port = int(os.getenv('GATEWAY_PORT', 5000))
