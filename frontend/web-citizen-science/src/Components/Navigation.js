@@ -29,11 +29,6 @@ function Navigation() {
               </Nav.Link>
         </Nav.Item>
         <Nav.Item >
-              <Nav.Link as={Link} to="/createproject" >
-                Create New Project
-              </Nav.Link>
-        </Nav.Item>
-        <Nav.Item >
               <Nav.Link as={Link} to="/admins" >
                Admins
               </Nav.Link>
