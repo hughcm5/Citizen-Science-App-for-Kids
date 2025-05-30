@@ -32,7 +32,7 @@ env_variables:
     HEALTH_CHECK_TIMEOUT: "10"
     NO_AUTH_SERVICES: "projects,observations,csv"
 
-    CORS_ORIGINS: "https://citizen-science-app-for-kids.uc.r.appspot.com"
+    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com"
     DEBUG: "True"
 
     CLOUD_SQL: "True"
@@ -50,4 +50,4 @@ env_variables:
     GOOGLE_CLIENT_ID: "213180173282-45m91pb9akumnr4tmp9agsoq0l59uchk.apps.googleusercontent.com"
     GOOGLE_CLIENT_SECRET: "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"
     REDIRECT_URI: "/oauth/callback"
-    FRONTEND_REDIRECT_URL: "https://citizen-science-app-for-kids.uc.r.appspot.com"
+    FRONTEND_REDIRECT_URL: "https://citizen-science-app-for-kids.wn.r.appspot.com"
