@@ -161,13 +161,37 @@ def logout():
 def forward_service(service_url):
     try:
         target_url = f"{service_url}{request.path}"
-        response = requests.request(
-            method=request.method,
-            url=target_url,
-            headers={key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
-            params=request.args,
-            json=request.get_json(silent=True) or {}
-        )
+        # response = requests.request(
+        #     method=request.method,
+        #     url=target_url,
+        #     headers={key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
+        #     params=request.args,
+        #     json=request.get_json(silent=True) or {}
+        # )
+
+        args = {
+            'method': request.method,
+            'url': target_url,
+            'headers': {key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
+            'params': request.args,
+        }
+
+        if request.method in ['POST', 'PUT', 'PATCH']:
+            # Check if the original request had a JSON body
+            if request.content_type and 'application/json' in request.content_type.lower():
+                try:
+                    # Try to get JSON data from the original request
+                    original_json_data = request.get_json()
+                    if original_json_data is not None:  # Ensure it's not None (e.g. if body was empty "{}" but valid JSON)
+                        args['json'] = original_json_data
+                except Exception as e:
+                    return jsonify({'Error': 'Invalid JSON data', 'details': str(e)}), 400
+            # If not JSON, but there's other data, pass it as 'data'
+            elif request.data:
+                args['data'] = request.data
+
+        response = requests.request(**args)
+
         content_type = response.headers.get('Content-Type', '')
         if content_type.startswith('application/json'): 
             return jsonify(response.json()), response.status_code
