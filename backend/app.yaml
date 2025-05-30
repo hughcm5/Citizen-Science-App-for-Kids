@@ -41,7 +41,7 @@ env_variables:
     DB_PASSWORD: "1234"
     DB_NAME: "citizen_science_app"
     DB_CONNECTION_NAME: "citizen-science-app-for-kids:us-central1:citizen-science-instance"
-    GOOGLE_APPLICATION_CREDENTIALS: ""
+    # GOOGLE_APPLICATION_CREDENTIALS: ""
 
     CLIENT_ID: "SUVIcGTVz4Cxjs9KONBkLufxKsjZyzCI"
     CLIENT_SECRET: "_wkkQzDOouQg8JBykJAgToU7ceWW36RmcTZUZF9RaC3NRKiHVckPIt8_xJcrl-j-"

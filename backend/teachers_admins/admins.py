@@ -15,6 +15,8 @@ from six.moves.urllib.request import urlopen
 from jose import jwt
 from authlib.integrations.flask_client import OAuth
 import uuid
+from google.cloud.sql.connector import Connector
+
 
 
 # Load environment variables
@@ -24,16 +26,28 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 app.secret_key = 'SECRET_KEY'
 
-# client = datastore.Client()
 
+def getconn():
+    conn = connector.connect(
+        os.environ["DB_CONNECTION_NAME"],
+        "pymysql",
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        db=os.environ["DB_NAME"],
+    )
+    return conn
+
+
+# Initialize the Cloud SQL Python Connector
+connector = Connector()
 
 # Get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
-    #  This is for production on Google Cloud Run or App Engine not using the Cloud SQL Proxy
-    db_uri = (
-        f"mysql+pymysql://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}@/"
-        f"{os.environ['DB_NAME']}?unix_socket=/cloudsql/{os.environ['DB_CONNECTION_NAME']}"
-    )
+    # used the documentation for this and the function it uses https://pypi.org/project/cloud-sql-python-connector/
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://"
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "creator": getconn
+        }
 
 else:
     # use this for local development AND if using the Cloud SQL Proxy
@@ -41,8 +55,8 @@ else:
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
         f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
     )
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = str(uuid.uuid4())  # For session management
 
