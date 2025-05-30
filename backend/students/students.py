@@ -76,7 +76,7 @@ def create_student():
 
         if not data:
             return jsonify({'error': 'No data provided'}), 400
-        if 'student_lastname' not in data or 'student_firstname' not in data or 'email' not in data or 'class_id' not in data:
+        if 'student_lastname' not in data or 'student_firstname' not in data or 'class_id' not in data:
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
@@ -111,7 +111,7 @@ def update_student(student_id):
 
         if not data:
             return jsonify({'error': 'No data provided'}), 400
-        if 'student_lastname' not in data or 'student_firstname' not in data or 'email' not in data or 'class_id' not in data:
+        if 'student_lastname' not in data or 'student_firstname' not in data or 'class_id' not in data:
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
