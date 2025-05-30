@@ -31,11 +31,12 @@ def getconn():
     return conn
 
 
-# Initialize the Cloud SQL Python Connector
-connector = Connector()
-
 # Get the database URL from the environment variable
 if os.getenv("CLOUD_SQL", "false").lower() == "true":
+
+    # Initialize the Cloud SQL Python Connector
+    connector = Connector()
+
     # used the documentation for this and the function it uses https://pypi.org/project/cloud-sql-python-connector/
     app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://"
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
