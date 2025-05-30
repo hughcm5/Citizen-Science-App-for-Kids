@@ -174,6 +174,7 @@ function ViewProject() {
             <table className="projectTable">
               <thead>
                 <tr>
+                  <th> </th>
                   <th>ID</th>
                   <th>Title</th>
                   <th>Description</th>
@@ -184,9 +185,22 @@ function ViewProject() {
               <tbody>
               {projectData.map(project => (
                 <tr key={project.project_id}>
+                  <td>
+                    {
+                      editedId === project.project_id ? (<>
+                            <button onClick={() => cancelEdit()}>Cancel</button>
+                            <button onClick={() => onSaveEdit()}>Save</button>
+                            </>)
+                          : (<button onClick={() => onEditRow(project)}>Edit</button>)
+                        }
+                  </td>
                   <td>{project.project_id}</td>
-                  <td>{project.project_title}</td>
-                  <td>{project.description}</td>
+                  <td>{
+                  editedId === project.project_id ? (<input name="project_title" type="text" value={editedProjectData.project_title} onChange={onEditChange}/>) : (project.project_title)
+                  }</td>
+                  <td>{
+                  editedId === project.project_id ? (<input name="description" type="text" value={editedProjectData.description} onChange={onEditChange}/>) : (project.description)
+                  }</td>
                   <td>{toHumanReadableDate(project.created_at)}</td>
                   <td>{toHumanReadableDate(project.updated_at)}</td>    
                 </tr>
@@ -195,6 +209,7 @@ function ViewProject() {
             </table>
             <br />
           { /* ------------ Project Results  ------------*/ }
+          <h2>Project Results</h2>
           <p>Select a Project to View its results:</p>
           <select
             value={selectedProjectId}
@@ -210,9 +225,23 @@ function ViewProject() {
               // for debugging purposes
               JSON.stringify(selectedProjectResults, null, 2)
             }
-          <table>
+          <table className="resultsTable">
           { /* ------------ TODO Display Results  ------------*/ }
+            <thead>
+              <tr>
+                <th>Project Details</th>
+                <th>field_data_stats</th>
+                <th>observations</th>
+                <th>stats</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projectData.map(project => (
+                <tr key={project.project_id}>
 
+                </tr>
+              ))}
+            </tbody>
           </table>
           <p> Download Project Data</p>
           { /* ------------ Show CSV File  ------------*/ }
