@@ -69,7 +69,8 @@ function Admin() {
 
   const deleteAdmin = async (id) => {
   try {
-    const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins` + id.toString());
+    // const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins` + id.toString());
+    const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/${id}`);
     
     console.log('Admin deleted successfully:', response.data);
     // Handle successful deletion (todo: update/refresh table upon deletion)
