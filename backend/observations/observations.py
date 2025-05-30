@@ -10,6 +10,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Observation, Student, Project
+from google.cloud.sql.connector import Connector
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -18,12 +19,29 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
 CORS(app, supports_credentials=True)
 
-# get the database URL from the environment variable
-if os.getenv("CLOUD_SQL", "false").lower() == "true":
-    db_uri = (
-        f"mysql+pymysql://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}@/"
-        f"{os.environ['DB_NAME']}?unix_socket=/cloudsql/{os.environ['DB_CONNECTION_NAME']}"
+
+def getconn():
+    conn = connector.connect(
+        os.environ["DB_CONNECTION_NAME"],
+        "pymysql",
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        db=os.environ["DB_NAME"],
     )
+    return conn
+
+
+# Initialize the Cloud SQL Python Connector
+connector = Connector()
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    # used the documentation for this and the function it uses https://pypi.org/project/cloud-sql-python-connector/
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://"
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "creator": getconn
+        }
+
 else:
     db_uri = (
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
