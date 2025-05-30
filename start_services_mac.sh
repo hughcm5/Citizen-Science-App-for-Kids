@@ -25,6 +25,9 @@ end tell
 EOF
 }
 
+# Start the database proxy
+# start_service "Google Cloud SQL proxy" "./cloud-sql-proxy citizen-science-app-for-kids:us-central1:citizen-science-instance"
+
 # Start individual microservices
 start_service "Observations" "observations.py"
 start_service "Classrooms" "classrooms.py"

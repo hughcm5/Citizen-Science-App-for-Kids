@@ -14,8 +14,8 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 # CORS configuration
 CORS(app,
-     origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
-     supports_credentials=True
+      origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
+      supports_credentials=True
      )
 
 # Secret key for session management
@@ -50,9 +50,10 @@ SERVICE_URLS = {
     'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5002',
     'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5003',
     'admins': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5004',
-    'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
+    # 'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
     'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
+
 
 def verify_token(token):
     """
@@ -61,6 +62,7 @@ def verify_token(token):
     """
     # TODO - Implement token verification logic
     pass
+
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -74,7 +76,7 @@ def health_check():
         try:
             timeout = int(os.getenv('HEALTH_CHECK_TIMEOUT', 5))
             response = requests.get(f"{service_url}/health", timeout=timeout)
-            results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code)
+            results[service] = 'ok' if response.status_code == 200 else 'service unavailable: status code ' + str(response.status_code) + f" ({response.text})" + f" ({service_url})"
         except requests.RequestException as e:
             results[service] = f'unavailable: {repr(e)}'
 
@@ -83,10 +85,12 @@ def health_check():
         'services': results
     }), 200
 
+
 # Login Route
 @app.route('/login')
 def login():
     return auth0.authorize_redirect(redirect_uri=REDIRECT_URI)
+
 
 # Callback Route
 @app.route('/oauth/callback')
@@ -148,6 +152,7 @@ def callback():
 
     return redirect(os.getenv("FRONTEND_REDIRECT_URL", "http://localhost:3000"))
 
+
 # Logout Route
 @app.route('/logout')
 def logout():
@@ -156,17 +161,33 @@ def logout():
         f"https://{DOMAIN}/v2/logout?client_id={CLIENT_ID}&returnTo={os.getenv('FRONTEND_REDIRECT_URL', 'http://localhost:3000')}"
     )
 
+
 # Forwards requests to the appropriate service
 def forward_service(service_url):
     try:
         target_url = f"{service_url}{request.path}"
-        response = requests.request(
-            method=request.method,
-            url=target_url,
-            headers={key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
-            params=request.args,
-            json=request.get_json(silent=True) or {}
-        )
+
+        args = {
+            'method': request.method,
+            'url': target_url,
+            'headers': {key: value for key, value in request.headers.items() if key.lower() not in ['host', 'content-length']},
+            'params': request.args,
+        }
+
+        if request.method in ['POST', 'PUT', 'PATCH']:
+            # Check if the original request had a JSON body
+            if request.content_type and 'application/json' in request.content_type.lower():
+                try:
+                    original_json_data = request.get_json()
+                    if original_json_data is not None:
+                        args['json'] = original_json_data
+                except Exception as e:
+                    return jsonify({'Error': 'Invalid JSON data', 'details': str(e)}), 400
+            elif request.data:
+                args['data'] = request.data
+
+        response = requests.request(**args)
+
         content_type = response.headers.get('Content-Type', '')
         if content_type.startswith('application/json'): 
             return jsonify(response.json()), response.status_code
@@ -188,6 +209,7 @@ def gateway(service, path=None):
     if not service_url:
         return jsonify({'Error': f'Service URL for {service} not configured'}), 500
     return forward_service(service_url)
+
 
 if __name__ == "__main__":
     port = int(os.getenv('GATEWAY_PORT', 5000))

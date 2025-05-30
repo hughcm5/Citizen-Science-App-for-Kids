@@ -27,7 +27,8 @@ function Admin() {
 /* ------------ Retrieve  ------------*/
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/admins');
+      const response = await axios.get('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins');
+      // const response = await axios.get('http://localhost:5000/admins');
       setAdminData(response.data);
       setLoading(false);
     } catch (err) {
@@ -52,7 +53,8 @@ function Admin() {
     }
     console.log('admin:', Admin);
     axios
-      .post("http://localhost:5000/admins", admin_payload)
+      .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
+      // .post("http://localhost:5000/admins", admin_payload)
       .then((response) => {
         console.log('Admin creation successful');
         fetchData();
@@ -74,7 +76,8 @@ function Admin() {
   /* ------------ Delete  ------------*/
   const deleteAdmin = async (id) => {
   try {
-    const response = await axios.delete(`http://localhost:5000/admins/` + id.toString());
+    // const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins` + id.toString());
+    const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/${id}`);
     
     console.log('Admin deleted successfully:', response.data);
     // Handle successful deletion (update/refresh table upon deletion)

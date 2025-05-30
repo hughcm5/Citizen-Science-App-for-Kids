@@ -50,7 +50,7 @@ export default function addbservation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 1,
+          student_id: 2,
           project_id: Number(selectedProjectId),
           observation_data: { observationText },
         }), // send observation data
@@ -75,7 +75,7 @@ export default function addbservation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 1,
+          student_id: 2,
           project_id: Number(selectedProjectId),
           observation_data: { checkboxOptions },
         }), // send observation data
@@ -100,7 +100,7 @@ export default function addbservation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 1,
+          student_id: 2,
           project_id: Number(selectedProjectId),
           observation_data: { observationDropdown },
         }), // send observation data
