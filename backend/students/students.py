@@ -10,17 +10,35 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Classroom, Student, Observation
+from google.cloud.sql.connector import Connector
 
 # Load environment variables
 load_dotenv(find_dotenv())
 # Initialize Flask app
 app = Flask(__name__)
 
-# get the database URL from the environment variable
-if os.getenv("CLOUD_SQL", "false").lower() == "true":
-    db_uri = (
-        # TODO: replace with the actual connection string for google cloud sql
+def getconn():
+    conn = connector.connect(
+        os.environ["DB_CONNECTION_NAME"],
+        "pymysql",
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        db=os.environ["DB_NAME"],
     )
+    return conn
+
+
+# Initialize the Cloud SQL Python Connector
+connector = Connector()
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    # used the documentation for this and the function it uses https://pypi.org/project/cloud-sql-python-connector/
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://"
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "creator": getconn
+        }
+
 else:
     db_uri = (
         f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
@@ -75,18 +93,18 @@ def create_student():
 
         if not data:
             return jsonify({'error': 'No data provided'}), 400
-        if 'student_lastname' not in data or 'student_firstname' not in data or 'email' not in data or 'classroom_id' not in data:
+        if 'student_lastname' not in data or 'student_firstname' not in data or 'class_id' not in data:
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
         if not isinstance(data['class_id'], int) or not isinstance(data['student_id'], int):
-            return jsonify({'error': 'student_id and classroom_id must be integers'}), 400
+            return jsonify({'error': 'student_id and class_id must be integers'}), 400
         # if not isinstance(data['class_codes'], list):
         #     return jsonify({'error': 'class_codes must be a list'}), 400
         new_student = Student(
             student_lastname=data['student_lastname'],
             student_firstname=data['student_firstname'],
-            class_id=data.get('classroom_id'),
+            class_id=data.get('class_id'),
             # student_id=data['student_id'],
             # class_codes=data.get('class_codes', []),
         )
@@ -110,12 +128,12 @@ def update_student(student_id):
 
         if not data:
             return jsonify({'error': 'No data provided'}), 400
-        if 'student_lastname' not in data or 'student_firstname' not in data or 'email' not in data or 'classroom_id' not in data:
+        if 'student_lastname' not in data or 'student_firstname' not in data or 'class_id' not in data:
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
         if not isinstance(data['class_id'], int) or not isinstance(data['student_id'], int):
-            return jsonify({'error': 'student_id and classroom_id must be integers'}), 400
+            return jsonify({'error': 'student_id and class_id must be integers'}), 400
         # if not isinstance(data['class_codes'], list):
         #     return jsonify({'error': 'class_codes must be a list'}), 400
 
@@ -123,7 +141,7 @@ def update_student(student_id):
 
         student.student_lastname = data.get('student_lastname', student.student_lastname)
         student.student_firstname = data.get('student_firstname', student.student_firstname)
-        student.class_id = data.get('classroom_id', student.class_id)
+        student.class_id = data.get('class_id', student.class_id)
         # student.student_id = data.get('student_id', student.student_id)
         # student.class_codes = data.get('class_codes', student.class_codes)
         db.session.commit()

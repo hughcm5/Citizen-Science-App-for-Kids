@@ -1,0 +1,13 @@
+runtime: nodejs22
+service: default
+
+handlers:
+    - url: /
+      static_files: build/index.html
+      upload: build/index.html
+    - url: /(.*)
+      static_files: build/\1
+      upload: build/(.*)
+
+env_variables:
+    BACKEND_URL: "https://backend-dot-web-citizen-science.ey.r.appspot.com"
