@@ -32,7 +32,7 @@ EOF
 start_service "Observations" "./observations/observations.py"&
 start_service "Clasrooms" "./classrooms/classrooms.py"&
 start_service "Students" "./students/students.py"&
-start_service "Admins" "./teachers_admin/admin.py"&
+start_service "Admins" "./teachers_admins/admin.py"&
 start_service "Projects" "./projects/projects.py"&
 start_service "API" "./gateway/api_gateway.py" 
 
