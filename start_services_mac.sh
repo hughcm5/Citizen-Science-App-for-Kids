@@ -29,12 +29,12 @@ EOF
 # start_service "Google Cloud SQL proxy" "./cloud-sql-proxy citizen-science-app-for-kids:us-central1:citizen-science-instance"
 
 # Start individual microservices
-start_service "Observations" "observations.py"
-start_service "Classrooms" "classrooms.py"
-start_service "Students" "students.py"
-start_service "Admins" "admin.py"
-start_service "Projects" "projects.py"
-start_service "API" "api_gateway.py"
+start_service "Observations" "./observations/observations.py"&
+start_service "Clasrooms" "./classrooms/classrooms.py"&
+start_service "Students" "./students/students.py"&
+start_service "Admins" "./teachers_admins/admins.py"&
+start_service "Projects" "./projects/projects.py"&
+start_service "API" "./gateway/api_gateway.py" 
 
 echo "All microservices started."
 
