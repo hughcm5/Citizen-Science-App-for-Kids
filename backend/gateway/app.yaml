@@ -10,12 +10,6 @@ handlers:
       script: auto
 
 env_variables:
-    # PROJECTS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/projects"
-    # OBSERVATIONS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/observations"
-    # STUDENTS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/students"
-    # TEACHERS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/admins"
-    # CLASSROOMS_SERVICE_URL: "https://backend-dot-citizen-science-app-for-kids.uc.r.appspot.com/classroom"
-
     PROJECTS_SERVICE_URL: "https://projects-dot-citizen-science-app-for-kids.wn.r.appspot.com"
     OBSERVATIONS_SERVICE_URL: "https://observations-dot-citizen-science-app-for-kids.wn.r.appspot.com"
     STUDENTS_SERVICE_URL: "https://students-dot-citizen-science-app-for-kids.wn.r.appspot.com"
@@ -37,16 +31,12 @@ env_variables:
 
     CLOUD_SQL: "True"
 
-    DB_USER: "root"
-    DB_PASSWORD: "1234"
+    CLOUD_SQL: "True"
+
     DB_NAME: "citizen_science_app"
     DB_CONNECTION_NAME: "citizen-science-app-for-kids:us-central1:citizen-science-instance"
 
-    CLIENT_ID: "SUVIcGTVz4Cxjs9KONBkLufxKsjZyzCI"
-    CLIENT_SECRET: "_wkkQzDOouQg8JBykJAgToU7ceWW36RmcTZUZF9RaC3NRKiHVckPIt8_xJcrl-j-"
     AUTH0_DOMAIN: "dev-tmf2tlri8xgzzr2y.us.auth0.com"
 
-    GOOGLE_CLIENT_ID: "213180173282-45m91pb9akumnr4tmp9agsoq0l59uchk.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET: "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"
     REDIRECT_URI: "/oauth/callback"
     FRONTEND_REDIRECT_URL: "https://citizen-science-app-for-kids.wn.r.appspot.com"
