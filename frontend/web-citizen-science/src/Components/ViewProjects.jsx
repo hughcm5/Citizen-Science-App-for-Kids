@@ -9,6 +9,7 @@ import Col from "react-bootstrap/Col";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from "axios";
+import Classroom from './ClassroomPage';
 
 /* ------------ Functions for Projects Page ------------*/
 function ViewProject() {
@@ -19,14 +20,16 @@ function ViewProject() {
   const [description, setdescription] = useState('');
     /* Prepare the retrieve on the frontend */
   const [projectData, setprojectData] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedProjectResults, setSelectedProjectResults] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
   /* Prepare to edit on the frontend */
   const [editedId, setEditedId] = useState(null);
   const [editedProjectData, setEditedProjectData] = useState({});
-
+  /* allow user to download CSVfile */
+  const [CSVfile, setCSVfile] = useState(''); 
+  const [CSVdownload, setCSVdownload] = useState('');
 
 /* ------------ Create ------------*/
   const handleSubmit = (event) => {
@@ -38,7 +41,7 @@ function ViewProject() {
       description
     }
     console.log('project:', ViewProject);
-    axios.post("http://localhost:5000/projects", project_payload)
+    axios.post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects', project_payload)
     .then((response) => {
       console.log('Project creation successful');
       fetchData(); // repopulate table with new project 
@@ -57,18 +60,51 @@ function ViewProject() {
   }
 
 /* ------------ Retrieve ------------*/
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/projects');
-        setprojectData(response.data);
-        setLoading(false);
-      } catch (err) {
-        setRetrieveError(err)
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects')
+      .then((response) => {
+        console.log('Fetched projects successfully');
+        console.log(response);
+        const projectData = response.data
+        setprojectData(projectData);
+        // Set default selected project if null
+        if (!selectedProjectId) {
+          setSelectedProjectId(projectData[0].project_id);
+        } else {
+          // If it is already selected, make sure it exists
+          const existingProject = projectData.find(e => e.project_id === selectedProjectId);
+          // Else, just select the first one by default
+          if (!existingProject) {
+            setSelectedProjectId(projectData[0].project_id);
+          }
+        }
+
+        
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve projects');
+        console.error(err);
+      });
+
+  };
+
+  const fetchClassrooms = async () => {
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms')
+      .then((response) => {
+        console.log('Fetched classrooms successfully');
+        setClassrooms(response.data);
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve classrooms');
+        console.error(err);
+      });
+  }
+
   useEffect(() => {
     fetchData();
+    fetchClassrooms();
   }, []);
 
   /* ------------ Update ------------*/
@@ -101,7 +137,7 @@ function ViewProject() {
     };
     // TODO: Add some feedback for the user to know that edits are being saved
     try {
-      const response = await axios.put(`http://localhost:5000/projects/` + editedProjectData.project_id.toString(), project_payload);
+      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + editedProjectData.project_id.toString(), project_payload);
       console.log('Project updated successfully', response.data);
       // handle update
       const project_to_be_updated = projectData.find(obj => obj.project_id === editedProjectData.project_id);
@@ -121,17 +157,6 @@ function ViewProject() {
     }
   }
 /* ------------ Results ------------*/
-  const fetchResults = async () => {
-    console.log("Fetching");
-      try {
-        const response = await axios.get('http://localhost:5000/projects/'+ project_id.toString() + '/results');
-        setprojectData(response.data);
-        setLoading(false);
-      } catch (err) {
-        setRetrieveError(err)
-        setLoading(false);
-      }
-    };
   
   const fetchSelectedProject = async () => {
     if (!selectedProjectId) {
@@ -141,7 +166,7 @@ function ViewProject() {
     }
 
     axios
-      .get('http://localhost:5000/projects/'+ selectedProjectId.toString() + '/results')
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + selectedProjectId.toString() + '/results')
       .then((response) => {
         console.log('Successfully fetched project details');
         const project_details = response.data;
@@ -153,6 +178,55 @@ function ViewProject() {
         console.error(err);
       });
   }
+/* ------------ Delete  ------------*/
+  const deleteProject = async (id) => {
+    try {
+      const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + id.toString());
+      console.log('Project deleted successfully', response.data)
+      // handle success by refreshing table
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting project:', error); // error handling
+    }
+};
+/* ------------ CSV ------------*/
+  const fetchCSV = async () => {
+    if (!selectedProjectId) {
+      // TODO: Make an error message show
+      console.log("A project ID is required");
+      return;
+    }
+
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + selectedProjectId.toString() + '/csv')
+      .then((response) => {
+        console.log('CSV ready to be downloaded');
+        const csvData = response.data;
+        console.log(response);
+
+        // Get project name from data cache
+        const project = projectData.find(e => e.project_id === selectedProjectId);
+        const projectName = project ? project.project_title : "project"
+        const filename = projectName + ".csv";
+
+        // Create local file from fetched backend
+        const file = new File([csvData], filename, {
+          type: "text/csv",
+        });
+        const urlObj = URL.createObjectURL(file);
+
+        // Wierd hack to get downloads working with filenames
+        const link = document.createElement("a");
+        link.href = urlObj;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve CSV file data');
+        console.error(err);
+      });
+  };
 
 /* ------------ Page Content  ------------*/
   return (
@@ -180,6 +254,7 @@ function ViewProject() {
                   <th>Description</th>
                   <th>Created</th>
                   <th>Updated</th>
+                  <th> </th>
                 </tr>
               </thead>
               <tbody>
@@ -203,6 +278,7 @@ function ViewProject() {
                   }</td>
                   <td>{toHumanReadableDate(project.created_at)}</td>
                   <td>{toHumanReadableDate(project.updated_at)}</td>    
+                  <td><button onClick={(e) => deleteProject(project.project_id)}>Delete</button></td>
                 </tr>
               ))}
               </tbody>
@@ -245,16 +321,23 @@ function ViewProject() {
           </table>
           <p> Download Project Data</p>
           { /* ------------ Show CSV File  ------------*/ }
-          
+          <p>  </p>
           { /* ------------ Allow user to download CSV File  ------------*/ }
-
+          <button onClick={fetchCSV}> Download CSV </button> <br />
           { /* ------------ Create a Project ------------*/ }
             <h2> Create Project </h2>
             <p>Enter the project details to create a new project.</p>
-            { /* ------------ TODO: Selection for Class ID ------------*/ }
+            { /* ------------ Selection for Class ID ------------*/ }
             <form onSubmit={handleSubmit}>
               <label> 
-              <input type="number" placeholder="(Existing) Class ID" value={class_id} onChange={(e) => setclass_id(e.target.value)} />
+              <select
+            value={class_id}
+            onChange={e => setclass_id(e.target.value)}
+            >
+            {classrooms.map(classroom => (
+              <option value={classroom.class_id}>{classroom.class_name + ' (' + classroom.class_id + ')'}</option>
+            ))}
+              </select>
               <input type="text" placeholder="Title" value={project_title} onChange={(e) => setproject_title(e.target.value)} />
               <input type="textfield" placeholder="describe the project for the students" value={description} onChange={(e) => setdescription(e.target.value)} />
               </label>
