@@ -22,7 +22,7 @@ function ViewProject() {
   const [projectData, setprojectData] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [selectedProjectResults, setSelectedProjectResults] = useState([]);
+  const [selectedProjectResults, setSelectedProjectResults] = useState(null);
   const [retrieveError, setRetrieveError] = useState(null);
   /* Prepare to edit on the frontend */
   const [editedId, setEditedId] = useState(null);
@@ -80,7 +80,6 @@ function ViewProject() {
           }
         }
 
-        
       })
       .catch((err) => {
         console.error('Failed to retrieve projects');
@@ -94,7 +93,20 @@ function ViewProject() {
       .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms')
       .then((response) => {
         console.log('Fetched classrooms successfully');
+        const classrooms = response.data
         setClassrooms(response.data);
+
+        // Set default selected classroom if null
+        if (class_id === null || class_id === '') {
+          setclass_id(classrooms[0].class_id);
+        } else {
+          // If it is already selected, make sure it exists
+          const existingClass= classrooms.find(e => e.class_id === class_id);
+          // Else, just select the first one by default
+          if (!existingClass) {
+            setclass_id(classrooms[0].class_id);
+          }
+        }
       })
       .catch((err) => {
         console.error('Failed to retrieve classrooms');
@@ -284,46 +296,7 @@ function ViewProject() {
               </tbody>
             </table>
             <br />
-          { /* ------------ Project Results  ------------*/ }
-          <h2>Project Results</h2>
-          <p>Select a Project to View its results:</p>
-          <select
-            value={selectedProjectId}
-            onChange={e => setSelectedProjectId(e.target.value)}
-          >
-            {projectData.map(project => (
-              <option value={project.project_id}>{project.project_title + ' (' + project.project_id.toString() + ')'}</option>
-            ))}
-          </select>
-          <button onClick={fetchSelectedProject}>See Results</button>
-           <br />
-            {
-              // for debugging purposes
-              JSON.stringify(selectedProjectResults, null, 2)
-            }
-          <table className="resultsTable">
-          { /* ------------ TODO Display Results  ------------*/ }
-            <thead>
-              <tr>
-                <th>Project Details</th>
-                <th>field_data_stats</th>
-                <th>observations</th>
-                <th>stats</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projectData.map(project => (
-                <tr key={project.project_id}>
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p> Download Project Data</p>
-          { /* ------------ Show CSV File  ------------*/ }
-          <p>  </p>
-          { /* ------------ Allow user to download CSV File  ------------*/ }
-          <button onClick={fetchCSV}> Download CSV </button> <br />
+          
           { /* ------------ Create a Project ------------*/ }
             <h2> Create Project </h2>
             <p>Enter the project details to create a new project.</p>
@@ -344,6 +317,160 @@ function ViewProject() {
               <br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>
+            <br />
+            { /* ------------ Project Results  ------------*/ }
+          <h2>Project Results</h2>
+          <p>Select a Project to View its results:</p>
+          <select
+            value={selectedProjectId}
+            onChange={e => setSelectedProjectId(e.target.value)}
+          >
+            {projectData.map(project => (
+              <option value={project.project_id}>{project.project_title + ' (' + project.project_id.toString() + ')'}</option>
+            ))}
+          </select>
+          <button onClick={fetchSelectedProject}>See Results</button>
+           <br />
+            {
+              // for debugging purposes
+              JSON.stringify(selectedProjectResults, null, 2)
+            }
+
+          { /* Project description table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Class (Class ID)</th>
+                <th>Project Title (Project ID)</th>
+                <th>Project Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && (
+                  <tr>
+                    <td>{selectedProjectResults.project.class_id}</td>
+                    <td>{selectedProjectResults.project.project_title + ' (' + selectedProjectResults.project.project_id + ')' }</td>
+                    <td>{selectedProjectResults.project.description}</td>
+                  </tr>
+                )
+              }
+            </tbody>
+          </table>
+
+          { /* Project stats table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Total Observations</th>
+                <th>Total Students</th>
+                <th>Students with Observations</th>
+                <th>Students without Observations</th>
+                <th>Completion %</th>
+                <th>Average Observations per Student</th>
+                <th>Average Observations per Student with Observations</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && (
+                  <tr>
+                    <td>{selectedProjectResults.stats.total_observations}</td>
+                    <td>{selectedProjectResults.stats.total_students}</td>
+                    <td>{selectedProjectResults.stats.students_with_observations}</td>
+                    <td>{selectedProjectResults.stats.students_without_observations}</td>
+                    <td>{selectedProjectResults.stats.completion_percentage}</td>
+                    <td>{selectedProjectResults.stats.average_observations_per_student}</td>
+                    <td>{selectedProjectResults.stats.average_observations_per_student_with_observations}</td>
+                  </tr>
+                )
+              }
+            </tbody>
+          </table>
+
+          { /* students with observations table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Students with Observations (last name, first (student ID))</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && selectedProjectResults.students_with_observations.map(student => (
+                  <tr>
+                    <td>{student.last_name + ', ' + student.first_name + ' (' + student.student_id + ')'}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          { /* students without observations table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Students without Observations (last name, first (student ID))</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && selectedProjectResults.students_without_observations.map(student => (
+                  <tr>
+                    <td>{student.last_name + ', ' + student.first_name + ' (' + student.student_id + ')'}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          { /* Observation data table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Data Header</th>
+                <th>Data Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && Object.entries(selectedProjectResults.observations).forEach(([data_key, data_value]) => (
+                  <tr>
+                    <td>{data_key}</td>
+                    <td>{data_value}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          { /* field data stats table */ }
+          <table>
+            <thead>
+              <tr>
+                <th>Field Data Stats</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                selectedProjectResults !== null && Object.keys(selectedProjectResults.field_data_stats).forEach(([data_key, data_stats]) => (
+                  <tr>
+                    <td>
+                    {
+                      data_key + ' => ' + Object.keys(data_stats).map(key => `${key}: ${data_stats[key]}`).join(', ')
+                    }
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          <p> Download Project Data</p>
+          { /* ------------ Show CSV File  ------------*/ }
+          <p>  </p>
+          { /* ------------ Allow user to download CSV File  ------------*/ }
+          <button onClick={fetchCSV}> Download CSV </button> <br />
             </Col>
         </Row>
       </Container>
