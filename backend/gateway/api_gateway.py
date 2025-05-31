@@ -184,6 +184,24 @@ def logout():
         f"https://{DOMAIN}/v2/logout?client_id={CLIENT_ID}&returnTo={os.getenv('FRONTEND_REDIRECT_URL', 'http://localhost:3000')}"
     )
 
+@app.route('/session', methods=['GET'])
+def session_status():
+    """
+    Sends signal to frontend to let frontend know if user is logged in
+    """
+    user = session.get('user')
+    if user:
+        return jsonify({
+            'logged_in': True,
+            'user': {
+                'email': user.get('email'),
+                'name': user.get('name'),
+                'sub': user.get('sub')
+            }
+        }), 200
+    else:
+        return jsonify({'logged_in': False}), 200
+
 
 # Forwards requests to the appropriate service
 def forward_service(service_url):
