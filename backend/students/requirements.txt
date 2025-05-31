@@ -12,3 +12,4 @@ authlib
 requests
 six
 gunicorn
+google-cloud-secret-manager

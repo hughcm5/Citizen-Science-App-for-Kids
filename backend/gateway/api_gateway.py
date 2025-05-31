@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
 from authlib.integrations.flask_client import OAuth
 import uuid
+from google.cloud import secretmanager
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -21,9 +22,31 @@ CORS(app,
 # Secret key for session management
 app.secret_key = str(uuid.uuid4())
 
-# OAuth Settings
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+def access_secret_version(project_id, secret_id, version_id="latest"):
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(name=name)
+        payload = response.payload.data.decode("UTF-8")
+        return payload
+    except Exception as e:
+        app.logger.error(f"Error accessing secret: {secret_id} in project: {project_id}. Error: {e}")
+        if os.environ.get('GAE_ENV') == 'standard':
+            raise
+        return None
+
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    # NOT using the Cloud SQL Proxy or local development grab secrets from Secret Manager
+    PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    CLIENT_ID = access_secret_version(PROJECT_ID, "CLIENT_ID")
+    CLIENT_SECRET = access_secret_version(PROJECT_ID, "CLIENT_SECRET")
+    GOOGLE_CLIENT_SECRET = access_secret_version(PROJECT_ID, "GOOGLE_CLIENT_SECRET")
+else:
+    CLIENT_ID = os.getenv('CLIENT_ID')
+    CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+
 DOMAIN = os.getenv('AUTH0_DOMAIN')
 REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:5000/oauth/callback')
 BASE_URL = f"https://{DOMAIN}"

@@ -31,8 +31,6 @@ env_variables:
 
     CLOUD_SQL: "True"
 
-    CLOUD_SQL: "True"
-
     DB_NAME: "citizen_science_app"
     DB_CONNECTION_NAME: "citizen-science-app-for-kids:us-central1:citizen-science-instance"
 
