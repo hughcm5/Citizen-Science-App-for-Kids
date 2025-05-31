@@ -10,5 +10,4 @@ handlers:
       upload: build/(.*)
 
 env_variables:
-#    BACKEND_URL: "https://backend-dot-web-citizen-science.ey.r.appspot.com"
-REACT_APP_BACKEND_GATEWAY_URL: "https://backend-dot-web-citizen-science.ey.r.appspot.com"
+    REACT_APP_BACKEND_GATEWAY_URL: "https://backend-dot-web-citizen-science.ey.r.appspot.com"
