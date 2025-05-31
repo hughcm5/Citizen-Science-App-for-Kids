@@ -149,7 +149,7 @@ class Project(db.Model):
         """
         return {
             'project_id': self.project_id,
-            # 'class_id': self.class_id,
+            'class_id': self.class_id,
             'project_title': self.project_title,
             'description': self.description,
             'created_at': self.created_at.isoformat(),
