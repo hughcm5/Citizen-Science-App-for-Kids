@@ -1,5 +1,5 @@
 runtime: python312
-service: backend
+service: classrooms
 entrypoint: gunicorn -b :$PORT api_gateway:app
 
 handlers:
