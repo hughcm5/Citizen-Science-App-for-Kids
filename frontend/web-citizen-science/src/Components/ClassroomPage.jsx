@@ -28,7 +28,7 @@ function Classroom() {
   const fetchData = async () => {
     // todo refresh table when other users update during session
     try {
-      const response = await axios.get('http://localhost:5000/classrooms');
+      const response = await axios.get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms');
       setclassData(response.data);
       setLoading(false);
     } catch (err) {
@@ -52,7 +52,7 @@ function Classroom() {
     console.log('classroom:', Classroom);
     console.log('classroom data:', class_data); // Log the class_data object for debugging
     axios
-      .post("http://localhost:5000/classrooms", class_data)
+      .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms', class_data)
       .then((response) => {
         console.log('Classroom creation successful');
         fetchData();   // refresh table after creation
@@ -74,7 +74,7 @@ function Classroom() {
 /* ------------ Delete  ------------*/
   const deleteClassroom = async (class_id) => {
   try{
-    const response = await axios.delete(`http://localhost:5000/classrooms/` + class_id.toString());
+    const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms/' + class_id.toString());
 
     console.log('Classroom deleted successfully:', response.data);
     // Handle successful deletion and update/refresh table upon deletion
@@ -116,7 +116,7 @@ function Classroom() {
     };
     // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback for the user
     try {
-      const response = await axios.put(`http://localhost:5000/classrooms/` + editedClassData.class_id.toString(), class_payload);
+      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms/' + editedClassData.class_id.toString(), class_payload);
       // handle success (update/refresh table)
 
       // update fields on fromt end, need to displays something for user
