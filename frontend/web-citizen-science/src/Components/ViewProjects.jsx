@@ -240,15 +240,20 @@ function ViewProject() {
       });
   };
 
+/* ------------ Table Styling ------------*/
+
+
 /* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '10px'}}>Projects Page</h1>
-            <p>Citizen science projects are activities so K-12 students can 
-              meaningfully contribute to scientific research <br />
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}} > Projects Page</h1>
+          <Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>
+            <Col md={9}>
+              <p style={{fontSize:'20px', margin:'1%'}}>Citizen science projects are activities so K-12 students can engage with scientific research as a class.<br />
               <br /></p>
             <h2>Active Projects:</h2>
             {
