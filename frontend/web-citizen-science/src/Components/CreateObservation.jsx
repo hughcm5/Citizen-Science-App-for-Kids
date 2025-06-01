@@ -22,15 +22,50 @@ function Observation() {
 
   const [observationRowNumber, setObservationRowNumber] = useState(1);
 
+  const [classes, setClasses] = useState([]);
   const [projects, setProjects] = useState([]);
   const [students, setStudents] = useState([]);
   const [observations, setObservations] = useState([]);
+
+  const [editedId, setEditedId] = useState(null);
+  const [editedObservation, setEditedObservation] = useState({});
 
     /* Prepare the retrieve on the frontend */
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
+
+  /* ------------ Helpers  ------------*/
+  const toHumanReadableDate = (backendDateStr) => {
+    const date = new Date(backendDateStr);
+    // Format the string to remove timezone 
+    return date.toISOString().split('T')[0];
+  }
+
+  const getClassNameFromId = (id) => {
+    const classFound = classes.find(c => c.class_id == id);
+    if (classFound) {
+      return classFound.class_name;
+    } else {
+      return "Unknown";
+    }
+  }
+
+
   /* ------------ Retrieve  ------------*/
+  const fetchClasses = async () => {
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/classrooms")
+      .then((response) => {
+        const classroom_data = response.data;
+        setClasses(classroom_data);
+      })
+      .catch((err) => {
+        console.log('Failed to fetch classroom data');
+        console.log(err);
+      });
+  }
+
   const fetchProjects = async () => {
     axios
       .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/projects")
@@ -67,21 +102,6 @@ function Observation() {
       })
       .catch((err) => {
         console.log('Failed to fetch student data');
-        if (err.data) {
-          console.log(err.data);
-        }
-      });
-  }
-
-  const fetchClassrooms = async () => {
-    axios
-      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms')
-      .then((response) => {
-        const class_data = response.data;
-        setStudents(class_data);
-      })
-      .catch((err) => {
-        console.log('Failed to fetch classroom data');
         if (err.data) {
           console.log(err.data);
         }
@@ -148,10 +168,14 @@ function Observation() {
       .then((response) => {
         console.log('Observation post successful');
         console.log(response);
+
+        fetchAll();
       })
       .catch((err) => {
         console.error('Failed to post observation');
         console.error(err);
+
+        fetchAll();
       });
   };
 
@@ -171,11 +195,115 @@ function Observation() {
     setNewObservationPairs(newNewPairs);
   }
 
-  useEffect(() => {
+  const deleteObservation = (id) => {
+    axios
+      .delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + id.toString())
+      .then((response) => {
+        console.log('Observation delete successful');
+        console.log(response);
+
+        fetchAll();
+      })
+      .catch((err) => {
+        console.error('Failed to delete observation');
+        console.error(err);
+
+        fetchAll();
+      });
+  }
+
+  const onEditRow = (event, observation) => {
+    // enable the labels by setting an edited id to render the inputs
+    setEditedId(observation.observation_id);
+
+    const obsDataJsonStr = JSON.stringify(observation['observation data'], null, 2)
+    const obsCopy = {...observation, ['observation data']: obsDataJsonStr};
+
+    setEditedObservation(obsCopy);
+
+    // Auto resize textareas
+    const tablerow = event.target.closest('tr');
+    const textareas = tablerow.getElementsByTagName("textarea");
+    for (const textarea of textareas) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }
+
+  const onEditChange = (x) => {
+    const { name, value } = x.target;
+    setEditedObservation({...editedObservation, [name]: value});
+  }
+
+  const cancelEdit = () => {
+    setEditedId(null);
+    setEditedObservation({});
+  }
+
+  const onSaveEdit = async () => {
+    if (!editedId) {
+      // If nothing was edited, do nothing
+      return;
+    }
+
+    // TODO: Maybe do some frontend validation to catch mistakes before sending to the backend?
+
+    let observation_json = {}
+    try {
+      observation_json = JSON.parse(editedObservation['observation data']);
+    } catch (error) {
+      console.log("observation data field is malformed. Please make sure it is a properly JSON formatted");
+      return;
+    }
+
+    const project_id_int = parseInt(editedObservation.project_id);
+    const student_id_int = parseInt(editedObservation.student_id);
+
+    const observationPayload = {
+      'project_id': project_id_int,
+      'student_id': student_id_int,
+      'observation_data': observation_json
+    }
+
+    axios
+      .put(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + editedId.toString(), observationPayload)
+      .then((response) => {
+        console.log('Observation update successful');
+        console.log(response);
+
+        // A bit of an oxymoron since the edit was already successful but this is to disable the edit fields
+        cancelEdit();
+
+        // Refresh the data
+        fetchAll();
+      })
+      .catch((err) => {
+        console.error('Failed to update observation');
+        console.error(err);
+
+        fetchAll();
+      });
+  }
+
+  const fetchAll = () => {
+    fetchClasses();
     fetchProjects();
     fetchStudents();
     fetchObservations();
+  }
+
+  useEffect(() => {
+    fetchAll();
   }, []);
+
+  /* ------------ Table Styling ------------*/
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
 
 
 /* ------------ Page Content  ------------*/
@@ -188,8 +316,97 @@ function Observation() {
               Each project has a collection of observations made by the students in a class
             </h1>
             <h2>Current Observations:</h2>
-            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
-            <pre>{JSON.stringify(observations, null, 2)}</pre>
+            { /* ( <pre>{JSON.stringify(observations, null, 2)}</pre> ) */ }
+            {/* 
+            <select
+            value={class_id}
+            onChange={e => setclass_id(e.target.value)}
+            >
+            {classrooms.map(classroom => (
+              <option value={classroom.class_id}>{classroom.class_name + ' (' + classroom.class_id + ')'}</option>
+            ))}
+              </select>
+                 */ }
+            <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Class</th>
+                <th>Project</th>
+                <th>Student</th>
+                <th>Observations</th>
+                <th>Created At</th>
+                <th>Last Updated</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                observations.map(observation => (
+                  <tr key={observation.observation_id}>
+                    <td>
+                        {
+                          editedId === observation.observation_id
+                          ? (<>
+                              <button onClick={() => cancelEdit()}>Cancel</button>
+                              <button onClick={() => onSaveEdit()}>Save</button>
+                            </>)
+                          : (<button onClick={(e) => onEditRow(e, observation)}>Edit</button>)
+                        }
+                    </td>
+                    <td>{getClassNameFromId(observation['student class id']) + ' (' + observation['student class id'] + ')'}</td>
+                    <td>
+                      {
+                        editedId === observation.observation_id
+                        ? (<select
+                            name='project_id'
+                            value={editedObservation.project_id}
+                            onChange={onEditChange}
+                            >
+                            {projects.map(project => (
+                              <option value={project.project_id}>{project.project_title + ' (' + project.project_id.toString() + ')'}</option>
+                            ))}
+                          </select>)
+                        : observation['project title'] + ' (' + observation.project_id + ')'
+                      }
+                    </td>
+                    <td>
+                      {
+                        editedId === observation.observation_id
+                        ? (<select
+                            name='student_id'
+                            value={editedObservation.student_id}
+                            onChange={onEditChange}
+                            >
+                            {students.map(student => (
+                              <option value={student.student_id}>{student.student_lastname + ', ' + student.student_firstname + ' (' + student.student_id.toString() + ')'}</option>
+                            ))}
+                          </select>)
+                        : observation['student lastname'] + ', ' + observation['student firstname'] + ' (' + observation.student_id + ')'
+                      }
+                    </td>
+                    <td>
+                      {
+                        editedId === observation.observation_id
+                        ? (<textarea
+                            name='observation data'
+                            value={editedObservation['observation data']}
+                            onChange={onEditChange}
+                            />)
+                        : JSON.stringify(observation['observation data'], null, 2)
+                      }
+                    </td>
+                    <td>{toHumanReadableDate(observation.created_at)}</td>
+                    <td>{toHumanReadableDate(observation.updated_at)}</td>
+                    <td>
+                      <button onClick={(e) => deleteObservation(observation.observation_id)}>Delete</button>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
             {/* ------------ Observation Creation ------------*/}
             <h2>Create New Observation</h2>
             <p>Enter the observation details:</p>
