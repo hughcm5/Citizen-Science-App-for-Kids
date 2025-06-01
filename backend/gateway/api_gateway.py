@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, redirect, url_for, session
 from flask_cors import CORS
 from authlib.integrations.flask_client import OAuth
 import uuid
+from google.cloud import secretmanager
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -14,16 +15,40 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 # CORS configuration
 CORS(app,
-      origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
-      supports_credentials=True
+     origins=os.getenv('CORS_ORIGINS', 'http://localhost:8081').split(','),
+     supports_credentials=True
      )
+# CORS(app,
+#      origins='*')
 
 # Secret key for session management
 app.secret_key = str(uuid.uuid4())
 
-# OAuth Settings
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+def access_secret_version(project_id, secret_id, version_id="latest"):
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(name=name)
+        payload = response.payload.data.decode("UTF-8")
+        return payload
+    except Exception as e:
+        app.logger.error(f"Error accessing secret: {secret_id} in project: {project_id}. Error: {e}")
+        if os.environ.get('GAE_ENV') == 'standard':
+            raise
+        return None
+
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    # NOT using the Cloud SQL Proxy or local development grab secrets from Secret Manager
+    PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    CLIENT_ID = access_secret_version(PROJECT_ID, "CLIENT_ID")
+    CLIENT_SECRET = access_secret_version(PROJECT_ID, "CLIENT_SECRET")
+    GOOGLE_CLIENT_SECRET = access_secret_version(PROJECT_ID, "GOOGLE_CLIENT_SECRET")
+else:
+    CLIENT_ID = os.getenv('CLIENT_ID')
+    CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+
 DOMAIN = os.getenv('AUTH0_DOMAIN')
 REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:5000/oauth/callback')
 BASE_URL = f"https://{DOMAIN}"
@@ -160,6 +185,24 @@ def logout():
     return redirect(
         f"https://{DOMAIN}/v2/logout?client_id={CLIENT_ID}&returnTo={os.getenv('FRONTEND_REDIRECT_URL', 'http://localhost:3000')}"
     )
+
+@app.route('/session', methods=['GET'])
+def session_status():
+    """
+    Sends signal to frontend to let frontend know if user is logged in
+    """
+    user = session.get('user')
+    if user:
+        return jsonify({
+            'logged_in': True,
+            'user': {
+                'email': user.get('email'),
+                'name': user.get('name'),
+                'sub': user.get('sub')
+            }
+        }), 200
+    else:
+        return jsonify({'logged_in': False}), 200
 
 
 # Forwards requests to the appropriate service

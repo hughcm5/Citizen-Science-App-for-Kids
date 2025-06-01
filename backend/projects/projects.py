@@ -13,21 +13,47 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, Project, Student, Classroom, Admin
 from collections import defaultdict, Counter
 from google.cloud.sql.connector import Connector
+from google.cloud import secretmanager
+
 
 # Load environment variables
 load_dotenv(find_dotenv())
+
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8081"}})
-CORS(app, supports_credentials=True)
+
+
+def access_secret_version(project_id, secret_id, version_id="latest"):
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(name=name)
+        payload = response.payload.data.decode("UTF-8")
+        return payload
+    except Exception as e:
+        app.logger.error(f"Error accessing secret: {secret_id} in project: {project_id}. Error: {e}")
+        if os.environ.get('GAE_ENV') == 'standard':
+            raise
+        return None
+
+
+# Get the database URL from the environment variable
+if os.getenv("CLOUD_SQL", "false").lower() == "true":
+    # NOT using the Cloud SQL Proxy or local development grab secrets from Secret Manager
+    PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    DB_USER = access_secret_version(PROJECT_ID, "DB_USER")
+    DB_PASSWORD = access_secret_version(PROJECT_ID, "DB_PASSWORD")
+    CLIENT_ID = access_secret_version(PROJECT_ID, "CLIENT_ID")
+    CLIENT_SECRET = access_secret_version(PROJECT_ID, "CLIENT_SECRET")
+    GOOGLE_CLIENT_SECRET = access_secret_version(PROJECT_ID, "GOOGLE_CLIENT_SECRET")
 
 
 def getconn():
     conn = connector.connect(
         os.environ["DB_CONNECTION_NAME"],
         "pymysql",
-        user=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
+        user=DB_USER,
+        password=DB_PASSWORD,
         db=os.environ["DB_NAME"],
     )
     return conn
@@ -51,7 +77,8 @@ else:
         f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
     )
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -180,7 +207,7 @@ def get_project_csv(project_id):
     Get CSV file containing all observations for a specific project
     """
     try:
-        project = db.session.get(project_id)
+        project = db.session.get(Project, project_id)
         if not project:
             return jsonify({'error': 'Project not found'}), 404
 
@@ -212,7 +239,7 @@ def get_project_csv(project_id):
 @app.route('/projects/<int:project_id>/csv_download', methods=['GET'])
 def download_project_csv(project_id):
     try:
-        project = db.session.get(project_id)
+        project = db.session.get(Project, project_id)
         if not project:
             return jsonify({'error': 'Project not found'}), 404
 
@@ -251,7 +278,7 @@ def get_project_results(project_id):
     """
     # Check if the project exists
     try:
-        project = db.session.get(project_id)
+        project = db.session.get(Project, project_id)
         if not project:
             return jsonify({'error': 'Project not found'}), 404
 
