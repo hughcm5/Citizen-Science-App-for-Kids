@@ -27,13 +27,8 @@ function Admin() {
 /* ------------ Retrieve  ------------*/
   const fetchData = async () => {
     try {
-<<<<<<< HEAD
-      const response = await axios.get('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins');
-      //const response = await axios.get('http://localhost:5000/admins');
-=======
       // const response = await axios.get('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins');
       const response = await axios.get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins');
->>>>>>> 4e6ed4e9690db5ad12b6a06be25ff075539dbe2d
       setAdminData(response.data);
       setLoading(false);
     } catch (err) {
@@ -58,13 +53,8 @@ function Admin() {
     }
     console.log('admin:', Admin);
     axios
-<<<<<<< HEAD
-       .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
-      //.post("http://localhost:5000/admins", admin_payload)
-=======
       // .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins', admin_payload)
->>>>>>> 4e6ed4e9690db5ad12b6a06be25ff075539dbe2d
       .then((response) => {
         console.log('Admin creation successful');
         fetchData();

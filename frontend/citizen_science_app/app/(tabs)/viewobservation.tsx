@@ -82,7 +82,6 @@ export default function viewobservation() {
           for every obsveration
         */}
         {observations.map((observation) => {
-          console.log(observation)
           const { observationText, checkboxOptions, observationDropdown } =
             observation["observation data"];
 
@@ -129,7 +128,7 @@ export default function viewobservation() {
                     {observation["project title"]}
                   </Heading>
                   <Text>
-                    Observations: {observation["observation data"].note}
+                    Observations: {displayText}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
                     Created: {new Date(observation.created_at).toLocaleString()}

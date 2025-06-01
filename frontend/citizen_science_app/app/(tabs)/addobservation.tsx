@@ -45,13 +45,13 @@ export default function addbservation() {
   // Based of format (text, dropdown, checkbox) selected
   const handleSubmit = async () => {
     try {
-      const res = await fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations/", {
+      const res = await fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 2,
+          student_id: 1,
           project_id: Number(selectedProjectId),
           observation_data: { observationText },
         }), // send observation data
@@ -76,7 +76,7 @@ export default function addbservation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 2,
+          student_id: 1,
           project_id: Number(selectedProjectId),
           observation_data: { checkboxOptions },
         }), // send observation data
@@ -101,7 +101,7 @@ export default function addbservation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          student_id: 2,
+          student_id: 1,
           project_id: Number(selectedProjectId),
           observation_data: { observationDropdown },
         }), // send observation data
