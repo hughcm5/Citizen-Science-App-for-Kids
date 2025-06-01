@@ -15,8 +15,8 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 # CORS configuration
 CORS(app,
-      origins=os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(','),
-      supports_credentials=True
+     origins=os.getenv('CORS_ORIGINS', 'http://localhost:8081').split(','),
+     supports_credentials=True
      )
 
 # Secret key for session management

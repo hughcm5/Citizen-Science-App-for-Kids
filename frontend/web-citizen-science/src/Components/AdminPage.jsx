@@ -28,7 +28,7 @@ function Admin() {
   const fetchData = async () => {
     try {
       // const response = await axios.get('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins');
-      const response = await axios.get('http://localhost:5000/admins');
+      const response = await axios.get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins');
       setAdminData(response.data);
       setLoading(false);
     } catch (err) {
@@ -54,7 +54,7 @@ function Admin() {
     console.log('admin:', Admin);
     axios
       // .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
-      .post("http://localhost:5000/admins", admin_payload)
+      .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins', admin_payload)
       .then((response) => {
         console.log('Admin creation successful');
         fetchData();
@@ -77,7 +77,7 @@ function Admin() {
   const deleteAdmin = async (id) => {
   try {
     // const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/` + id.toString());
-    const response = await axios.delete(`http://localhost:5000/admins/` + id.toString());
+    const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + `/admins/` + id.toString());
     
     console.log('Admin deleted successfully:', response.data);
     // Handle successful deletion (update/refresh table upon deletion)
@@ -124,7 +124,8 @@ function Admin() {
     // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback that saving is happening
 
     try {
-      const response = await axios.put(`http://localhost:5000/admins/` + editedAdminData.admin_id.toString(), admin_payload);
+      // const response = await axios.put('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/' + editedAdminData.admin_id.toString(), admin_payload);
+      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins/' + editedAdminData.admin_id.toString(), admin_payload);
       console.log('Admin updated successfully: ', response.data);
       // Handle successful update (update/refresh table upon deletion)
 
