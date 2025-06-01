@@ -20,8 +20,7 @@ env_variables:
     OBSERVATIONS_SERVICE_NAME: "observations"
     STUDENTS_SERVICE_NAME: "students"
     TEACHERS_SERVICE_NAME: "teachers"
-    CSV_SERVICE_NAME: "csv"
-    CLASSROOM_SERVICE_NAME: "classroom"
+    CLASSROOMS_SERVICE_NAME: "classrooms"
 
     HEALTH_CHECK_TIMEOUT: "10"
     NO_AUTH_SERVICES: "projects,observations,csv"
