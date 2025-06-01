@@ -14,6 +14,7 @@ from models import db, Project, Student, Classroom, Admin
 from collections import defaultdict, Counter
 from google.cloud.sql.connector import Connector
 from google.cloud import secretmanager
+from flask_cors import CORS
 
 
 # Load environment variables
@@ -21,7 +22,6 @@ load_dotenv(find_dotenv())
 
 # Initialize Flask app
 app = Flask(__name__)
-
 
 def access_secret_version(project_id, secret_id, version_id="latest"):
     try:
