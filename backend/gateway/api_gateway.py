@@ -18,6 +18,8 @@ CORS(app,
      origins=os.getenv('CORS_ORIGINS', 'http://localhost:8081').split(','),
      supports_credentials=True
      )
+# CORS(app,
+#      origins='*')
 
 # Secret key for session management
 app.secret_key = str(uuid.uuid4())

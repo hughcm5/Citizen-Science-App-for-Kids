@@ -25,7 +25,7 @@ env_variables:
     HEALTH_CHECK_TIMEOUT: "10"
     NO_AUTH_SERVICES: "projects,observations,csv"
 
-    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com"
+    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com,http://localhost:8081"
     DEBUG: "True"
 
     CLOUD_SQL: "True"
