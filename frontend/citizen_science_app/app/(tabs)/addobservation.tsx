@@ -13,6 +13,7 @@ import {
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
+import { BACKEND_URL } from '@env';
 
 export default function addbservation() {
   // Usestate variables to hold all the form inputs 
@@ -44,7 +45,7 @@ export default function addbservation() {
   // Based of format (text, dropdown, checkbox) selected
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
+      const res = await fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +70,7 @@ export default function addbservation() {
   // For checkbox submissions
   const handleSubmit2 = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
+      const res = await fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +95,7 @@ export default function addbservation() {
   // For dropdown submissions
   const handleSubmit3 = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
+      const res = await fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,15 +119,16 @@ export default function addbservation() {
 
   // Use effect triggered only once at the start of page render to retrieve projects
   useEffect(() => {
-    fetch("http://192.168.68.104:5001/projects") // replace with your backend
+    fetch(`${BACKEND_URL}/projects`) // replace with your backend
       .then((response) => response.json())
       .then((data) => {
-        setProjects(data);
+        setProjects(data)
       })
       .catch((error) => {
         console.error("Error fetching projects:", error);
       });
   }, []);
+
 
   // Async functions that fetch story based on the "content" prompt attributed entered
   // The user inputs their API-KEY and sends a fetch request to the given endpoint

@@ -24,7 +24,7 @@ function Project() {
     }
     console.log('project_title:', project_title);
     axios
-      .post("http://localhost:5001/projects", project_data)
+      .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects", project_data)
       .then((response) => {
         console.log('Project post successful');
       })

@@ -41,7 +41,7 @@ function ViewProject() {
       description
     }
     console.log('project:', ViewProject);
-    axios.post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects', project_payload)
+    axios.post('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects', project_payload)
     .then((response) => {
       console.log('Project creation successful');
       fetchData(); // repopulate table with new project 
