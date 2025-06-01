@@ -124,7 +124,8 @@ function Admin() {
     // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback that saving is happening
 
     try {
-      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins' + editedAdminData.admin_id.toString(), admin_payload);
+      // const response = await axios.put('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/' + editedAdminData.admin_id.toString(), admin_payload);
+      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins/' + editedAdminData.admin_id.toString(), admin_payload);
       console.log('Admin updated successfully: ', response.data);
       // Handle successful update (update/refresh table upon deletion)
 
