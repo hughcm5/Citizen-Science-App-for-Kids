@@ -35,46 +35,11 @@ function App() {
           <Route path = "/" element= {<Homepage />}/>
           <Route path = "/Landing" element= {<Landing />}/>
           <Route path = "/login" element= {<Landing />}/>
-          <Route
-            path="/ViewProjects"
-            element={
-              <PrivateRoute>
-                <ViewProjects />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/Admins"
-            element={
-              <PrivateRoute>
-                <Admin />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/Classrooms"
-            element={
-              <PrivateRoute>
-                <Classroom />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/CreateStudent"
-            element={
-              <PrivateRoute>
-                <Student />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/CreateObservation"
-            element={
-              <PrivateRoute>
-                <Observation />
-              </PrivateRoute>
-            }
-          />
+          <Route path = "/ViewProjects" element= {<ViewProjects />}/>
+          <Route path = "/Admins" element= {<Admin />}/>
+          <Route path = "/Classrooms" element= {<Classroom />}/>
+          <Route path = "/CreateStudent" element= {<Student />}/>
+          <Route path = "/CreateObservation" element= {<Observation />}/>
         </Routes>
       </Router>
       <footer>
