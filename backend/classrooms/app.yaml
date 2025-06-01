@@ -1,6 +1,6 @@
 runtime: python312
 service: classrooms
-entrypoint: gunicorn -b :$PORT api_gateway:app
+entrypoint: gunicorn -b :$PORT classrooms:app
 
 handlers:
     # This handler routes all requests not caught above to your main app. It is
