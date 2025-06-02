@@ -143,7 +143,7 @@ function Student() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const student_data = {
-      class_id: class_id,
+      class_id: parseInt(class_id),
       student_lastname,
       student_firstname
     }
