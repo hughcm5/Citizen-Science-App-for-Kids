@@ -24,13 +24,7 @@ load_dotenv(find_dotenv())
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={
-    r"/admins*": {
-        "origins": ["http://localhost:3000", "https://your-production-frontend-url.com"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
+
 
 def access_secret_version(project_id, secret_id, version_id="latest"):
     try:
