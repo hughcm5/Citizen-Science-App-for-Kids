@@ -14,6 +14,11 @@ load_dotenv(find_dotenv())
 # Initialize Flask app
 app = Flask(__name__)
 # CORS configuration
+app.config.update(
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_SECURE=True
+)
+
 CORS(app,
      origins=os.getenv('CORS_ORIGINS', 'http://localhost:8081').split(','),
      supports_credentials=True
