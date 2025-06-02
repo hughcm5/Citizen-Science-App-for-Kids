@@ -310,11 +310,15 @@ function Observation() {
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '40px'}}>
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}} >Observations</h1>
+          <Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>
+            <Col md={9}>
+            <p style={{fontSize:'20px', margin:'1%'}}>
               Each project has a collection of observations made by the students in a class
-            </h1>
+            </p>
             <h2>Current Observations:</h2>
             { /* ( <pre>{JSON.stringify(observations, null, 2)}</pre> ) */ }
             {/* 

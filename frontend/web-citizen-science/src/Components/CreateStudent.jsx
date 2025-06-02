@@ -143,7 +143,6 @@ function Student() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const student_data = {
-      classroom_id: class_id,
       class_id: class_id,
       student_lastname,
       student_firstname
@@ -168,20 +167,27 @@ function Student() {
     // Format the string to remove timezone 
     return date.toISOString().split('T')[0];
   }
+/* ------------ Table Styling ------------*/
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
 
 /* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '10px'}}>
-            Students Page
-            </h1>
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}} >Students</h1>
+          <Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>
+            <Col md={9}>
             <p>Each classroom will have students that can access certain projects based on their assigned class codes</p>
             <h2>Current Students:</h2>
-
-            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
 
             { /* (<pre>{JSON.stringify(studentData, null, 2)}</pre>) */ }
             
@@ -189,7 +195,7 @@ function Student() {
             // /* ------------ Student Table  ------------*/
             // /* ------------ RUD Funtions  ------------*/
           }
-          <table className='studentTable'>
+          <table className='studentTable' style={tableStyle} >
             <thead>
               <tr>
                 <th> </th>

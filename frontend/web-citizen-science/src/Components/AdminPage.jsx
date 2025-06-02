@@ -152,15 +152,28 @@ function Admin() {
     }
   }
 
+  /* ------------ Table Styling ------------*/
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
+
 /* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '40px'}}>
-             The science projects are administered by educators
-            </h1>
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}}> Admins</h1>
+                  <Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>
+                <Col md={9}>
+            <p>The science projects are administered by educators</p>
+             
+            
             <h2>Current Admins:</h2>
             <br />
             {
@@ -169,7 +182,7 @@ function Admin() {
               <pre>{JSON.stringify(adminData, null, 2)}</pre>
               */
             }
-            <table className="adminTable">
+            <table className="adminTable" style={tableStyle}>
               <thead>
                   <tr>
                     <th> </th>

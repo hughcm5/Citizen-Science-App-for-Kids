@@ -17,6 +17,7 @@ function Classroom() {
   const [grade_level, setgrade_level] = useState('');
 
     /* Prepare the retrieve on the frontend */
+  const [admins, setAdmins] = useState([]);
   const [classData, setclassData] = useState([]); // make sure the default is an empty list 
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
@@ -38,6 +39,7 @@ function Classroom() {
   };
   useEffect(() => {
     fetchData();
+    fetchAdmins();
   }, []);
   
 /* ------------ Create ------------*/
@@ -87,6 +89,32 @@ function Classroom() {
   };
 
 /* ------------ Update ------------*/
+  const fetchAdmins = async () => {
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins')
+      .then((response) => {
+        console.log('Fetched admins successfully');
+        const admins = response.data
+        setAdmins(response.data);
+
+        // Set default selected classroom if null
+        if (admin_id === null || admin_id === '') {
+          setadmin_id(admins[0].admin_id);
+        } else {
+          // If it is already selected, make sure it exists
+          const existingadmin= admins.find(e => e.admin_id === admin_id);
+          // Else, just select the first one by default
+          if (!existingadmin) {
+            setadmin_id(admins[0].admin_id);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve admins');
+        console.error(err);
+      });
+  }
+
   const onEditRow = (classroom) => {
     // allow the row's content to be edited by the user
     setEditedId(classroom.class_id);
@@ -138,23 +166,34 @@ function Classroom() {
     }
   }
 
+  /* ------------ Table Styling ------------*/
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
+
 
 /* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '40px'}}>
-             Different classrooms will house different students and projects in the system
-            </h1>
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}}>Classrooms </h1>
+<Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>          <Col md={9}>
+            <p style={{fontSize:'20px', margin:'1%'}}>
+             Different classrooms will house different students and projects in the system</p>
             <h2>Current Classrooms:</h2>
             <p></p>
                         {
               // For debugging purposes only
            //  <pre>{JSON.stringify(classData, null, 2)}</pre>
             }
-            <table className ="classTable">
+            <table className ="classTable" style={tableStyle}>
               <thead>
                 <tr>
                     <th> </th>
@@ -217,8 +256,15 @@ function Classroom() {
             <form onSubmit={handleSubmit}>
               <label>
               Create a new Classroom - Enter the Class Details: <br />
-              <input type="number" placeholder="Class Code" value={class_code} onChange={(e) => setclass_code(e.target.value)} />
-              <input type="number" placeholder="Admin's ID" value={admin_id} onChange={(e) => setadmin_id(e.target.value)} />
+              <select
+                value={admin_id}
+                onChange={e => setadmin_id(e.target.value)}
+                >
+                {admins.map(admin => (
+                  <option value={admin.admin_id}>{admin.admin_id + ' (' + admin.admin_firstname + ')'}</option>
+                ))}
+              </select>
+             <input type="number" placeholder="Class Code" value={class_code} onChange={(e) => setclass_code(e.target.value)} />
               <input type="text" placeholder="Classroom's Name" value={class_name} onChange={(e) => setclass_name(e.target.value)} />
               <input type="text" placeholder="Grade Level (K, 1st, etc)" value={grade_level} onChange={(e) => setgrade_level(e.target.value)} />
               </label>

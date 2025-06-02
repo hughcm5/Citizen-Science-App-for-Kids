@@ -49,16 +49,17 @@ function Landing() {
               <Col md={9}>
               <h1 style={{padding:'2px'}}>Please log in to access the Admin Database</h1>
                 <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'center'}} onClick={(e) => onOAuthLogin()}>Login</Button>
+                <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'right'}} onClick={(e) => onOAuthLogout()}>Logout</Button>
                 { /* 
                 <Button onClick={(e) => onSessionGet()}>OAuth Get Session Info</Button>
-                <Button onClick={(e) => onOAuthLogout()}>OAuth Logout</Button>
                 */ }
                 {
+                /*
                   sessionInfo !== null &&
                     (<div>
                       {JSON.stringify(sessionInfo, null, 2)}
                     </div>)
-                }
+                */ }
               </Col>
             </Row>
           </Container>
