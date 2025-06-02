@@ -126,8 +126,8 @@ def create_student():
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
-        if not isinstance(data['class_id'], int) or not isinstance(data['student_id'], int):
-            return jsonify({'error': 'student_id and class_id must be integers'}), 400
+        if not isinstance(data['class_id'], int):
+            return jsonify({'error': 'class_id must be integers'}), 400
         # if not isinstance(data['class_codes'], list):
         #     return jsonify({'error': 'class_codes must be a list'}), 400
         new_student = Student(
@@ -161,8 +161,8 @@ def update_student(student_id):
             return jsonify({'error': 'Missing required fields'}), 400
         if not isinstance(data['student_lastname'], str) or not isinstance(data['student_firstname'], str):
             return jsonify({'error': 'student_lastname and student_firstname must be strings'}), 400
-        if not isinstance(data['class_id'], int) or not isinstance(data['student_id'], int):
-            return jsonify({'error': 'student_id and class_id must be integers'}), 400
+        if not isinstance(data['class_id'], int):
+            return jsonify({'error': 'class_id must be integers'}), 400
         # if not isinstance(data['class_codes'], list):
         #     return jsonify({'error': 'class_codes must be a list'}), 400
 

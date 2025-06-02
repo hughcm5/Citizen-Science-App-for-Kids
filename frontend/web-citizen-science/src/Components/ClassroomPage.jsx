@@ -53,6 +53,7 @@ function Classroom() {
     console.log('classroom data:', class_data); // Log the class_data object for debugging
     axios
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms', class_data)
+      console.log(response.data);
       .then((response) => {
         console.log('Classroom creation successful');
         fetchData();   // refresh table after creation
