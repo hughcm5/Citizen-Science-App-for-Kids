@@ -35,5 +35,5 @@ env_variables:
 
     AUTH0_DOMAIN: "dev-tmf2tlri8xgzzr2y.us.auth0.com"
 
-    REDIRECT_URI: "/oauth/callback"
+    REDIRECT_URI: "https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/oauth/callback"
     FRONTEND_REDIRECT_URL: "https://citizen-science-app-for-kids.wn.r.appspot.com"

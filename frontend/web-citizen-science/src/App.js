@@ -43,48 +43,11 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path = "/ViewProjects" element= {<ViewProjects />}/>
           <Route path = "/Admins" element= {<Admin />}/>
           <Route path = "/Classrooms" element= {<Classroom />}/>
           <Route path = "/CreateStudent" element= {<Student />}/>
           <Route path = "/CreateObservation" element= {<Observation />}/>
-{  
-        
-          /*}
-                    <Route path = "/ViewProjects" element= {<ViewProjects />}/>
-
-          <Route
-            path="/Admins"
-            element={
-              <PrivateRoute>
-                <Admin />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/Classrooms"
-            element={
-              <PrivateRoute>
-                <Classroom />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/CreateStudent"
-            element={
-              <PrivateRoute>
-                <Student />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/CreateObservation"
-            element={
-              <PrivateRoute>
-                <Observation />
-              </PrivateRoute>
-            }
-          />
-*/ }
         </Routes>
       </Router>
       <footer>
