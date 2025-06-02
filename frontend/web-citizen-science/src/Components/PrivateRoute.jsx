@@ -7,11 +7,17 @@ const PrivateRoute = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState(null);
 
     useEffect(() => {
+        console.log('Attempting to Check login...')
+
         axios
-        .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/session')
+        .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/session', {
+            withCredentials: true
+        })
+ 
         .then((response) => {
             const session_data = response.data;
             setLoggedIn(session_data.logged_in);
+// for debugging purposes     console.log('response.data: ', session_data)
         })
         .catch((error) => {
             console.error('Failed to get session from the backend:', error);

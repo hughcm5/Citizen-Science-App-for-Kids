@@ -43,6 +43,15 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path = "/Admins" element= {<Admin />}/>
+          <Route path = "/Classrooms" element= {<Classroom />}/>
+          <Route path = "/CreateStudent" element= {<Student />}/>
+          <Route path = "/CreateObservation" element= {<Observation />}/>
+{  
+        
+          /*}
+                    <Route path = "/ViewProjects" element= {<ViewProjects />}/>
+
           <Route
             path="/Admins"
             element={
@@ -75,6 +84,7 @@ function App() {
               </PrivateRoute>
             }
           />
+*/ }
         </Routes>
       </Router>
       <footer>
