@@ -436,48 +436,7 @@ function ViewProject() {
               }
             </tbody>
           </table>
-              <p>Observation Data</p>
-          { /* Observation data table */ }
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th>Data Header</th>
-                <th>Data Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                selectedProjectResults !== null && Object.entries(selectedProjectResults.observations).forEach(([data_key, data_value]) => (
-                  <tr>
-                    <td>{data_key}</td>
-                    <td>{data_value}</td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-              <p>Field Data</p>
-          { /* field data stats table */ }
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th>Field Data Stats</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                selectedProjectResults !== null && Object.keys(selectedProjectResults.field_data_stats).forEach(([data_key, data_stats]) => (
-                  <tr>
-                    <td>
-                    {
-                      data_key + ' => ' + Object.keys(data_stats).map(key => `${key}: ${data_stats[key]}`).join(', ')
-                    }
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table> <br />
+           <br />
 
           <p> Download Project Data</p>
           { /* ------------ Show CSV File  ------------*/ }
