@@ -241,7 +241,13 @@ function ViewProject() {
   };
 
 /* ------------ Table Styling ------------*/
-
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
 
 /* ------------ Page Content  ------------*/
   return (
@@ -262,7 +268,7 @@ function ViewProject() {
             }
             <p>You can view the current Citizen Science Projects.</p>
             { /* ------------ Project Table  ------------*/ }
-            <table className="projectTable">
+            <table className="projectTable" style={tableStyle}>
               <thead>
                 <tr>
                   <th> </th>
@@ -306,8 +312,8 @@ function ViewProject() {
             <h2> Create Project </h2>
             <p>Enter the project details to create a new project.</p>
             { /* ------------ Selection for Class ID ------------*/ }
-            <form onSubmit={handleSubmit}>
-              <label> 
+            <form onSubmit={handleSubmit} style={tableStyle}>
+              <label>  <br />
               <select
             value={class_id}
             onChange={e => setclass_id(e.target.value)}
@@ -315,7 +321,7 @@ function ViewProject() {
             {classrooms.map(classroom => (
               <option value={classroom.class_id}>{classroom.class_name + ' (' + classroom.class_id + ')'}</option>
             ))}
-              </select>
+              </select><br />
               <input type="text" placeholder="Title" value={project_title} onChange={(e) => setproject_title(e.target.value)} />
               <input type="textfield" placeholder="describe the project for the students" value={description} onChange={(e) => setdescription(e.target.value)} />
               </label>
@@ -335,14 +341,15 @@ function ViewProject() {
             ))}
           </select>
           <button onClick={fetchSelectedProject}>See Results</button>
-           <br />
-            {
+           <br /><br />
+            { /*
               // for debugging purposes
               JSON.stringify(selectedProjectResults, null, 2)
             }
 
           { /* Project description table */ }
-          <table>
+          <p>Project Details</p>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Class (Class ID)</th>
@@ -364,7 +371,8 @@ function ViewProject() {
           </table>
 
           { /* Project stats table */ }
-          <table>
+          <p>Project Statistics</p>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Total Observations</th>
@@ -392,9 +400,9 @@ function ViewProject() {
               }
             </tbody>
           </table>
-
+          <p>Student Activity</p>
           { /* students with observations table */ }
-          <table>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Students with Observations (last name, first (student ID))</th>
@@ -410,9 +418,9 @@ function ViewProject() {
               }
             </tbody>
           </table>
-
+          <p>Inactive Students</p>
           { /* students without observations table */ }
-          <table>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Students without Observations (last name, first (student ID))</th>
@@ -428,9 +436,9 @@ function ViewProject() {
               }
             </tbody>
           </table>
-
+              <p>Observation Data</p>
           { /* Observation data table */ }
-          <table>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Data Header</th>
@@ -448,9 +456,9 @@ function ViewProject() {
               }
             </tbody>
           </table>
-
+              <p>Field Data</p>
           { /* field data stats table */ }
-          <table>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>Field Data Stats</th>
@@ -469,13 +477,13 @@ function ViewProject() {
                 ))
               }
             </tbody>
-          </table>
+          </table> <br />
 
           <p> Download Project Data</p>
           { /* ------------ Show CSV File  ------------*/ }
           <p>  </p>
           { /* ------------ Allow user to download CSV File  ------------*/ }
-          <button onClick={fetchCSV}> Download CSV </button> <br />
+          <button onClick={fetchCSV}> Download CSV </button> <br /><br />
             </Col>
         </Row>
       </Container>
