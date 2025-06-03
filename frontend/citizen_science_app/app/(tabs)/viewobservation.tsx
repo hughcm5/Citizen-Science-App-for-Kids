@@ -24,11 +24,13 @@ export default function viewobservation() {
   // Use effect that triggers only once at the start of component render to fetch
   // all observations stored in the backend
   useEffect(() => {
-    fetch("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations")
+    fetch(
+      "https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations"
+    )
       .then((response) => response.json())
       .then((data) => {
         setObservations(data);
-        console.log(data)
+        console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching", error);
@@ -82,21 +84,6 @@ export default function viewobservation() {
           for every obsveration
         */}
         {observations.map((observation) => {
-          const { observationText, checkboxOptions, observationDropdown } =
-            observation["observation data"];
-
-          let displayText = "No observation available";
-
-          if (observationText) {
-            displayText = observationText;
-          } else if (checkboxOptions && checkboxOptions.length > 0) {
-            displayText = checkboxOptions.join(", ");
-          } else if (observationDropdown) {
-            displayText = Array.isArray(observationDropdown)
-              ? observationDropdown.join(", ")
-              : observationDropdown;
-          }
-
           return (
             <Card key={observation.observation_id} m={4}>
               <Box p={5}>
@@ -127,9 +114,13 @@ export default function viewobservation() {
                     Observation ID: {observation.observation_id} for Project:{" "}
                     {observation["project title"]}
                   </Heading>
-                  <Text>
-                    Observations: {displayText}
-                  </Text>
+                  {Object.entries(observation["observation data"]).map(
+                    ([key, value], index) => (
+                      <Text key={index}>
+                        {key}: {String(value)}
+                      </Text>
+                    )
+                  )}
                   <Text fontSize="xs" color="gray.500">
                     Created: {new Date(observation.created_at).toLocaleString()}
                   </Text>
