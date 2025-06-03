@@ -5,9 +5,15 @@ handlers:
     - url: /
       static_files: build/index.html
       upload: build/index.html
+      redirect_http_response_code: 301
     - url: /(.*)
-      static_files: build/\1
+      static_files: build/index.html
       upload: build/(.*)
+      redirect_http_response_code: 301
+    - url: /(.*\.(.+))$
+      static_files: build/index.html
+      upload: build/(.*\.(.+))
+      redirect_http_response_code: 301
 
 env_variables:
     REACT_APP_BACKEND_GATEWAY_URL: https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com
