@@ -13,18 +13,17 @@ load_dotenv(find_dotenv())
 
 # Initialize Flask app
 app = Flask(__name__)
-# CORS configuration
+# Configure session management
 app.config.update(
     SESSION_COOKIE_SAMESITE='None',
     SESSION_COOKIE_SECURE=True
 )
-
+# CORS configuration
 CORS(app,
      origins=os.getenv('CORS_ORIGINS', 'http://localhost:8081').split(','),
      supports_credentials=True
      )
-# CORS(app,
-#      origins='*')
+
 
 # Secret key for session management
 app.secret_key = str(uuid.uuid4())
@@ -80,18 +79,8 @@ SERVICE_URLS = {
     'observations': os.getenv('OBSERVATIONS_SERVICE_URL') or 'http://localhost:5002',
     'students': os.getenv('STUDENTS_SERVICE_URL') or 'http://localhost:5003',
     'admins': os.getenv('TEACHERS_SERVICE_URL') or 'http://localhost:5004',
-    # 'csv': os.getenv('CSV_SERVICE_URL') or 'http://localhost:5005',
     'classrooms': os.getenv('CLASSROOMS_SERVICE_URL') or 'http://localhost:5006',
 }
-
-
-def verify_token(token):
-    """
-    Verify the token with Google Auth or Auth0.
-    To be implemented.
-    """
-    # TODO - Implement token verification logic
-    pass
 
 
 @app.route('/health', methods=['GET'])
@@ -250,8 +239,6 @@ def gateway(service, path=None):
     service = service.lower()
     if service not in SERVICE_URLS.keys():
         return jsonify({'Error': f'Unknown service: {service}'}), 404
-
-    NO_AUTH_SERVICES = os.getenv('NO_AUTH_SERVICES', "projects,observations,csv").split(',')
 
     service_url = SERVICE_URLS.get(service)
     if not service_url:

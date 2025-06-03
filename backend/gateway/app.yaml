@@ -23,9 +23,8 @@ env_variables:
     CLASSROOMS_SERVICE_NAME: "classrooms"
 
     HEALTH_CHECK_TIMEOUT: "10"
-    NO_AUTH_SERVICES: "projects,observations,csv"
 
-    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com,http://localhost:8081"
+    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com,http://localhost:8081,http://localhost:5000"
     DEBUG: "True"
 
     CLOUD_SQL: "True"
