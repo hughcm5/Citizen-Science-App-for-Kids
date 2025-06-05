@@ -130,7 +130,7 @@ export default function addbservation() {
 
   // Use effect triggered only once at the start of page render to retrieve projects
   useEffect(() => {
-    fetch(`${BACKEND_URL}/projects`) // replace with your backend
+    fetch(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects`) // replace with your backend
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
@@ -142,7 +142,7 @@ export default function addbservation() {
   }, []);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/students`) // replace with your backend
+    fetch(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/students`) // replace with your backend
       .then((response) => response.json())
       .then((data) => {
         setStudents(data);
