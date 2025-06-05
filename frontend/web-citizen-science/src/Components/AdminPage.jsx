@@ -15,7 +15,6 @@ function Admin() {
   const [admin_firstname, setadmin_firstname] = useState('');
   const [admin_lastname, setadmin_lastname] = useState('');
   const [email, setemail] = useState('');
-  const [role, setrole] = useState('');
 
   const [adminData, setAdminData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +48,7 @@ function Admin() {
       admin_firstname,
       admin_lastname,
       email,
-      role
+      'role': 'teacher' // The backend will only accept the role 'teacher'
     }
     console.log('admin:', Admin);
     axios
@@ -117,7 +116,6 @@ function Admin() {
       'admin_firstname' : editedAdminData.admin_firstname,
       'admin_lastname' : editedAdminData.admin_lastname,
       'email' : editedAdminData.email,
-      'role' : editedAdminData.role,
       'oauth_id' : editedAdminData.oauth_id
     };
 
@@ -136,7 +134,6 @@ function Admin() {
         admin_to_be_updated.admin_firstname = editedAdminData.admin_firstname;
         admin_to_be_updated.admin_lastname = editedAdminData.admin_lastname;
         admin_to_be_updated.email = editedAdminData.email;
-        admin_to_be_updated.role = editedAdminData.role;
         admin_to_be_updated.oauth_id = editedAdminData.oauth_id;
       }
 
@@ -226,13 +223,7 @@ function Admin() {
                           : (admin.admin_firstname)
                         }
                       </td>
-                      <td>
-                        {
-                          editedId === admin.admin_id
-                          ? (<input name="role" type="text" value={editedAdminData.role} onChange={onEditChange} />)
-                          : (admin.role)
-                        }
-                      </td>
+                      <td>{admin.role}</td>
                       <td>{toHumanReadableDate(admin.created_at)}</td>
                       <td>{toHumanReadableDate(admin.updated_at)}</td>
                       <td>
@@ -253,10 +244,9 @@ function Admin() {
             <form onSubmit={handleSubmit}>
               <label>
               Create a new Admin - Enter the Admin's Details: </label><br />
-              <input type="text" placeholder="First Name" value={admin_firstname} onChange={(e) => setadmin_firstname(e.target.value)} />
               <input type="text" placeholder="Last Name" value={admin_lastname} onChange={(e) => setadmin_lastname(e.target.value)} />
+              <input type="text" placeholder="First Name" value={admin_firstname} onChange={(e) => setadmin_firstname(e.target.value)} />
               <input type="text" placeholder="Admin's Email" value={email} onChange={(e) => setemail(e.target.value)}/>
-              <input type="text" placeholder="Admin's Role (teacher, principle, etc)" value={role} onChange={(e) => setrole(e.target.value)}/>
               <br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>

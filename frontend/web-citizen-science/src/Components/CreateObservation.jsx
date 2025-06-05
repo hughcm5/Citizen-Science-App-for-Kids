@@ -11,16 +11,10 @@ import axios from "axios";
 
 /* ------------ Page Functions  ------------*/
 function Observation() {
-  /* Prepare the payloads */
-  const [data, setdata] = useState('');
 
   const [newProjectId, setNewProjectId] = useState(null);
   const [newStudentId, setNewStudentId] = useState(null);
-  const [newObservationData, setNewObservationData] = useState([]);
-  const [newObservationRow, setNewObservationRow] = useState([]);
-  const [newObservationPairs, setNewObservationPairs] = useState([]);
-
-  const [observationRowNumber, setObservationRowNumber] = useState(1);
+  const [newObservationPairs, setNewObservationPairs] = useState([{ key: '', value: '' }]);
 
   const [classes, setClasses] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -29,11 +23,6 @@ function Observation() {
 
   const [editedId, setEditedId] = useState(null);
   const [editedObservation, setEditedObservation] = useState({});
-
-    /* Prepare the retrieve on the frontend */
-  const [loading, setLoading] = useState(true);
-  const [retrieveError, setRetrieveError] = useState(null);
-
 
   /* ------------ Helpers  ------------*/
   const toHumanReadableDate = (backendDateStr) => {
@@ -299,6 +288,7 @@ function Observation() {
   /* ------------ Table Styling ------------*/
   var tableStyle = {
        "border": "1px solid black",
+        width: '100%',
     };
   var column = {
       padding: '10px',
@@ -443,10 +433,8 @@ function Observation() {
                   </div>
                 ))
               }
-
-              <br />
               <button type='button' onClick={addNewObservationPair}>Add a new observation</button>
-              </label><br />
+              </label><br /><br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>
             </Col>

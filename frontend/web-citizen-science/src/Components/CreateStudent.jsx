@@ -222,7 +222,7 @@ function Student() {
                   }
                 </td>
                 <td>{student.student_id}</td>
-                <td>{student.class_id}</td>
+                <td>{classrooms.find((c) => c.class_id === student.class_id)?.class_name + ' (' + student.class_id + ')'}</td>
                 <td>
                   {
                     editedId === student.student_id
