@@ -96,7 +96,10 @@ function Student() {
 
     try {
       const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students/' + editedStudentData.student_id.toString(), student_payload);
-      console.log('Student updated successfully: ', response.data);
+      const msg = 'Student updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
+
       // Handle successful update (update/refresh table upon deletion)
 
       // Update the fields on the front end side to speed it up?
@@ -113,7 +116,9 @@ function Student() {
       cancelEdit();
       // TODO: have some kind of popup telling the user of the successful edit
     } catch (error) {
-      console.error('Error updating student:', error);
+      const msg = 'Error updating student';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // Error handling
       // TODO: Maybe autocancel or leave up at editing mode?
       // TODO: have some kind of popup telling the user that something wrong happened
@@ -124,11 +129,15 @@ function Student() {
     try {
       const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students/' + id.toString());
       
-      console.log('Student deleted successfully:', response.data);
+      const msg = 'Student deleted successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       // Handle successful deletion (update/refresh table upon deletion)
       fetchData();
     } catch (error) {
-      console.error('Error deleting student:', error);
+      const msg = 'Error deleting student';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // Error handling
     }
   };
@@ -151,11 +160,15 @@ function Student() {
     axios
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students', student_data)
       .then((response) => {
-        console.log('Student creation successful');
+        const msg = 'Student creation successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
         fetchData();
       })
       .catch((err) => {
-        console.log('Failed to create student in the database');
+        const msg = 'Failed to create student in the database';
+        console.error(msg, ': ', err);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
@@ -222,7 +235,7 @@ function Student() {
                   }
                 </td>
                 <td>{student.student_id}</td>
-                <td>{student.class_id}</td>
+                <td>{classrooms.find((c) => c.class_id === student.class_id)?.class_name + ' (' + student.class_id + ')'}</td>
                 <td>
                   {
                     editedId === student.student_id

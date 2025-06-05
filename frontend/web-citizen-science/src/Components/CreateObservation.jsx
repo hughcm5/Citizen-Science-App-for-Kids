@@ -11,16 +11,10 @@ import axios from "axios";
 
 /* ------------ Page Functions  ------------*/
 function Observation() {
-  /* Prepare the payloads */
-  const [data, setdata] = useState('');
 
   const [newProjectId, setNewProjectId] = useState(null);
   const [newStudentId, setNewStudentId] = useState(null);
-  const [newObservationData, setNewObservationData] = useState([]);
-  const [newObservationRow, setNewObservationRow] = useState([]);
-  const [newObservationPairs, setNewObservationPairs] = useState([]);
-
-  const [observationRowNumber, setObservationRowNumber] = useState(1);
+  const [newObservationPairs, setNewObservationPairs] = useState([{ key: '', value: '' }]);
 
   const [classes, setClasses] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -29,11 +23,6 @@ function Observation() {
 
   const [editedId, setEditedId] = useState(null);
   const [editedObservation, setEditedObservation] = useState({});
-
-    /* Prepare the retrieve on the frontend */
-  const [loading, setLoading] = useState(true);
-  const [retrieveError, setRetrieveError] = useState(null);
-
 
   /* ------------ Helpers  ------------*/
   const toHumanReadableDate = (backendDateStr) => {
@@ -166,14 +155,17 @@ function Observation() {
     axios
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations", observationPayload)
       .then((response) => {
-        console.log('Observation post successful');
-        console.log(response);
+
+        const msg = 'Observation post successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to post observation');
-        console.error(err);
+        const msg = 'Failed to post observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
@@ -199,14 +191,17 @@ function Observation() {
     axios
       .delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + id.toString())
       .then((response) => {
-        console.log('Observation delete successful');
-        console.log(response);
+
+        const msg = 'Observation deleted successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to delete observation');
-        console.error(err);
+        const msg = 'Failed to delete observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
@@ -268,8 +263,9 @@ function Observation() {
     axios
       .put(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + editedId.toString(), observationPayload)
       .then((response) => {
-        console.log('Observation update successful');
-        console.log(response);
+        const msg = 'Observation update successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         // A bit of an oxymoron since the edit was already successful but this is to disable the edit fields
         cancelEdit();
@@ -278,8 +274,9 @@ function Observation() {
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to update observation');
-        console.error(err);
+        const msg = 'Failed to update observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
@@ -299,6 +296,7 @@ function Observation() {
   /* ------------ Table Styling ------------*/
   var tableStyle = {
        "border": "1px solid black",
+        width: '100%',
     };
   var column = {
       padding: '10px',
@@ -443,10 +441,8 @@ function Observation() {
                   </div>
                 ))
               }
-
-              <br />
               <button type='button' onClick={addNewObservationPair}>Add a new observation</button>
-              </label><br />
+              </label><br /><br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>
             </Col>

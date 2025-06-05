@@ -15,7 +15,6 @@ function Admin() {
   const [admin_firstname, setadmin_firstname] = useState('');
   const [admin_lastname, setadmin_lastname] = useState('');
   const [email, setemail] = useState('');
-  const [role, setrole] = useState('');
 
   const [adminData, setAdminData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,18 +48,22 @@ function Admin() {
       admin_firstname,
       admin_lastname,
       email,
-      role
+      'role': 'teacher' // The backend will only accept the role 'teacher'
     }
     console.log('admin:', Admin);
     axios
       // .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins', admin_payload)
       .then((response) => {
-        console.log('Admin creation successful');
+        const msg = 'Admin creation successful';
+        console.log(msg);
+        window.alert(msg);
         fetchData();
       })
       .catch((err) => {
-        console.log('Failed to create admin');
+        const msg = 'Failed to create admin';
+        console.error(msg);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
@@ -79,11 +82,15 @@ function Admin() {
     // const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/` + id.toString());
     const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + `/admins/` + id.toString());
     
-    console.log('Admin deleted successfully:', response.data);
+    const msg = 'Admin deleted successfully';
+    console.log(msg, ': ', response?.data);
+    window.alert(msg);
     // Handle successful deletion (update/refresh table upon deletion)
     fetchData();
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    const msg = 'Error deleting admin';
+    window.alert(msg);
+    console.error(msg, ': ', error);
     // Error handling
   }
 };
@@ -117,7 +124,6 @@ function Admin() {
       'admin_firstname' : editedAdminData.admin_firstname,
       'admin_lastname' : editedAdminData.admin_lastname,
       'email' : editedAdminData.email,
-      'role' : editedAdminData.role,
       'oauth_id' : editedAdminData.oauth_id
     };
 
@@ -126,7 +132,9 @@ function Admin() {
     try {
       // const response = await axios.put('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/' + editedAdminData.admin_id.toString(), admin_payload);
       const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins/' + editedAdminData.admin_id.toString(), admin_payload);
-      console.log('Admin updated successfully: ', response.data);
+      const msg = 'Admin updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       // Handle successful update (update/refresh table upon deletion)
 
       // Update the fields on the front end side to speed it up?
@@ -136,7 +144,6 @@ function Admin() {
         admin_to_be_updated.admin_firstname = editedAdminData.admin_firstname;
         admin_to_be_updated.admin_lastname = editedAdminData.admin_lastname;
         admin_to_be_updated.email = editedAdminData.email;
-        admin_to_be_updated.role = editedAdminData.role;
         admin_to_be_updated.oauth_id = editedAdminData.oauth_id;
       }
 
@@ -145,7 +152,9 @@ function Admin() {
       cancelEdit();
       // TODO: have some kind of popup telling the user of the successful edit
     } catch (error) {
-      console.error('Error updating admin:', error);
+      const msg = 'Error updating admin';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // Error handling
       // TODO: Maybe autocancel or leave up at editing mode?
       // TODO: have some kind of popup telling the user that something wrong happened
@@ -226,13 +235,7 @@ function Admin() {
                           : (admin.admin_firstname)
                         }
                       </td>
-                      <td>
-                        {
-                          editedId === admin.admin_id
-                          ? (<input name="role" type="text" value={editedAdminData.role} onChange={onEditChange} />)
-                          : (admin.role)
-                        }
-                      </td>
+                      <td>{admin.role}</td>
                       <td>{toHumanReadableDate(admin.created_at)}</td>
                       <td>{toHumanReadableDate(admin.updated_at)}</td>
                       <td>
@@ -253,10 +256,9 @@ function Admin() {
             <form onSubmit={handleSubmit}>
               <label>
               Create a new Admin - Enter the Admin's Details: </label><br />
-              <input type="text" placeholder="First Name" value={admin_firstname} onChange={(e) => setadmin_firstname(e.target.value)} />
               <input type="text" placeholder="Last Name" value={admin_lastname} onChange={(e) => setadmin_lastname(e.target.value)} />
+              <input type="text" placeholder="First Name" value={admin_firstname} onChange={(e) => setadmin_firstname(e.target.value)} />
               <input type="text" placeholder="Admin's Email" value={email} onChange={(e) => setemail(e.target.value)}/>
-              <input type="text" placeholder="Admin's Role (teacher, principle, etc)" value={role} onChange={(e) => setrole(e.target.value)}/>
               <br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>

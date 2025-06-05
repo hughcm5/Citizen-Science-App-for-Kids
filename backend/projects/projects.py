@@ -216,14 +216,14 @@ def get_project_csv(project_id):
         headers = [
             'observation_id', 'project_id', 'project title', 'student_id',
             'student firstname', 'student lastname', 'class id',
-            'created_at', 'updated_at', 'Observation data'
+            'created_at', 'updated_at', 'observation data'
         ]
         csv_data = ','.join(headers) + '\n'
 
         for ob_data in obs_dict:
             row = [
-                # if header is not 'Observation data', convert to string
-                str(ob_data.get(h, '')) if h != 'Observation data' else
+                # if header is not 'observation data', convert to string
+                str(ob_data.get(h, '')) if h != 'observation data' else
                 json.dumps(ob_data.get(h, {}))
                 for h in headers
             ]
@@ -248,21 +248,26 @@ def download_project_csv(project_id):
         headers = [
             'observation_id', 'project_id', 'project title', 'student_id',
             'student firstname', 'student lastname', 'class id',
-            'created_at', 'updated_at', 'Observation data'
+            'created_at', 'updated_at', 'observation data'
         ]
         csv_data = ','.join(headers) + '\n'
-        file_name = f'project_{project_id}_observations.csv'
+        
+        # Fix to resolve file paths as Flask's "send_file" looks at different directories than Python's "open"
+        # Fix it to make them point to the same absolute path
+        dir = os.path.dirname(os.path.realpath(__file__))
+        file_name = os.path.abspath(os.path.join(dir, f'project_{project_id}_observations.csv'))
+        
         # Iterate through the observations and make the obervation data a string
         for ob_data in obs_dict:
             row = [
-                # if header is not 'Observation data', convert to string
-                str(ob_data.get(h, '')) if h != 'Observation data' else
+                # if header is not 'observation data', convert to string
+                str(ob_data.get(h, '')) if h != 'observation data' else
                 json.dumps(ob_data.get(h, {}))
                 for h in headers
             ]
             csv_data += ','.join(row) + '\n'
 
-        with open(file_name, 'w') as csv_file:
+        with open(file_name, 'w+') as csv_file:
             csv_file.write(csv_data)
         return send_file(file_name, as_attachment=True, download_name=file_name,
                          mimetype='text/csv')
@@ -310,6 +315,7 @@ def get_project_results(project_id):
    
         for obs in obs_dict:
             obs_data = obs.get("Observation data", {})
+            #  should it be: .get("Observation data", [key], [value]) ?
             for key, value in obs_data.items():
                 if isinstance(value, (int, float)):
                     numeric_sums[key] += value

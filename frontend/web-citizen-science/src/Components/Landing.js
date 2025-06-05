@@ -45,9 +45,11 @@ function Landing() {
       <section>
         <Container fluid>
           <Container className="pagecontent">
-            <Row>
+            <Row style={{backgroundColor:'#86adde80', borderRadius: '20px',
+                    
+                }}>
               <Col md={9}>
-              <h1 style={{padding:'2px'}}>Please log in to access the Admin Database</h1>
+              <h1 style={{padding:'2px'}}>Please log in to access the Admin Website</h1>
                 <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'center'}} onClick={(e) => onOAuthLogin()}>Login</Button>
                 <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'right'}} onClick={(e) => onOAuthLogout()}>Logout</Button>
                 { /* 

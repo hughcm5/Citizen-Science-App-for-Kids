@@ -41,13 +41,17 @@ function ViewProject() {
       description
     }
     console.log('project:', ViewProject);
-    axios.post('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects', project_payload)
+    axios.post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects', project_payload)
     .then((response) => {
-      console.log('Project creation successful');
+      const msg = 'Project creation successful';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       fetchData(); // repopulate table with new project 
     })
     .catch((err) => {
-      console.log('Failed to create this project');
+      const msg = 'Failed to create this project';
+      console.log(msg, ': ', err);
+      window.alert(msg);
       if (err.data) {
         console.log(JSON.stringify(err.data));
       }
@@ -150,7 +154,9 @@ function ViewProject() {
     // TODO: Add some feedback for the user to know that edits are being saved
     try {
       const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + editedProjectData.project_id.toString(), project_payload);
-      console.log('Project updated successfully', response.data);
+      const msg = 'Project updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       // handle update
       const project_to_be_updated = projectData.find(obj => obj.project_id === editedProjectData.project_id);
       if (project_to_be_updated) {
@@ -162,7 +168,9 @@ function ViewProject() {
       cancelEdit(); // exit edit mode: disables edit fields 
       // TODO let user know edits were successful
     } catch (error) {
-      console.error('Error updating project: ', error); // error handling
+      const msg = 'Error updating project';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // TODO autocancel or leave editing mode
       cancelEdit();
       // TODO tell user stuff went wrong and what went wrong
@@ -172,8 +180,9 @@ function ViewProject() {
   
   const fetchSelectedProject = async () => {
     if (!selectedProjectId) {
-      // TODO: Make an error message show
-      console.log("A project ID is required");
+      const msg = 'A project ID is required. Please use the drop down select';
+      console.log(msg);
+      window.alert(msg);
       return;
     }
 
@@ -194,18 +203,23 @@ function ViewProject() {
   const deleteProject = async (id) => {
     try {
       const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/projects/' + id.toString());
-      console.log('Project deleted successfully', response.data)
+      const msg = 'Project deleted successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       // handle success by refreshing table
       fetchData();
     } catch (error) {
-      console.error('Error deleting project:', error); // error handling
+      const msg = 'Error deleting project';
+      console.log(msg, ': ', error);
+      window.alert(msg);
     }
 };
 /* ------------ CSV ------------*/
   const fetchCSV = async () => {
     if (!selectedProjectId) {
-      // TODO: Make an error message show
-      console.log("A project ID is required");
+      const msg = 'A project ID is required. Please use the drop down select';
+      console.log(msg);
+      window.alert(msg);
       return;
     }
 
