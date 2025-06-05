@@ -1,7 +1,8 @@
 /* Landing aka Log-In Page for the Admin Website */
 
 /* ------------ Necessary Imports ------------*/
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 /*Import components from react-bootstrap */
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -13,51 +14,58 @@ import axios from "axios";
 function Landing() {
   const [CLIENT_ID, setCLIENT_ID] = useState('')
   const [CLIENT_SECRET, setCLIENT_SECRET] = useState('')
+  const [user, setUser] = useState(null)
+  const [sessionInfo, setSessionInfo] = useState(null)
+  const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
-    event.preventDefault();
-    const oauth_data = {
-      CLIENT_ID,
-      CLIENT_SECRET,
-    }
-    console.log('oauth_data:', oauth_data);
+  const onOAuthLogin = () => {
+    window.open(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/login");
+  }
+
+  const onOAuthLogout = () => {
+    window.open(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/logout");
+  }
+
+  const onSessionGet = () => {
     axios
-      .post("http://localhost:5000/oauth/callback", oauth_data)
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/session")
       .then((response) => {
-        console.log('Login successful');
+        console.log('Successfully retrieved session info from the backend');
+        setSessionInfo(response.data);
       })
       .catch((err) => {
-        console.log('Failed to log in');
-        if (err.data) {
-          console.log(JSON.stringify(err.data));
-        }
+        console.error('Failed to retrieve session info from the backend: ', err);
       });
-  };
+  }
+
+  useEffect(() => {
+  }, []);
 
     return (
       <section>
         <Container fluid>
           <Container className="pagecontent">
-            <Row>
+            <Row style={{backgroundColor:'#86adde80', borderRadius: '20px',
+                    
+                }}>
               <Col md={9}>
-              <h1>
-                Please log in:
-              </h1>
-  
-              <h3> Enter your Email & Password </h3>
-            <form onSubmit={handleSubmit}>
-              <input type="email" placeholder="Enter your Google Email" value={CLIENT_ID} onChange={ (e)=> setCLIENT_ID} />
-              <input type="text" placeholder="Password: " value={CLIENT_SECRET} onChange={(e) => setCLIENT_SECRET(e.target.value)} />
-                </form>
-              <Button variant="primary" type="submit">Submit</Button>
-               {/* onClick send authentication data to back end to log in the admin */}
-              { /** useState to contain data from remote server and to contain form data */ }
-              { /* Load the page with buttons that allow Admin to Add New Project or View Current Projects after login */ }
-              { /* If current projects is selected, then populate with the existing projects from the remote source */ }
-            </Col>
-          </Row>
+              <h1 style={{padding:'2px'}}>Please log in to access the Admin Website</h1>
+                <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'center'}} onClick={(e) => onOAuthLogin()}>Login</Button>
+                <Button style={{fontSize:'20px', margin:'1%', padding:'20px', float:'right'}} onClick={(e) => onOAuthLogout()}>Logout</Button>
+                { /* 
+                <Button onClick={(e) => onSessionGet()}>OAuth Get Session Info</Button>
+                */ }
+                {
+                /*
+                  sessionInfo !== null &&
+                    (<div>
+                      {JSON.stringify(sessionInfo, null, 2)}
+                    </div>)
+                */ }
+              </Col>
+            </Row>
+          </Container>
         </Container>
-      </Container>
       </section>
     )
   }

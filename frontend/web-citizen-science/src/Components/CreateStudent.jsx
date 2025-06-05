@@ -9,77 +9,273 @@ import Col from "react-bootstrap/Col";
 import Button from 'react-bootstrap/Button';
 import axios from "axios";
 
-/* ------------ Page Content  ------------*/
+/* ------------ Student Table  ------------*/
 function Student() {
   const [class_id, setclass_id] = useState('');
   const [student_lastname, setstudent_lastname] = useState('');
   const [student_firstname, setstudent_firstname] = useState('');
-  const [class_codes, setclass_codes] = useState('');
 
     /* Prepare the retrieve on the frontend */
-  const [studentData, setstudentData] = useState(null);
+  const [studentData, setstudentData] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retrieveError, setRetrieveError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/students');
-        setstudentData(response.data);
-        setLoading(false);
-      } catch (err) {
+  const [editedId, setEditedId] = useState(null);
+  const [editedStudentData, setEditedStudentData] = useState({});
+
+/* ------------ Retrieve  ------------*/
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students');
+      setstudentData(response.data);
+      setLoading(false);
+    } catch (err) {
         setRetrieveError(err)
         setLoading(false);
-      }
+    }
+  };
+
+  const fetchClassrooms = async () => {
+    axios
+      .get(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms')
+      .then((response) => {
+        console.log('Fetched classrooms successfully');
+        const classrooms = response.data
+        setClassrooms(response.data);
+
+        // Set default selected classroom if null
+        if (class_id === null || class_id === '') {
+          setclass_id(classrooms[0].class_id);
+        } else {
+          // If it is already selected, make sure it exists
+          const existingClass= classrooms.find(e => e.class_id === class_id);
+          // Else, just select the first one by default
+          if (!existingClass) {
+            setclass_id(classrooms[0].class_id);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve classrooms');
+        console.error(err);
+      });
+  }
+
+  const onEditRow = (student) => {
+    // enable the labels by setting an edited id to render the inputs
+    setEditedId(student.student_id);
+    setEditedStudentData(student);
+  }
+
+  const onEditChange = (x) => {
+    const { name, value } = x.target;
+    setEditedStudentData({...editedStudentData, [name]: value});
+  }
+
+  const cancelEdit = () => {
+    setEditedId(null);
+    setEditedStudentData({});
+  }
+
+  const onSaveEdit = async () => {
+    if (!editedId) {
+      // If nothing was edited, do nothing
+      return;
+    }
+
+    // TODO: Maybe do some frontend validation to catch mistakes before sending to the backend?
+
+    const student_payload = {
+      'student_lastname' : editedStudentData.student_lastname,
+      'student_firstname' : editedStudentData.student_firstname,
+      'class_id' : editedStudentData.class_id
     };
 
+    // TODO: Change or disable the "save" button to say "saving" or similar so that there is feedback that saving is happening
+
+    try {
+      const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students/' + editedStudentData.student_id.toString(), student_payload);
+      const msg = 'Student updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
+
+      // Handle successful update (update/refresh table upon deletion)
+
+      // Update the fields on the front end side to speed it up?
+      // iterate to find the admin with the same id
+      const student_to_be_updated = studentData.find(obj => obj.student_id === editedStudentData.admin_id);
+      if (student_to_be_updated) {
+        student_to_be_updated.student_firstname = editedStudentData.admin_firstname;
+        student_to_be_updated.student_lastname = editedStudentData.admin_lastname;
+        student_to_be_updated.class_id = editedStudentData.class_id;
+      }
+
+      fetchData();
+      // A bit of an oxymoron since the edit was already successful but this is to disable the edit fields
+      cancelEdit();
+      // TODO: have some kind of popup telling the user of the successful edit
+    } catch (error) {
+      const msg = 'Error updating student';
+      console.error(msg, ': ', error);
+      window.alert(msg);
+      // Error handling
+      // TODO: Maybe autocancel or leave up at editing mode?
+      // TODO: have some kind of popup telling the user that something wrong happened
+    }
+  }
+
+  const deleteStudent = async (id) => {
+    try {
+      const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students/' + id.toString());
+      
+      const msg = 'Student deleted successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
+      // Handle successful deletion (update/refresh table upon deletion)
+      fetchData();
+    } catch (error) {
+      const msg = 'Error deleting student';
+      console.error(msg, ': ', error);
+      window.alert(msg);
+      // Error handling
+    }
+  };
+
+  /* Prepare the retrieve on the frontend */
+  useEffect(() => {
     fetchData();
+    fetchClassrooms();
   }, []);
 
+/* ------------ Create  ------------*/
   const handleSubmit = (event) => {
     event.preventDefault();
     const student_data = {
-      class_id,
+      class_id: parseInt(class_id),
       student_lastname,
-      student_firstname,
-      class_codes
+      student_firstname
     }
     console.log('student:', Student);
     axios
-      .post("http://localhost:5000/students", student_data)
+      .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/students', student_data)
       .then((response) => {
-        console.log('Student creation successful');
+        const msg = 'Student creation successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
+        fetchData();
       })
       .catch((err) => {
-        console.log('Failed to create student in the database');
+        const msg = 'Failed to create student in the database';
+        console.error(msg, ': ', err);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
       });
   };
 
+  const toHumanReadableDate = (backendDateStr) => {
+    const date = new Date(backendDateStr);
+    // Format the string to remove timezone 
+    return date.toISOString().split('T')[0];
+  }
+/* ------------ Table Styling ------------*/
+  var tableStyle = {
+       "border": "1px solid black",
+    };
+  var column = {
+      padding: '10px',
+      "border-bottom": "1px solid black"
+    };
+
+/* ------------ Page Content  ------------*/
   return (
     <Container fluid>
       <Container className="content">
-        <Row>
-          <Col md={9}>
-            <h1 style={{paddingBottom: '10px'}}>
-            Students Page
-            </h1>
+        <h1 style={{
+        fontSize: '50px', padding:'1.5%', color:'black', filter: 'drop-shadow(2px 2px 1px blue)'}} >Students</h1>
+          <Row style={{
+          backgroundColor:'#86adde80', borderRadius: '10px',    
+                }}>
+            <Col md={9}>
             <p>Each classroom will have students that can access certain projects based on their assigned class codes</p>
             <h2>Current Students:</h2>
-            <p>To do: Use a Table to format the Retrieved Data from the Backend - Data populates as JSON (good for debugging but needs to be changed)</p>
-            <pre>{JSON.stringify(studentData, null, 2)}</pre>
+
+            { /* (<pre>{JSON.stringify(studentData, null, 2)}</pre>) */ }
+            
+          {
+            // /* ------------ Student Table  ------------*/
+            // /* ------------ RUD Funtions  ------------*/
+          }
+          <table className='studentTable' style={tableStyle} >
+            <thead>
+              <tr>
+                <th> </th>
+                <th>ID #</th>
+                <th>Class</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th> </th>
+              </tr>
+            </thead>
+            <tbody>
+            {studentData.map(student => (
+              <tr key={student.student_id}>
+                <td>
+                  {
+                    editedId === student.student_id
+                    ? (<>
+                        <button onClick={() => cancelEdit()}>Cancel</button>
+                        <button onClick={() => onSaveEdit()}>Save</button>
+                      </>)
+                    : (<button onClick={() => onEditRow(student)}>Edit</button>)
+                  }
+                </td>
+                <td>{student.student_id}</td>
+                <td>{classrooms.find((c) => c.class_id === student.class_id)?.class_name + ' (' + student.class_id + ')'}</td>
+                <td>
+                  {
+                    editedId === student.student_id
+                    ? (<input name="student_lastname" type="text" value={editedStudentData.student_lastname} onChange={onEditChange} />)
+                    : (student.student_lastname)
+                  }
+                </td>
+                <td>
+                  {
+                    editedId === student.student_id
+                    ? (<input name="student_firstname" type="text" value={editedStudentData.student_firstname} onChange={onEditChange} />)
+                    : (student.student_firstname)
+                  }
+                </td>
+                <td>{toHumanReadableDate(student.created_at)}</td>
+                <td>{toHumanReadableDate(student.updated_at)}</td>
+                <td><button onClick={(event) => deleteStudent(student.student_id)}>Delete</button></td>
+              </tr>
+            ))}
+            </tbody>
+          </table>
+            
+                      {
+            // /* ------------ Create Student Form ------------*/
+          }
             <h2> You can create a new student for the website here: </h2>
-              
             <form onSubmit={handleSubmit}>
               <label>
-              Create a new Student - Enter the Students's Details:
-              <input type="number" placeholder="Class ID" value={class_id} onChange={(e) => setclass_id(e.target.value)} />
+              Create a new Student - Enter the Students's Details:    </label><br />
+              <select
+                value={class_id}
+                onChange={e => setclass_id(e.target.value)}
+                >
+                {classrooms.map(classroom => (
+                  <option value={classroom.class_id}>{classroom.class_name + ' (' + classroom.class_id + ')'}</option>
+                ))}
+              </select>
               <input type="text" placeholder="Last Name" value={student_lastname} onChange={(e) => setstudent_lastname(e.target.value)} />
               <input type="text" placeholder="First Name" value={student_firstname} onChange={(e) => setstudent_firstname(e.target.value)} />
-              <input type="text" placeholder="Class Code" value={class_codes} onChange={(e) => setclass_codes(e.target.value)} />
-              </label>
+              <br />
               <Button variant="primary" type="submit">Submit</Button>
             </form>
             </Col>

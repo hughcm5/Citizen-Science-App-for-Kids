@@ -7,3 +7,8 @@ Flask-SQLAlchemy
 PyMySQL
 flask-cors
 uuid
+python-jose
+authlib
+requests
+six
+gunicorn

@@ -1,0 +1,39 @@
+runtime: python312
+service: observations
+entrypoint: gunicorn -b :$PORT observations:app
+
+handlers:
+    # This handler routes all requests not caught above to your main app. It is
+    # required when static routes are defined, but can be omitted (along with
+    # the entire handlers section) when there are no static files defined.
+    - url: /.*
+      script: auto
+
+env_variables:
+    PROJECTS_SERVICE_URL: "https://projects-dot-citizen-science-app-for-kids.wn.r.appspot.com"
+    OBSERVATIONS_SERVICE_URL: "https://observations-dot-citizen-science-app-for-kids.wn.r.appspot.com"
+    STUDENTS_SERVICE_URL: "https://students-dot-citizen-science-app-for-kids.wn.r.appspot.com"
+    TEACHERS_SERVICE_URL: "https://admins-dot-citizen-science-app-for-kids.wn.r.appspot.com"
+    CLASSROOMS_SERVICE_URL: "https://classrooms-dot-citizen-science-app-for-kids.wn.r.appspot.com"
+
+    PROJECTS_SERVICE_NAME: "projects"
+    OBSERVATIONS_SERVICE_NAME: "observations"
+    STUDENTS_SERVICE_NAME: "students"
+    TEACHERS_SERVICE_NAME: "teachers"
+    CLASSROOMS_SERVICE_NAME: "classrooms"
+
+    HEALTH_CHECK_TIMEOUT: "10"
+    NO_AUTH_SERVICES: "projects,observations,csv"
+
+    CORS_ORIGINS: "https://citizen-science-app-for-kids.wn.r.appspot.com"
+    DEBUG: "True"
+
+    CLOUD_SQL: "True"
+
+    DB_NAME: "citizen_science_app"
+    DB_CONNECTION_NAME: "citizen-science-app-for-kids:us-central1:citizen-science-instance"
+
+    AUTH0_DOMAIN: "dev-tmf2tlri8xgzzr2y.us.auth0.com"
+
+    REDIRECT_URI: "/oauth/callback"
+    FRONTEND_REDIRECT_URL: "https://citizen-science-app-for-kids.wn.r.appspot.com"
