@@ -15,12 +15,14 @@ import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 export default function addbservation() {
-  // Usestate variables to hold all the form inputs 
+  // Usestate variables to hold all the form inputs
   // User selects project_id from stored projects
   // User selects the type of format to write obsverations in
   const [projects, setProjects] = useState([]);
+  const [students, setStudents] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [formatType, setFormatType] = useState("");
+  const [studentId, setSelectedStudentId] = useState("");
 
   // Each state variable here stores the data the student has written
   // For a specific format method that is dynamically rendered
@@ -44,17 +46,20 @@ export default function addbservation() {
   // Based of format (text, dropdown, checkbox) selected
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          student_id: 1,
-          project_id: Number(selectedProjectId),
-          observation_data: { observationText },
-        }), // send observation data
-      });
+      const res = await fetch(
+        "https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            student_id: Number(studentId),
+            project_id: Number(selectedProjectId),
+            observation_data: { observationText },
+          }), // send observation data
+        }
+      );
 
       if (res.ok) {
         setObservationText(""); // clear input
@@ -69,17 +74,20 @@ export default function addbservation() {
   // For checkbox submissions
   const handleSubmit2 = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          student_id: 1,
-          project_id: Number(selectedProjectId),
-          observation_data: { checkboxOptions },
-        }), // send observation data
-      });
+      const res = await fetch(
+        "https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            student_id: Number(studentId),
+            project_id: Number(selectedProjectId),
+            observation_data: { checkboxOptions },
+          }), // send observation data
+        }
+      );
 
       if (res.ok) {
         setCheckboxOptions([]); // clear input
@@ -94,17 +102,20 @@ export default function addbservation() {
   // For dropdown submissions
   const handleSubmit3 = async () => {
     try {
-      const res = await fetch("http://192.168.68.104:5002/observations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          student_id: 1,
-          project_id: Number(selectedProjectId),
-          observation_data: { observationDropdown },
-        }), // send observation data
-      });
+      const res = await fetch(
+        "https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/observations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            student_id: Number(studentId),
+            project_id: Number(selectedProjectId),
+            observation_data: { observationDropdown },
+          }), // send observation data
+        }
+      );
 
       if (res.ok) {
         setObservationDropdown([]); // clear input
@@ -118,10 +129,22 @@ export default function addbservation() {
 
   // Use effect triggered only once at the start of page render to retrieve projects
   useEffect(() => {
-    fetch("http://192.168.68.104:5001/projects") // replace with your backend
+    fetch(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects`) // replace with your backend
       .then((response) => response.json())
       .then((data) => {
         setProjects(data);
+        console.log(data)
+      })
+      .catch((error) => {
+        console.error("Error fetching projects:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/students`) // replace with your backend
+      .then((response) => response.json())
+      .then((data) => {
+        setStudents(data);
       })
       .catch((error) => {
         console.error("Error fetching projects:", error);
@@ -252,7 +275,7 @@ export default function addbservation() {
   }
 
   // Dynamic function to return and render specific forms based on option picked
-  // For example, clicking on text in the dropdown selection returns the first 
+  // For example, clicking on text in the dropdown selection returns the first
   // conditional statement and so on...
   const renderInputByFormat = () => {
     if (formatType === "text") {
@@ -359,6 +382,35 @@ export default function addbservation() {
           <Heading mb={6} size="md">
             Add Observation for your Selected Project
           </Heading>
+
+          <Select
+            selectedValue={studentId}
+            minWidth="200"
+            placeholder="Select Your Student Id"
+            onValueChange={(value) => setSelectedStudentId(value)}
+            _selectedItem={{
+              bg: "teal.600",
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mb={4}
+          >
+            {students.map((student) => (
+              <Select.Item
+                key={student.student_id}
+                label={`${student.student_firstname} ${student.student_lastname} ID:(${student.student_id})`}
+                value={student.student_id}
+              />
+            ))}
+          </Select>
+          
+          {studentId && (
+            <Box>
+              <Heading size="sm" mb={1}>
+                Student ID
+              </Heading>
+              <Text mb={2}>{studentId}</Text>
+            </Box>
+          )}
 
           <Select
             selectedValue={selectedProjectId}
