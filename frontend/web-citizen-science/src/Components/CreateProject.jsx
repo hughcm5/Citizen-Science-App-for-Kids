@@ -26,10 +26,14 @@ function Project() {
     axios
       .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/projects", project_data)
       .then((response) => {
-        console.log('Project post successful');
+        const msg = 'Project created successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
       })
       .catch((err) => {
-        console.log('Failed to post project');
+        const msg = 'Failed to create project';
+        console.error(msg, ': ', err);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }

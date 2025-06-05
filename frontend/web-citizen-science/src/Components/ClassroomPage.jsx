@@ -56,12 +56,16 @@ function Classroom() {
     axios
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms', class_data)
       .then((response) => {
-        console.log('Classroom creation successful');
+        const msg = 'Classroom creation successful';
+        console.log(msg);
+        window.alert(msg);
         fetchData();   // refresh table after creation
       })
       .catch((err) => {
         // todo : signal if admin ID not found
-        console.log('Failed to create classroom');
+        const msg = 'Failed to create classroom';
+        console.error(msg);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
@@ -78,13 +82,17 @@ function Classroom() {
   try{
     const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms/' + class_id.toString());
 
-    console.log('Classroom deleted successfully:', response.data);
+    const msg = 'Classroom deleted successfully';
+    console.log(msg, ': ', response?.data);
+    window.alert(msg);
     // Handle successful deletion and update/refresh table upon deletion
     fetchData();
     }
     catch (error){
-    console.error('Error deleting classroom:', error);
-    // Error handling
+      const msg = 'Error deleting classroom';
+      console.error(msg, ': ', error);
+      window.alert(msg);
+      // Error handling
     }
   };
 
@@ -147,6 +155,11 @@ function Classroom() {
       const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/classrooms/' + editedClassData.class_id.toString(), class_payload);
       // handle success (update/refresh table)
 
+
+      const msg = 'Classroom updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
+
       // update fields on fromt end, need to displays something for user
       // iterate to match classroom with id to edit
       const class_to_update = classData.find(obj => obj.class_id === editedClassData.class_id);
@@ -160,7 +173,9 @@ function Classroom() {
       fetchData(); // repopulate the table
       cancelEdit(); // stop the editing processs
     } catch (error) {
-      console.error('Error updating this classroom: ', error);
+      const msg = 'Error updating this classroom';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // error handling
       // TODO frontend implementation: print error for user, etc
     }

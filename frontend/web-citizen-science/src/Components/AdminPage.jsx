@@ -55,11 +55,15 @@ function Admin() {
       // .post("https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins", admin_payload)
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins', admin_payload)
       .then((response) => {
-        console.log('Admin creation successful');
+        const msg = 'Admin creation successful';
+        console.log(msg);
+        window.alert(msg);
         fetchData();
       })
       .catch((err) => {
-        console.log('Failed to create admin');
+        const msg = 'Failed to create admin';
+        console.error(msg);
+        window.alert(msg);
         if (err.data) {
           console.log(JSON.stringify(err.data));
         }
@@ -78,11 +82,15 @@ function Admin() {
     // const response = await axios.delete(`https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/` + id.toString());
     const response = await axios.delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + `/admins/` + id.toString());
     
-    console.log('Admin deleted successfully:', response.data);
+    const msg = 'Admin deleted successfully';
+    console.log(msg, ': ', response?.data);
+    window.alert(msg);
     // Handle successful deletion (update/refresh table upon deletion)
     fetchData();
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    const msg = 'Error deleting admin';
+    window.alert(msg);
+    console.error(msg, ': ', error);
     // Error handling
   }
 };
@@ -124,7 +132,9 @@ function Admin() {
     try {
       // const response = await axios.put('https://backend-dot-citizen-science-app-for-kids.wn.r.appspot.com/admins/' + editedAdminData.admin_id.toString(), admin_payload);
       const response = await axios.put(process.env.REACT_APP_BACKEND_GATEWAY_URL + '/admins/' + editedAdminData.admin_id.toString(), admin_payload);
-      console.log('Admin updated successfully: ', response.data);
+      const msg = 'Admin updated successfully';
+      console.log(msg, ': ', response?.data);
+      window.alert(msg);
       // Handle successful update (update/refresh table upon deletion)
 
       // Update the fields on the front end side to speed it up?
@@ -142,7 +152,9 @@ function Admin() {
       cancelEdit();
       // TODO: have some kind of popup telling the user of the successful edit
     } catch (error) {
-      console.error('Error updating admin:', error);
+      const msg = 'Error updating admin';
+      console.error(msg, ': ', error);
+      window.alert(msg);
       // Error handling
       // TODO: Maybe autocancel or leave up at editing mode?
       // TODO: have some kind of popup telling the user that something wrong happened

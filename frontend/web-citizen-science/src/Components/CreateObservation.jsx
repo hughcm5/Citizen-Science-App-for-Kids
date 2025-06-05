@@ -155,14 +155,17 @@ function Observation() {
     axios
       .post(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations", observationPayload)
       .then((response) => {
-        console.log('Observation post successful');
-        console.log(response);
+
+        const msg = 'Observation post successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to post observation');
-        console.error(err);
+        const msg = 'Failed to post observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
@@ -188,14 +191,17 @@ function Observation() {
     axios
       .delete(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + id.toString())
       .then((response) => {
-        console.log('Observation delete successful');
-        console.log(response);
+
+        const msg = 'Observation deleted successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to delete observation');
-        console.error(err);
+        const msg = 'Failed to delete observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
@@ -257,8 +263,9 @@ function Observation() {
     axios
       .put(process.env.REACT_APP_BACKEND_GATEWAY_URL + "/observations/" + editedId.toString(), observationPayload)
       .then((response) => {
-        console.log('Observation update successful');
-        console.log(response);
+        const msg = 'Observation update successful';
+        console.log(msg, ': ', response?.data);
+        window.alert(msg);
 
         // A bit of an oxymoron since the edit was already successful but this is to disable the edit fields
         cancelEdit();
@@ -267,8 +274,9 @@ function Observation() {
         fetchAll();
       })
       .catch((err) => {
-        console.error('Failed to update observation');
-        console.error(err);
+        const msg = 'Failed to update observation';
+        console.error(msg, ': ', err);
+        window.alert(msg);
 
         fetchAll();
       });
